@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">#E62118</color>
+    <color name="colorPrimaryDark">#C31C13</color>
+    <color name="colorAccent">#E62118</color>
+    <color name="colorWatch">#424242</color>
+    <color name="colorWatchDark">#212121</color>
+    <color name="white">#fafafa</color>
+    <color name="white_pressed">#f1f1f1</color>
+    <color name="black_semi_transparent">#B2000000</color>
+    <color name="half_black">#808080</color>
+</resources>
