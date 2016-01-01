@@ -1,6 +1,8 @@
 package cz.martykan.webtube;
 
+import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Build;
@@ -9,6 +11,7 @@ import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
@@ -20,6 +23,9 @@ import android.webkit.WebResourceResponse;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
+import android.widget.FrameLayout;
+import android.widget.ProgressBar;
+
 import java.io.IOException;
 import java.io.InputStream;
 
@@ -28,6 +34,9 @@ public class MainActivity extends AppCompatActivity {
     WebView webView;
     View appWindow;
     Window window;
+    ProgressBar progress;
+    View mCustomView;
+    FrameLayout customViewContainer;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,12 +49,83 @@ public class MainActivity extends AppCompatActivity {
         webView = (WebView) findViewById(R.id.webView);
         appWindow = findViewById(R.id.appWindow);
         window = this.getWindow();
+        progress = (ProgressBar) findViewById(R.id.progress);
+        customViewContainer = (FrameLayout) findViewById(R.id.customViewContainer);
 
         // To save login info
         CookieManager.getInstance().setAcceptCookie(true);
         if (Integer.valueOf(Build.VERSION.SDK_INT) >= 21) {
             CookieManager.getInstance().setAcceptThirdPartyCookies(webView, true);
         }
+
+        webView.setWebChromeClient(new WebChromeClient() {
+            @Override
+            public void onShowCustomView(View view,CustomViewCallback callback) {
+                // if a view already exists then immediately terminate the new one
+                if (mCustomView != null) {
+                    callback.onCustomViewHidden();
+                    return;
+                }
+                mCustomView = view;
+                webView.setVisibility(View.GONE);
+                customViewContainer.setVisibility(View.VISIBLE);
+                customViewContainer.addView(view);
+
+                View decorView = getWindow().getDecorView();
+                // Hide the status bar.
+                int uiOptions = View.SYSTEM_UI_FLAG_FULLSCREEN;
+                decorView.setSystemUiVisibility(uiOptions);
+
+            }
+
+            @Override
+            public void onHideCustomView() {
+                super.onHideCustomView();
+                if (mCustomView == null)
+                    return;
+
+                webView.setVisibility(View.VISIBLE);
+                customViewContainer.setVisibility(View.GONE);
+
+                mCustomView.setVisibility(View.GONE);
+                customViewContainer.removeView(mCustomView);
+                mCustomView = null;
+
+                View decorView = getWindow().getDecorView();
+                // Show the status bar.
+                int uiOptions = View.SYSTEM_UI_FLAG_VISIBLE;
+                decorView.setSystemUiVisibility(uiOptions);
+            }
+
+
+            public void onProgressChanged(WebView view, int percentage) {
+                progress.setVisibility(View.VISIBLE);
+                progress.setProgress(percentage);
+
+                // For more advnaced loading
+                if(Integer.valueOf(Build.VERSION.SDK_INT) >= 19) {
+                    if (percentage == 100) {
+                        progress.setIndeterminate(true);
+                    } else {
+                        progress.setIndeterminate(false);
+                    }
+                    webView.evaluateJavascript("(function() { return document.getElementsByClassName('_mks')[0] != null; })();",
+                            new ValueCallback<String>() {
+                                @Override
+                                public void onReceiveValue(String value) {
+                                    Log.i("LOADING", value.toString());
+                                    if (value.equals("false")) {
+                                        progress.setVisibility(View.INVISIBLE);
+                                    } else {
+                                        onProgressChanged(webView, 100);
+                                    }
+                                }
+                            });
+                }
+            }
+
+
+        });
 
         webView.setWebViewClient(new WebViewClient() {
             // Open links in a browser window (except for sign-in dialogs and YouTube URLs)
@@ -118,20 +198,31 @@ public class MainActivity extends AppCompatActivity {
 
         WebSettings webSettings = webView.getSettings();
         webSettings.setJavaScriptEnabled(true);
-        webSettings.setCacheMode(WebSettings.LOAD_NO_CACHE);
-        webSettings.setRenderPriority(WebSettings.RenderPriority.HIGH);
+        webSettings.setJavaScriptCanOpenWindowsAutomatically(false);
+        webSettings.setAllowFileAccess(false);
+
+        webSettings.setDatabaseEnabled(true);
+        String databasePath = this.getApplicationContext()
+                .getDir("database", Context.MODE_PRIVATE).getPath();
+        webSettings.setDatabasePath(databasePath);
+
+        String cachePath = this.getApplicationContext()
+                .getDir("cache", Context.MODE_PRIVATE).getPath();
+        webSettings.setAppCachePath(cachePath);
+        webSettings.setAllowFileAccess(true);
+        webSettings.setAppCacheEnabled(true);
+        webSettings.setDomStorageEnabled(true);
+        webSettings.setAppCacheMaxSize(1024 * 1024 * 8);
+        webSettings.setCacheMode(WebSettings.LOAD_DEFAULT);
+
         webView.setHorizontalScrollBarEnabled(false);
+
         webView.setLayerType(View.LAYER_TYPE_HARDWARE, null);
-        webView.setDrawingCacheBackgroundColor(Color.WHITE);
-        webView.setDrawingCacheEnabled(false);
-        webView.setWillNotCacheDrawing(true);
-        if(Build.VERSION.SDK_INT <= Build.VERSION_CODES.LOLLIPOP_MR1){
-            webView.setAnimationCacheEnabled(false);
-            webView.setAlwaysDrawnWithCacheEnabled(false);
-        }
+
         webView.setBackgroundColor(Color.WHITE);
         webView.setScrollbarFadingEnabled(true);
         webView.setNetworkAvailable(true);
+
         webView.loadUrl("https://m.youtube.com/");
 
         // Floating action buttons
