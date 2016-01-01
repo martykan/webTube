@@ -2,8 +2,8 @@
 Android wrapper for the YouTube website with a couple little tweaks. Allows you to use YouTube comfortably, even without GAPPS on your phone.
 
 ## Screenshots
-[<img src="http://i.imgur.com/uoBaifl.png" width=250>](http://i.imgur.com/uoBaifl.png)
-[<img src="http://i.imgur.com/sYUF63R.png" width=250>](http://i.imgur.com/sYUF63R.png)
+[<img src="http://i.imgur.com/s7G1o3G.png" width=250>](http://i.imgur.com/s7G1o3G.png)
+[<img src="http://i.imgur.com/tybWcz3.png" width=250>](http://i.imgur.com/tybWcz3.png)
 [<img src="http://i.imgur.com/rCZ7hzB.png" width=250>](http://i.imgur.com/rCZ7hzB.png)
 
 ## Contribution
