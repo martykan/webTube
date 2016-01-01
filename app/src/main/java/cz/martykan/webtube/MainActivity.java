@@ -140,31 +140,19 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
 
-            // Block tracking URLs
-            @Override
-            public WebResourceResponse shouldInterceptRequest(WebView view, String url) {
-                if (url.toString().contains("csi") || url.toString().contains("ptracking") || url.toString().contains("doubleclick")) {
-                    return new WebResourceResponse("text/plain", "UTF-8", new InputStream() {
-                        @Override
-                        public int read() throws IOException {
-                            return 0;
-                        }
-                    });
-                }
-                return null;
-            }
-
             public void onLoadResource(WebView view, String url) {
-                // Gets rid of orange outlines
-                String css = "*, *:focus { /*overflow-x: hidden !important;*/ " +
-                        "/*transform: translate3d(0,0,0) !important; -webkit-transform: translate3d(0,0,0) !important;*/ outline: none !important; -webkit-tap-highlight-color: rgba(255,255,255,0) !important; -webkit-tap-highlight-color: transparent !important; }";
-                webView.loadUrl("javascript:(function() {" +
-                        "var parent = document.getElementsByTagName('head').item(0);" +
-                        "var style = document.createElement('style');" +
-                        "style.type = 'text/css';" +
-                        "style.innerHTML = '" + css + "';" +
-                        "parent.appendChild(style)" +
-                        "})()");
+                // Gets rid of orange outlines (causes bug on jellybean)
+                if (Integer.valueOf(Build.VERSION.SDK_INT) >= 19) {
+                    String css = "*, *:focus { /*overflow-x: hidden !important;*/ " +
+                            "/*transform: translate3d(0,0,0) !important; -webkit-transform: translate3d(0,0,0) !important;*/ outline: none !important; -webkit-tap-highlight-color: rgba(255,255,255,0) !important; -webkit-tap-highlight-color: transparent !important; }";
+                    webView.loadUrl("javascript:(function() {" +
+                            "var parent = document.getElementsByTagName('head').item(0);" +
+                            "var style = document.createElement('style');" +
+                            "style.type = 'text/css';" +
+                            "style.innerHTML = '" + css + "';" +
+                            "parent.appendChild(style)" +
+                            "})()");
+                }
 
                 // To change the statusbar color
                 if (Integer.valueOf(Build.VERSION.SDK_INT) >= 21) {
@@ -202,9 +190,6 @@ public class MainActivity extends AppCompatActivity {
         webSettings.setAllowFileAccess(false);
 
         webSettings.setDatabaseEnabled(true);
-        String databasePath = this.getApplicationContext()
-                .getDir("database", Context.MODE_PRIVATE).getPath();
-        webSettings.setDatabasePath(databasePath);
 
         String cachePath = this.getApplicationContext()
                 .getDir("cache", Context.MODE_PRIVATE).getPath();
@@ -212,7 +197,6 @@ public class MainActivity extends AppCompatActivity {
         webSettings.setAllowFileAccess(true);
         webSettings.setAppCacheEnabled(true);
         webSettings.setDomStorageEnabled(true);
-        webSettings.setAppCacheMaxSize(1024 * 1024 * 8);
         webSettings.setCacheMode(WebSettings.LOAD_DEFAULT);
 
         webView.setHorizontalScrollBarEnabled(false);
