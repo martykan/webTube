@@ -8,8 +8,8 @@ android {
         applicationId "cz.martykan.webtube"
         minSdkVersion 15
         targetSdkVersion 23
-        versionCode 4
-        versionName "0.3.1"
+        versionCode 5
+        versionName "0.4"
     }
     buildTypes {
         release {
