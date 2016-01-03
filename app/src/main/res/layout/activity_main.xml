@@ -41,6 +41,16 @@
         android:layout_marginEnd="16dp">
 
         <com.getbase.floatingactionbutton.FloatingActionButton
+            android:id="@+id/fab_tor"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:visibility="gone"
+            fab:fab_colorNormal="@color/white"
+            fab:fab_icon="@drawable/ic_vector_polygon_grey600_24dp"
+            fab:fab_title="Enable TOR"
+            fab:fab_colorPressed="@color/white_pressed"/>
+
+        <com.getbase.floatingactionbutton.FloatingActionButton
             android:id="@+id/fab_browser"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

@@ -1,15 +1,25 @@
 package cz.martykan.webtube;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.Color;
+import android.net.Proxy;
 import android.net.Uri;
 import android.os.Build;
+
 import com.getbase.floatingactionbutton.FloatingActionButton;
+
+import android.os.Parcelable;
+import android.preference.PreferenceManager;
 import android.support.design.widget.Snackbar;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.ArrayMap;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -26,8 +36,16 @@ import android.webkit.WebViewClient;
 import android.widget.FrameLayout;
 import android.widget.ProgressBar;
 
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.PrintWriter;
+import java.io.StringWriter;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+
+import info.guardianproject.netcipher.proxy.OrbotHelper;
+import info.guardianproject.netcipher.web.WebkitProxy;
+
 
 public class MainActivity extends AppCompatActivity {
 
@@ -37,12 +55,25 @@ public class MainActivity extends AppCompatActivity {
     ProgressBar progress;
     View mCustomView;
     FrameLayout customViewContainer;
+    FloatingActionButton fabTor;
+
+    public static String LOG_TAG = "webTube";
+
+    // For the snackbar with error message
+    View.OnClickListener clickListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            webView.loadUrl("https://m.youtube.com/");
+        }
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        // Gotta go fast!
         getWindow().setFlags(
                 WindowManager.LayoutParams.FLAG_HARDWARE_ACCELERATED,
                 WindowManager.LayoutParams.FLAG_HARDWARE_ACCELERATED);
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
@@ -59,9 +90,10 @@ public class MainActivity extends AppCompatActivity {
         }
 
         webView.setWebChromeClient(new WebChromeClient() {
+
+            // Fullscreen playback
             @Override
-            public void onShowCustomView(View view,CustomViewCallback callback) {
-                // if a view already exists then immediately terminate the new one
+            public void onShowCustomView(View view, CustomViewCallback callback) {
                 if (mCustomView != null) {
                     callback.onCustomViewHidden();
                     return;
@@ -97,13 +129,13 @@ public class MainActivity extends AppCompatActivity {
                 decorView.setSystemUiVisibility(uiOptions);
             }
 
-
+            // Progressbar
             public void onProgressChanged(WebView view, int percentage) {
                 progress.setVisibility(View.VISIBLE);
                 progress.setProgress(percentage);
 
-                // For more advnaced loading
-                if(Integer.valueOf(Build.VERSION.SDK_INT) >= 19) {
+                // For more advnaced loading status
+                if (Integer.valueOf(Build.VERSION.SDK_INT) >= 19) {
                     if (percentage == 100) {
                         progress.setIndeterminate(true);
                     } else {
@@ -113,7 +145,6 @@ public class MainActivity extends AppCompatActivity {
                             new ValueCallback<String>() {
                                 @Override
                                 public void onReceiveValue(String value) {
-                                    Log.i("LOADING", value.toString());
                                     if (value.equals("false")) {
                                         progress.setVisibility(View.INVISIBLE);
                                     } else {
@@ -141,7 +172,7 @@ public class MainActivity extends AppCompatActivity {
             }
 
             public void onLoadResource(WebView view, String url) {
-                // Gets rid of orange outlines (causes bug on jellybean)
+                // Gets rid of orange outlines
                 if (Integer.valueOf(Build.VERSION.SDK_INT) >= 19) {
                     String css = "*, *:focus { /*overflow-x: hidden !important;*/ " +
                             "/*transform: translate3d(0,0,0) !important; -webkit-transform: translate3d(0,0,0) !important;*/ outline: none !important; -webkit-tap-highlight-color: rgba(255,255,255,0) !important; -webkit-tap-highlight-color: transparent !important; }";
@@ -154,7 +185,7 @@ public class MainActivity extends AppCompatActivity {
                             "})()");
                 }
 
-                // To change the statusbar color
+                // To adapt the statusbar color
                 if (Integer.valueOf(Build.VERSION.SDK_INT) >= 21) {
                     webView.evaluateJavascript("(function() { if(document.getElementById('player').style.visibility == 'hidden' || document.getElementById('player').innerHTML == '') { return 'not_video'; } else { return 'video'; } })();",
                             new ValueCallback<String>() {
@@ -178,12 +209,15 @@ public class MainActivity extends AppCompatActivity {
                     webView.loadUrl("https://m.youtube.com/");
                 } else if (description.toString().contains("NAME_NOT_RESOLVED")) {
                     Snackbar.make(appWindow, "Oh no! You are not connected to the internet.", Snackbar.LENGTH_INDEFINITE).setAction("Reload", clickListener).show();
+                } else if (description.toString().contains("PROXY_CONNECTION_FAILED")) {
+                    Snackbar.make(appWindow, "Oh no! Tor is not working properly.", Snackbar.LENGTH_INDEFINITE).setAction("Reload", clickListener).show();
                 } else {
                     Snackbar.make(appWindow, "Oh no! " + description, Snackbar.LENGTH_INDEFINITE).setAction("Reload", clickListener).show();
                 }
             }
         });
 
+        // Some settings
         WebSettings webSettings = webView.getSettings();
         webSettings.setJavaScriptEnabled(true);
         webSettings.setJavaScriptCanOpenWindowsAutomatically(false);
@@ -233,15 +267,78 @@ public class MainActivity extends AppCompatActivity {
                 webView.loadUrl("https://m.youtube.com/");
             }
         });
+
+        // Tor
+        SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(this);
+        fabTor = (FloatingActionButton) findViewById(R.id.fab_tor);
+        if(OrbotHelper.isOrbotInstalled(getApplicationContext())) {
+            fabTor.setVisibility(View.VISIBLE);
+            if(sp.getBoolean("torEnabled", false)) {
+                torEnable();
+                fabTor.setTitle("Disable TOR");
+            }
+            else {
+                fabTor.setTitle("Enable TOR");
+            }
+            fabTor.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(v.getContext());
+                    SharedPreferences.Editor spEdit = sp.edit();
+                    if(sp.getBoolean("torEnabled", false)) {
+                        spEdit.putBoolean("torEnabled", false);
+                        torDisable();
+                        fabTor.setTitle("Enable TOR");
+                    }
+                    else {
+                        AlertDialog dialog = new AlertDialog.Builder(MainActivity.this).create();
+                        dialog.setTitle("Enable Tor?");
+                        dialog.setMessage("Using Tor irresponsibly, like signing in to your YouTube account, will deanonymize your traffic and only make it worse.");
+                        dialog.setCancelable(false);
+                        dialog.setButton(DialogInterface.BUTTON_POSITIVE, "Enable",
+                                new DialogInterface.OnClickListener() {
+                                    public void onClick(DialogInterface dialog, int buttonId) {
+                                        SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(MainActivity.this);
+                                        SharedPreferences.Editor spEdit = sp.edit();
+                                        spEdit.putBoolean("torEnabled", true);
+                                        torEnable();
+                                        fabTor.setTitle("Disable TOR");
+                                        spEdit.commit();
+                                    }
+                                });
+                        dialog.setButton(DialogInterface.BUTTON_NEGATIVE, "Cancel",
+                                new DialogInterface.OnClickListener() {
+                                    public void onClick(DialogInterface dialog, int buttonId) {
+
+                                    }
+                                });
+                        dialog.show();
+                    }
+                    spEdit.commit();
+                }
+            });
+        }
     }
 
-    // For the snackbar with error message
-    View.OnClickListener clickListener = new View.OnClickListener() {
-        @Override
-        public void onClick(View v) {
-            webView.loadUrl("https://m.youtube.com/");
+    public void torEnable() {
+        if (!OrbotHelper.isOrbotRunning(getApplicationContext()))
+            OrbotHelper.requestStartTor(getApplicationContext());
+        try {
+            WebkitProxy.setProxy(MainActivity.class.getName(), getApplicationContext(), null, "localhost", 8118);
         }
-    };
+        catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void torDisable() {
+        try {
+            WebkitProxy.resetProxy(MainActivity.class.getName(), getApplicationContext());
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 
     // For easier navigation
     @Override
