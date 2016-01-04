@@ -34,6 +34,18 @@
                 <data
                     android:host="m.youtube.com"
                     android:scheme="http" />
+                <data
+                    android:host="youtube.com"
+                    android:scheme="https" />
+                <data
+                    android:host="youtube.com"
+                    android:scheme="http" />
+                <data
+                    android:host="youtu.be"
+                    android:scheme="https" />
+                <data
+                    android:host="youtu.be"
+                    android:scheme="http" />
             </intent-filter>
         </activity>
     </application>
