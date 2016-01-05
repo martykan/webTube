@@ -1,47 +1,30 @@
 package cz.martykan.webtube;
 
-import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.graphics.Bitmap;
 import android.graphics.Color;
-import android.net.Proxy;
 import android.net.Uri;
 import android.os.Build;
-
-import com.getbase.floatingactionbutton.FloatingActionButton;
-
-import android.os.Parcelable;
+import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
-import android.util.ArrayMap;
-import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
-import android.webkit.ConsoleMessage;
 import android.webkit.CookieManager;
 import android.webkit.ValueCallback;
 import android.webkit.WebChromeClient;
-import android.webkit.WebResourceResponse;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.FrameLayout;
 import android.widget.ProgressBar;
 
-import java.io.PrintWriter;
-import java.io.StringWriter;
-import java.lang.reflect.Constructor;
-import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
+import com.getbase.floatingactionbutton.FloatingActionButton;
 
 import info.guardianproject.netcipher.proxy.OrbotHelper;
 import info.guardianproject.netcipher.web.WebkitProxy;
@@ -241,7 +224,9 @@ public class MainActivity extends AppCompatActivity {
         webView.setScrollbarFadingEnabled(true);
         webView.setNetworkAvailable(true);
 
-        webView.loadUrl("https://m.youtube.com/");
+        if (!loadUrlFromIntent(getIntent())) {
+            webView.loadUrl("https://m.youtube.com/");
+        }
 
         // Floating action buttons
         FloatingActionButton fabBrowser = (FloatingActionButton) findViewById(R.id.fab_browser);
@@ -317,6 +302,34 @@ public class MainActivity extends AppCompatActivity {
                     spEdit.commit();
                 }
             });
+        }
+    }
+
+    @Override
+    protected void onNewIntent(final Intent intent) {
+        super.onNewIntent(intent);
+
+        loadUrlFromIntent(intent);
+    }
+
+    /**
+     * Tries to load URL in WebView if Intent contains required data. Also see Intent filter in manifest.
+     *
+     * @param intent may contain required data
+     * @return {@code true} if data is loaded from URL or URL is already loaded, else {@code false}
+     */
+    private boolean loadUrlFromIntent(final Intent intent) {
+
+        if (Intent.ACTION_VIEW.equals(intent.getAction()) && intent.getData() != null) {
+            final String url = intent.getData().toString();
+
+            if (url != null && !url.equals(webView.getUrl())) {
+                webView.loadUrl(url);
+            }
+
+            return true;
+        } else {
+            return false;
         }
     }
 
