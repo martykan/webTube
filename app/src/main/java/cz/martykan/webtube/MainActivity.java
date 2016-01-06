@@ -12,6 +12,7 @@ import android.preference.PreferenceManager;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
@@ -155,46 +156,48 @@ public class MainActivity extends AppCompatActivity {
             }
 
             public void onLoadResource(WebView view, String url) {
-                // Remove all iframes (to prevent WebRTC exploits)
-                webView.loadUrl("javascript:(function() {" +
-                        "var iframes = document.getElementsByTagName('iframe');" +
-                        "for(i=0;i<=iframes.length;i++){" +
-                        "if(typeof iframes[0] != 'undefined')" +
-                        "iframes[0].outerHTML = '';" +
-                        "}})()");
-
-                // Gets rid of orange outlines
-                if (Integer.valueOf(Build.VERSION.SDK_INT) >= 19) {
-
-                    String css = "*, *:focus { /*overflow-x: hidden !important;*/ " +
-                            " outline: none !important; -webkit-tap-highlight-color: rgba(255,255,255,0) !important; -webkit-tap-highlight-color: transparent !important; }" +
-                            " ._mfd { border-top: 2px #e62117 solid !important; }";
+                if(!url.contains(".jpg")) {
+                    // Remove all iframes (to prevent WebRTC exploits)
                     webView.loadUrl("javascript:(function() {" +
-                            "if(document.getElementById('webTubeStyle') == null){" +
-                            "var parent = document.getElementsByTagName('head').item(0);" +
-                            "var style = document.createElement('style');" +
-                            "style.id = 'webTubeStyle';" +
-                            "style.type = 'text/css';" +
-                            "style.innerHTML = '" + css + "';" +
-                            "parent.appendChild(style);" +
+                            "var iframes = document.getElementsByTagName('iframe');" +
+                            "for(i=0;i<=iframes.length;i++){" +
+                            "if(typeof iframes[0] != 'undefined')" +
+                            "iframes[0].outerHTML = '';" +
                             "}})()");
-                }
 
-                // To adapt the statusbar color
-                if (Integer.valueOf(Build.VERSION.SDK_INT) >= 21) {
-                    final View statusBarSpace = findViewById(R.id.statusBarSpace);
-                    statusBarSpace.setVisibility(View.VISIBLE);
-                    webView.evaluateJavascript("(function() { if(document.getElementById('player').style.visibility == 'hidden' || document.getElementById('player').innerHTML == '') { return 'not_video'; } else { return 'video'; } })();",
-                            new ValueCallback<String>() {
-                                @Override
-                                public void onReceiveValue(String value) {
-                                    if (!value.toString().contains("not_video")) {
-                                        statusBarSpace.setBackgroundColor(getApplication().getResources().getColor(R.color.colorWatch));
-                                    } else {
-                                        statusBarSpace.setBackgroundColor(getApplication().getResources().getColor(R.color.colorPrimary));
+                    // Gets rid of orange outlines
+                    if (Integer.valueOf(Build.VERSION.SDK_INT) >= 19) {
+
+                        String css = "*, *:focus { " +
+                                " outline: none !important; -webkit-tap-highlight-color: rgba(255,255,255,0) !important; -webkit-tap-highlight-color: transparent !important; }" +
+                                " ._mfd { padding-top: 2px !important; } ";
+                        webView.loadUrl("javascript:(function() {" +
+                                "if(document.getElementById('webTubeStyle') == null){" +
+                                "var parent = document.getElementsByTagName('head').item(0);" +
+                                "var style = document.createElement('style');" +
+                                "style.id = 'webTubeStyle';" +
+                                "style.type = 'text/css';" +
+                                "style.innerHTML = '" + css + "';" +
+                                "parent.appendChild(style);" +
+                                "}})()");
+                    }
+
+                    // To adapt the statusbar color
+                    if (Integer.valueOf(Build.VERSION.SDK_INT) >= 21) {
+                        final View statusBarSpace = findViewById(R.id.statusBarSpace);
+                        statusBarSpace.setVisibility(View.VISIBLE);
+                        webView.evaluateJavascript("(function() { if(document.getElementById('player').style.visibility == 'hidden' || document.getElementById('player').innerHTML == '') { return 'not_video'; } else { return 'video'; } })();",
+                                new ValueCallback<String>() {
+                                    @Override
+                                    public void onReceiveValue(String value) {
+                                        if (!value.toString().contains("not_video")) {
+                                            statusBarSpace.setBackgroundColor(getApplication().getResources().getColor(R.color.colorWatch));
+                                        } else {
+                                            statusBarSpace.setBackgroundColor(getApplication().getResources().getColor(R.color.colorPrimary));
+                                        }
                                     }
-                                }
-                            });
+                                });
+                    }
                 }
             }
 
