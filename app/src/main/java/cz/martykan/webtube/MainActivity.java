@@ -165,29 +165,33 @@ public class MainActivity extends AppCompatActivity {
 
                 // Gets rid of orange outlines
                 if (Integer.valueOf(Build.VERSION.SDK_INT) >= 19) {
+
                     String css = "*, *:focus { /*overflow-x: hidden !important;*/ " +
-                            "/*transform: translate3d(0,0,0) !important; -webkit-transform: translate3d(0,0,0) !important;*/ outline: none !important; -webkit-tap-highlight-color: rgba(255,255,255,0) !important; -webkit-tap-highlight-color: transparent !important; }";
+                            " outline: none !important; -webkit-tap-highlight-color: rgba(255,255,255,0) !important; -webkit-tap-highlight-color: transparent !important; }" +
+                            " ._mfd { border-top: 2px #e62117 solid !important; }";
                     webView.loadUrl("javascript:(function() {" +
+                            "if(document.getElementById('webTubeStyle') == null){" +
                             "var parent = document.getElementsByTagName('head').item(0);" +
                             "var style = document.createElement('style');" +
+                            "style.id = 'webTubeStyle';" +
                             "style.type = 'text/css';" +
                             "style.innerHTML = '" + css + "';" +
-                            "parent.appendChild(style)" +
-                            "})()");
+                            "parent.appendChild(style);" +
+                            "}})()");
                 }
 
                 // To adapt the statusbar color
                 if (Integer.valueOf(Build.VERSION.SDK_INT) >= 21) {
+                    final View statusBarSpace = findViewById(R.id.statusBarSpace);
+                    statusBarSpace.setVisibility(View.VISIBLE);
                     webView.evaluateJavascript("(function() { if(document.getElementById('player').style.visibility == 'hidden' || document.getElementById('player').innerHTML == '') { return 'not_video'; } else { return 'video'; } })();",
                             new ValueCallback<String>() {
                                 @Override
                                 public void onReceiveValue(String value) {
-                                    window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
-                                    window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
                                     if (!value.toString().contains("not_video")) {
-                                        window.setStatusBarColor(getApplication().getResources().getColor(R.color.colorWatchDark));
+                                        statusBarSpace.setBackgroundColor(getApplication().getResources().getColor(R.color.colorWatch));
                                     } else {
-                                        window.setStatusBarColor(getApplication().getResources().getColor(R.color.colorPrimaryDark));
+                                        statusBarSpace.setBackgroundColor(getApplication().getResources().getColor(R.color.colorPrimary));
                                     }
                                 }
                             });
