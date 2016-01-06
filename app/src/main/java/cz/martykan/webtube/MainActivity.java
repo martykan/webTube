@@ -155,6 +155,14 @@ public class MainActivity extends AppCompatActivity {
             }
 
             public void onLoadResource(WebView view, String url) {
+                // Remove all iframes (to prevent WebRTC exploits)
+                webView.loadUrl("javascript:(function() {" +
+                        "var iframes = document.getElementsByTagName('iframe');" +
+                        "for(i=0;i<=iframes.length;i++){" +
+                        "if(typeof iframes[0] != 'undefined')" +
+                        "iframes[0].outerHTML = '';" +
+                        "}})()");
+
                 // Gets rid of orange outlines
                 if (Integer.valueOf(Build.VERSION.SDK_INT) >= 19) {
                     String css = "*, *:focus { /*overflow-x: hidden !important;*/ " +
