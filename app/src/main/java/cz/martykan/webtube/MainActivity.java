@@ -9,10 +9,14 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.support.design.widget.NavigationView;
 import android.support.design.widget.Snackbar;
+import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
@@ -27,12 +31,21 @@ import android.widget.ProgressBar;
 
 import com.getbase.floatingactionbutton.FloatingActionButton;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
+
 import info.guardianproject.netcipher.proxy.OrbotHelper;
 import info.guardianproject.netcipher.web.WebkitProxy;
 
 
 public class MainActivity extends AppCompatActivity {
 
+    public static String LOG_TAG = "webTube";
     WebView webView;
     View appWindow;
     Window window;
@@ -40,8 +53,12 @@ public class MainActivity extends AppCompatActivity {
     View mCustomView;
     FrameLayout customViewContainer;
     FloatingActionButton fabTor;
+    DrawerLayout drawerLayout;
+    NavigationView navigationView;
+    SharedPreferences sp;
 
-    public static String LOG_TAG = "webTube";
+    List<String> bookmarkUrls;
+    List<String> bookmarkTitles;
 
     // For the snackbar with error message
     View.OnClickListener clickListener = new View.OnClickListener() {
@@ -50,6 +67,18 @@ public class MainActivity extends AppCompatActivity {
             webView.loadUrl("https://m.youtube.com/");
         }
     };
+
+    public static List<JSONObject> asList(final JSONArray ja) {
+        final int len = ja.length();
+        final ArrayList<JSONObject> result = new ArrayList<JSONObject>(len);
+        for (int i = 0; i < len; i++) {
+            final JSONObject obj = ja.optJSONObject(i);
+            if (obj != null) {
+                result.add(obj);
+            }
+        }
+        return result;
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -67,14 +96,11 @@ public class MainActivity extends AppCompatActivity {
         progress = (ProgressBar) findViewById(R.id.progress);
         customViewContainer = (FrameLayout) findViewById(R.id.customViewContainer);
 
-        // To save login info
-        CookieManager.getInstance().setAcceptCookie(true);
-        if (Integer.valueOf(Build.VERSION.SDK_INT) >= 21) {
-            CookieManager.getInstance().setAcceptThirdPartyCookies(webView, true);
-        }
+        sp = PreferenceManager.getDefaultSharedPreferences(this);
+        drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
+        navigationView = (NavigationView) findViewById(R.id.bookmarks_panel);
 
         webView.setWebChromeClient(new WebChromeClient() {
-
             // Fullscreen playback
             @Override
             public void onShowCustomView(View view, CustomViewCallback callback) {
@@ -137,6 +163,11 @@ public class MainActivity extends AppCompatActivity {
                                 }
                             });
                 }
+                else {
+                    if (percentage == 100) {
+                        progress.setVisibility(View.GONE);
+                    }
+                }
             }
 
 
@@ -156,7 +187,7 @@ public class MainActivity extends AppCompatActivity {
             }
 
             public void onLoadResource(WebView view, String url) {
-                if(!url.contains(".jpg")) {
+                if (!url.contains(".jpg")) {
                     // Remove all iframes (to prevent WebRTC exploits)
                     webView.loadUrl("javascript:(function() {" +
                             "var iframes = document.getElementsByTagName('iframe');" +
@@ -201,6 +232,12 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
 
+            @Override
+            public void onPageFinished(WebView view, String url) {
+                super.onPageFinished(view, url);
+                initalizeBookmarks(navigationView);
+            }
+
             // Deal with error messages
             public void onReceivedError(WebView view, int errorCode, String description, String failingUrl) {
                 if (description.toString().contains("NETWORK_CHANGED")) {
@@ -215,108 +252,59 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        // Some settings
-        WebSettings webSettings = webView.getSettings();
-        webSettings.setJavaScriptEnabled(true);
-        webSettings.setJavaScriptCanOpenWindowsAutomatically(false);
-        webSettings.setAllowFileAccess(false);
+        // Set up webView
+        setUpWebview();
 
-        webSettings.setDatabaseEnabled(true);
+        // Initialize bookmarks panel
+        initalizeBookmarks(navigationView);
+        drawerLayout.setDrawerListener(new DrawerLayout.DrawerListener() {
+            @Override
+            public void onDrawerSlide(View drawerView, float slideOffset) {
+                initalizeBookmarks(navigationView);
+            }
 
-        String cachePath = this.getApplicationContext()
-                .getDir("cache", Context.MODE_PRIVATE).getPath();
-        webSettings.setAppCachePath(cachePath);
-        webSettings.setAllowFileAccess(true);
-        webSettings.setAppCacheEnabled(true);
-        webSettings.setDomStorageEnabled(true);
-        webSettings.setCacheMode(WebSettings.LOAD_DEFAULT);
+            @Override
+            public void onDrawerOpened(View drawerView) {
+                initalizeBookmarks(navigationView);
+            }
 
-        webView.setHorizontalScrollBarEnabled(false);
+            @Override
+            public void onDrawerClosed(View drawerView) {
 
-        webView.setLayerType(View.LAYER_TYPE_HARDWARE, null);
+            }
 
-        webView.setBackgroundColor(Color.WHITE);
-        webView.setScrollbarFadingEnabled(true);
-        webView.setNetworkAvailable(true);
+            @Override
+            public void onDrawerStateChanged(int newState) {
 
-        if (!loadUrlFromIntent(getIntent())) {
-            webView.loadUrl("https://m.youtube.com/");
-        }
+            }
+        });
+        navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
+            @Override
+            public boolean onNavigationItemSelected(MenuItem menuItem) {
+                if (menuItem.getTitle() == "Add this page") {
+                    if (!webView.getTitle().equals("YouTube")) {
+                        addBookmark(webView.getTitle().replace(" - YouTube", ""), webView.getUrl());
+                    }
+                } else if (menuItem.getTitle() == "Remove this page") {
+                    removeBookmark(webView.getTitle().replace(" - YouTube", ""));
+                } else {
+                    webView.loadUrl(bookmarkUrls.get(bookmarkTitles.indexOf(menuItem.getTitle())));
+                    drawerLayout.closeDrawers();
+                }
+                return true;
+            }
+        });
 
         // Floating action buttons
-        FloatingActionButton fabBrowser = (FloatingActionButton) findViewById(R.id.fab_browser);
-        fabBrowser.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(webView.getUrl())));
-            }
-        });
-
-        FloatingActionButton fabRefresh = (FloatingActionButton) findViewById(R.id.fab_refresh);
-        fabRefresh.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                webView.reload();
-            }
-        });
-
-        FloatingActionButton fabHome = (FloatingActionButton) findViewById(R.id.fab_home);
-        fabHome.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                webView.loadUrl("https://m.youtube.com/");
-            }
-        });
+        setUpFABs();
 
         // Tor
-        SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(this);
         fabTor = (FloatingActionButton) findViewById(R.id.fab_tor);
-        if(OrbotHelper.isOrbotInstalled(getApplicationContext())) {
-            fabTor.setVisibility(View.VISIBLE);
-            if(sp.getBoolean("torEnabled", false)) {
-                torEnable();
-                fabTor.setTitle("Disable TOR");
-            }
-            else {
-                fabTor.setTitle("Enable TOR");
-            }
-            fabTor.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(v.getContext());
-                    SharedPreferences.Editor spEdit = sp.edit();
-                    if(sp.getBoolean("torEnabled", false)) {
-                        spEdit.putBoolean("torEnabled", false);
-                        torDisable();
-                        fabTor.setTitle("Enable TOR");
-                    }
-                    else {
-                        AlertDialog dialog = new AlertDialog.Builder(MainActivity.this).create();
-                        dialog.setTitle("Enable Tor?");
-                        dialog.setMessage("Using Tor irresponsibly, like signing in to your YouTube account, will deanonymize your traffic and only make it worse.");
-                        dialog.setCancelable(false);
-                        dialog.setButton(DialogInterface.BUTTON_POSITIVE, "Enable",
-                                new DialogInterface.OnClickListener() {
-                                    public void onClick(DialogInterface dialog, int buttonId) {
-                                        SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(MainActivity.this);
-                                        SharedPreferences.Editor spEdit = sp.edit();
-                                        spEdit.putBoolean("torEnabled", true);
-                                        torEnable();
-                                        fabTor.setTitle("Disable TOR");
-                                        spEdit.commit();
-                                    }
-                                });
-                        dialog.setButton(DialogInterface.BUTTON_NEGATIVE, "Cancel",
-                                new DialogInterface.OnClickListener() {
-                                    public void onClick(DialogInterface dialog, int buttonId) {
+        setUpTor();
 
-                                    }
-                                });
-                        dialog.show();
-                    }
-                    spEdit.commit();
-                }
-            });
+        // Load the page
+        if (!loadUrlFromIntent(getIntent())) {
+            webView.loadUrl("https://m.youtube.com/");
         }
     }
 
@@ -348,13 +336,189 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    public void setUpWebview() {
+        // To save login info
+        CookieManager.getInstance().setAcceptCookie(true);
+        if (Integer.valueOf(Build.VERSION.SDK_INT) >= 21) {
+            CookieManager.getInstance().setAcceptThirdPartyCookies(webView, true);
+        }
+
+        // Some settings
+        WebSettings webSettings = webView.getSettings();
+        webSettings.setJavaScriptEnabled(true);
+        webSettings.setJavaScriptCanOpenWindowsAutomatically(false);
+        webSettings.setAllowFileAccess(false);
+
+        webSettings.setDatabaseEnabled(true);
+
+        String cachePath = this.getApplicationContext()
+                .getDir("cache", Context.MODE_PRIVATE).getPath();
+        webSettings.setAppCachePath(cachePath);
+        webSettings.setAllowFileAccess(true);
+        webSettings.setAppCacheEnabled(true);
+        webSettings.setDomStorageEnabled(true);
+        webSettings.setCacheMode(WebSettings.LOAD_DEFAULT);
+
+        webView.setHorizontalScrollBarEnabled(false);
+
+        webView.setLayerType(View.LAYER_TYPE_HARDWARE, null);
+
+        webView.setBackgroundColor(Color.WHITE);
+        webView.setScrollbarFadingEnabled(true);
+        webView.setNetworkAvailable(true);
+
+    }
+
+    public void setUpFABs() {
+        FloatingActionButton fabBrowser = (FloatingActionButton) findViewById(R.id.fab_browser);
+        fabBrowser.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(webView.getUrl())));
+            }
+        });
+
+        FloatingActionButton fabRefresh = (FloatingActionButton) findViewById(R.id.fab_refresh);
+        fabRefresh.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                webView.reload();
+            }
+        });
+
+        FloatingActionButton fabHome = (FloatingActionButton) findViewById(R.id.fab_home);
+        fabHome.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                webView.loadUrl("https://m.youtube.com/");
+            }
+        });
+
+        FloatingActionButton fabBookmarks = (FloatingActionButton) findViewById(R.id.fab_bookmarks);
+        fabBookmarks.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                drawerLayout.openDrawer(findViewById(R.id.bookmarks_panel));
+            }
+        });
+    }
+
+    public void initalizeBookmarks(NavigationView navigationView) {
+        bookmarkUrls = new ArrayList<String>();
+        bookmarkTitles = new ArrayList<String>();
+
+        final Menu menu = navigationView.getMenu();
+        menu.clear();
+        String result = sp.getString("bookmarks", "[]");
+        try {
+            JSONArray bookmarksArray = new JSONArray(result);
+            for (int i = 0; i < bookmarksArray.length(); i++) {
+                JSONObject bookmark = bookmarksArray.getJSONObject(i);
+                menu.add(bookmark.getString("title")).setIcon(R.drawable.ic_star_grey600_24dp);
+                bookmarkTitles.add(bookmark.getString("title"));
+                bookmarkUrls.add(bookmark.getString("url"));
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        if (!bookmarkUrls.contains(webView.getUrl())) {
+            menu.add("Add this page").setIcon(R.drawable.ic_plus_grey600_24dp);
+        } else {
+            menu.add("Remove this page").setIcon(R.drawable.ic_close_grey600_24dp);
+        }
+    }
+
+    public void addBookmark(String title, String url) {
+        String result = sp.getString("bookmarks", "[]");
+        try {
+            JSONArray bookmarksArray = new JSONArray(result);
+            bookmarksArray.put(new JSONObject("{'title':'" + title + "','url':'" + url + "'}"));
+            SharedPreferences.Editor editor = sp.edit();
+            editor.putString("bookmarks", bookmarksArray.toString());
+            editor.commit();
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        initalizeBookmarks(navigationView);
+    }
+
+    public void removeBookmark(String title) {
+        String result = sp.getString("bookmarks", "[]");
+        try {
+            JSONArray bookmarksArray = new JSONArray(result);
+            if (Integer.valueOf(Build.VERSION.SDK_INT) >= 19) {
+                bookmarksArray.remove(bookmarkTitles.indexOf(title));
+            } else {
+                final List<JSONObject> objs = asList(bookmarksArray);
+                objs.remove(bookmarkTitles.indexOf(title));
+                final JSONArray out = new JSONArray();
+                for (final JSONObject obj : objs) {
+                    out.put(obj);
+                }
+                bookmarksArray = out;
+            }
+            SharedPreferences.Editor editor = sp.edit();
+            editor.putString("bookmarks", bookmarksArray.toString());
+            editor.commit();
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        initalizeBookmarks(navigationView);
+    }
+
+    public void setUpTor() {
+        if (OrbotHelper.isOrbotInstalled(getApplicationContext())) {
+            fabTor.setVisibility(View.VISIBLE);
+            if (sp.getBoolean("torEnabled", false)) {
+                torEnable();
+                fabTor.setTitle("Disable TOR");
+            } else {
+                fabTor.setTitle("Enable TOR");
+            }
+            fabTor.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    SharedPreferences.Editor spEdit = sp.edit();
+                    if (sp.getBoolean("torEnabled", false)) {
+                        spEdit.putBoolean("torEnabled", false);
+                        torDisable();
+                        fabTor.setTitle("Enable TOR");
+                    } else {
+                        AlertDialog dialog = new AlertDialog.Builder(MainActivity.this).create();
+                        dialog.setTitle("Enable Tor?");
+                        dialog.setMessage("Using Tor irresponsibly, like signing in to your YouTube account, will deanonymize your traffic and only make it worse.");
+                        dialog.setCancelable(false);
+                        dialog.setButton(DialogInterface.BUTTON_POSITIVE, "Enable",
+                                new DialogInterface.OnClickListener() {
+                                    public void onClick(DialogInterface dialog, int buttonId) {
+                                        SharedPreferences.Editor spEdit = sp.edit();
+                                        spEdit.putBoolean("torEnabled", true);
+                                        torEnable();
+                                        fabTor.setTitle("Disable TOR");
+                                        spEdit.commit();
+                                    }
+                                });
+                        dialog.setButton(DialogInterface.BUTTON_NEGATIVE, "Cancel",
+                                new DialogInterface.OnClickListener() {
+                                    public void onClick(DialogInterface dialog, int buttonId) {
+
+                                    }
+                                });
+                        dialog.show();
+                    }
+                    spEdit.commit();
+                }
+            });
+        }
+    }
+
     public void torEnable() {
         if (!OrbotHelper.isOrbotRunning(getApplicationContext()))
             OrbotHelper.requestStartTor(getApplicationContext());
         try {
             WebkitProxy.setProxy(MainActivity.class.getName(), getApplicationContext(), null, "localhost", 8118);
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
@@ -362,13 +526,11 @@ public class MainActivity extends AppCompatActivity {
     public void torDisable() {
         try {
             WebkitProxy.resetProxy(MainActivity.class.getName(), getApplicationContext());
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
-    // For easier navigation
     @Override
     public void onBackPressed() {
         if (webView.canGoBack()) {
