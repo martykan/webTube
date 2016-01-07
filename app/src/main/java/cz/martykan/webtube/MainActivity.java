@@ -448,10 +448,10 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
                 if (!webView.getUrl().contains("/watch")) {
                     AlertDialog dialog = new AlertDialog.Builder(MainActivity.this).create();
-                    dialog.setTitle("No Video!");
-                    dialog.setMessage("Please select a video and try again.");
+                    dialog.setTitle(getString(R.string.error_no_video));
+                    dialog.setMessage(getString(R.string.error_select_video_and_retry));
                     dialog.setCancelable(true);
-                    dialog.setButton(DialogInterface.BUTTON_POSITIVE, "OK",
+                    dialog.setButton(DialogInterface.BUTTON_POSITIVE, getString(R.string.ok),
                             new DialogInterface.OnClickListener() {
                                 public void onClick(DialogInterface dialog, int buttonId) {
                                     dialog.dismiss();
