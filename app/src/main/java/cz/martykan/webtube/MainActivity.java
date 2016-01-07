@@ -336,6 +336,25 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    public void homepageTutorial() {
+        if(!sp.getBoolean("homepageLearned", false)) {
+            AlertDialog dialog = new AlertDialog.Builder(MainActivity.this).create();
+            dialog.setTitle(getString(R.string.home));
+            dialog.setMessage(getString(R.string.homePageHelp));
+            dialog.setCancelable(false);
+            dialog.setButton(DialogInterface.BUTTON_POSITIVE, "OK",
+                    new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int buttonId) {
+                            dialog.dismiss();
+                            SharedPreferences.Editor editor = sp.edit();
+                            editor.putBoolean("homepageLearned", true);
+                            editor.commit();
+                        }
+                    });
+            dialog.show();
+        }
+    }
+
     public void setUpWebview() {
         // To save login info
         CookieManager.getInstance().setAcceptCookie(true);
@@ -390,6 +409,7 @@ public class MainActivity extends AppCompatActivity {
         fabHome.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                homepageTutorial();
                 webView.loadUrl(sp.getString("homepage", "https://m.youtube.com/"));
             }
         });
