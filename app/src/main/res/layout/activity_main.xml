@@ -62,7 +62,7 @@
                 fab:fab_colorNormal="@color/white"
                 fab:fab_colorPressed="@color/white_pressed"
                 fab:fab_icon="@drawable/ic_vector_polygon_grey600_24dp"
-                fab:fab_title="Enable TOR" />
+                fab:fab_title="@string/enableTor" />
 
             <com.getbase.floatingactionbutton.FloatingActionButton
                 android:id="@+id/fab_kodi"
@@ -72,7 +72,7 @@
                 fab:fab_colorNormal="@color/white"
                 fab:fab_colorPressed="@color/white_pressed"
                 fab:fab_icon="@drawable/ic_cast_grey_24px"
-                fab:fab_title="Open in Kodi" />
+                fab:fab_title="@string/castToKodi" />
 
             <com.getbase.floatingactionbutton.FloatingActionButton
                 android:id="@+id/fab_browser"
@@ -81,7 +81,7 @@
                 fab:fab_colorNormal="@color/white"
                 fab:fab_colorPressed="@color/white_pressed"
                 fab:fab_icon="@drawable/ic_web_grey600_24dp"
-                fab:fab_title="Open in browser" />
+                fab:fab_title="@string/openInBrowser" />
 
             <com.getbase.floatingactionbutton.FloatingActionButton
                 android:id="@+id/fab_bookmarks"
@@ -90,7 +90,7 @@
                 fab:fab_colorNormal="@color/white"
                 fab:fab_colorPressed="@color/white_pressed"
                 fab:fab_icon="@drawable/ic_star_grey600_24dp"
-                fab:fab_title="Bookmarks" />
+                fab:fab_title="@string/bookmarks" />
 
             <com.getbase.floatingactionbutton.FloatingActionButton
                 android:id="@+id/fab_refresh"
@@ -99,7 +99,7 @@
                 fab:fab_colorNormal="@color/white"
                 fab:fab_colorPressed="@color/white_pressed"
                 fab:fab_icon="@drawable/ic_refresh_grey600_24dp"
-                fab:fab_title="Refresh" />
+                fab:fab_title="@string/refresh" />
 
             <com.getbase.floatingactionbutton.FloatingActionButton
                 android:id="@+id/fab_home"
@@ -108,7 +108,7 @@
                 fab:fab_colorNormal="@color/white"
                 fab:fab_colorPressed="@color/white_pressed"
                 fab:fab_icon="@drawable/ic_home_grey600_24dp"
-                fab:fab_title="Home" />
+                fab:fab_title="@string/home" />
 
         </com.getbase.floatingactionbutton.FloatingActionsMenu>
 

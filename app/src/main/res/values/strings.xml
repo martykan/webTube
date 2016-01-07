@@ -1,3 +1,22 @@
 <resources>
     <string name="app_name">WebTube</string>
+
+    <string name="home">Home</string>
+    <string name="refresh">Refresh</string>
+    <string name="bookmarks">Bookmarks</string>
+    <string name="openInBrowser">Open in browser</string>
+    <string name="castToKodi">Cast to Kodi</string>
+    <string name="enableTor">Enable Tor</string>
+    <string name="disableTor">Disable Tor</string>
+
+    <string name="torWarning">Using Tor irresponsibly, like signing in to your YouTube account, will deanonymize your traffic and only make it worse.</string>
+    <string name="enable">Enable</string>
+    <string name="cancel">Cancel</string>
+
+    <string name="addPage">Add this page</string>
+    <string name="removePage">Remove this page</string>
+
+    <string name="errorNoInternet">Oh no! You are not connected to the internet.</string>
+    <string name="errorTor">Oh no! Tor is not working properly.</string>
+    <string name="error">Oh no!</string>
 </resources>

@@ -243,11 +243,11 @@ public class MainActivity extends AppCompatActivity {
                 if (description.toString().contains("NETWORK_CHANGED")) {
                     webView.loadUrl("https://m.youtube.com/");
                 } else if (description.toString().contains("NAME_NOT_RESOLVED")) {
-                    Snackbar.make(appWindow, "Oh no! You are not connected to the internet.", Snackbar.LENGTH_INDEFINITE).setAction("Reload", clickListener).show();
+                    Snackbar.make(appWindow, getString(R.string.errorNoInternet), Snackbar.LENGTH_INDEFINITE).setAction(getString(R.string.refresh), clickListener).show();
                 } else if (description.toString().contains("PROXY_CONNECTION_FAILED")) {
-                    Snackbar.make(appWindow, "Oh no! Tor is not working properly.", Snackbar.LENGTH_INDEFINITE).setAction("Reload", clickListener).show();
+                    Snackbar.make(appWindow, getString(R.string.errorTor), Snackbar.LENGTH_INDEFINITE).setAction(getString(R.string.refresh), clickListener).show();
                 } else {
-                    Snackbar.make(appWindow, "Oh no! " + description, Snackbar.LENGTH_INDEFINITE).setAction("Reload", clickListener).show();
+                    Snackbar.make(appWindow, getString(R.string.error) + " " + description, Snackbar.LENGTH_INDEFINITE).setAction(getString(R.string.refresh), clickListener).show();
                 }
             }
         });
@@ -281,11 +281,11 @@ public class MainActivity extends AppCompatActivity {
         navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
             @Override
             public boolean onNavigationItemSelected(MenuItem menuItem) {
-                if (menuItem.getTitle() == "Add this page") {
+                if (menuItem.getTitle() == getString(R.string.addPage)) {
                     if (!webView.getTitle().equals("YouTube")) {
                         addBookmark(webView.getTitle().replace(" - YouTube", ""), webView.getUrl());
                     }
-                } else if (menuItem.getTitle() == "Remove this page") {
+                } else if (menuItem.getTitle() == getString(R.string.removePage)) {
                     removeBookmark(webView.getTitle().replace(" - YouTube", ""));
                 } else {
                     webView.loadUrl(bookmarkUrls.get(bookmarkTitles.indexOf(menuItem.getTitle())));
@@ -466,9 +466,9 @@ public class MainActivity extends AppCompatActivity {
         }
 
         if (!bookmarkUrls.contains(webView.getUrl())) {
-            menu.add("Add this page").setIcon(R.drawable.ic_plus_grey600_24dp);
+            menu.add(getString(R.string.addPage)).setIcon(R.drawable.ic_plus_grey600_24dp);
         } else {
-            menu.add("Remove this page").setIcon(R.drawable.ic_close_grey600_24dp);
+            menu.add(getString(R.string.removePage)).setIcon(R.drawable.ic_close_grey600_24dp);
         }
     }
 
@@ -517,9 +517,9 @@ public class MainActivity extends AppCompatActivity {
             fabTor.setVisibility(View.VISIBLE);
             if (sp.getBoolean("torEnabled", false)) {
                 torEnable();
-                fabTor.setTitle("Disable TOR");
+                fabTor.setTitle(getString(R.string.disableTor));
             } else {
-                fabTor.setTitle("Enable TOR");
+                fabTor.setTitle(getString(R.string.enableTor));
             }
             fabTor.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -528,23 +528,23 @@ public class MainActivity extends AppCompatActivity {
                     if (sp.getBoolean("torEnabled", false)) {
                         spEdit.putBoolean("torEnabled", false);
                         torDisable();
-                        fabTor.setTitle("Enable TOR");
+                        fabTor.setTitle(getString(R.string.enableTor));
                     } else {
                         AlertDialog dialog = new AlertDialog.Builder(MainActivity.this).create();
-                        dialog.setTitle("Enable Tor?");
-                        dialog.setMessage("Using Tor irresponsibly, like signing in to your YouTube account, will deanonymize your traffic and only make it worse.");
+                        dialog.setTitle(getString(R.string.enableTor) + "?");
+                        dialog.setMessage(getString(R.string.torWarning));
                         dialog.setCancelable(false);
-                        dialog.setButton(DialogInterface.BUTTON_POSITIVE, "Enable",
+                        dialog.setButton(DialogInterface.BUTTON_POSITIVE, getString(R.string.enable),
                                 new DialogInterface.OnClickListener() {
                                     public void onClick(DialogInterface dialog, int buttonId) {
                                         SharedPreferences.Editor spEdit = sp.edit();
                                         spEdit.putBoolean("torEnabled", true);
                                         torEnable();
-                                        fabTor.setTitle("Disable TOR");
+                                        fabTor.setTitle(getString(R.string.disableTor));
                                         spEdit.commit();
                                     }
                                 });
-                        dialog.setButton(DialogInterface.BUTTON_NEGATIVE, "Cancel",
+                        dialog.setButton(DialogInterface.BUTTON_NEGATIVE, getString(R.string.cancel),
                                 new DialogInterface.OnClickListener() {
                                     public void onClick(DialogInterface dialog, int buttonId) {
 
