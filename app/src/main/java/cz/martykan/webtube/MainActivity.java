@@ -401,6 +401,58 @@ public class MainActivity extends AppCompatActivity {
                 drawerLayout.openDrawer(findViewById(R.id.bookmarks_panel));
             }
         });
+
+        FloatingActionButton fabKodi = (FloatingActionButton) findViewById(R.id.fab_kodi);
+        fabKodi.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(webView.getUrl().equals("https://m.youtube.com/")) {
+                    AlertDialog dialog = new AlertDialog.Builder(MainActivity.this).create();
+                    dialog.setTitle("No Video!");
+                    dialog.setMessage("Please select a video and try again.");
+                    dialog.setCancelable(true);
+                    dialog.setButton(DialogInterface.BUTTON_POSITIVE, "OK",
+                            new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int buttonId) {
+                                    dialog.dismiss();
+                                }
+                            });
+                    dialog.show();
+                } else {
+                    /*The following code is based on an extract from the source code of NewPipe (v0.7.2) (https://github.com/theScrabi/NewPipe),
+                    which is also licenced under version 3 of the GNU General Public License as published by the Free Software Foundation.
+                    The copyright owner of the original code is Christian Schabesberger <chris.schabesberger@mailbox.org>.
+                    All modifications were made on 06-Jan-2016*/
+                    try {
+                        Intent intent = new Intent(Intent.ACTION_VIEW);
+                        intent.setPackage("org.xbmc.kore");
+                        intent.setData(Uri.parse(webView.getUrl().replace("https", "http")));
+                        MainActivity.this.startActivity(intent);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                        AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+                        builder.setMessage("Kore not found")
+                                .setPositiveButton("Install", new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        Intent intent = new Intent();
+                                        intent.setAction(Intent.ACTION_VIEW);
+                                        intent.setData(Uri.parse("https://f-droid.org/repository/browse/?fdfilter=kore&fdid=org.xbmc.kore"));
+                                        MainActivity.this.startActivity(intent);
+                                    }
+                                })
+                                .setNegativeButton("cancel", new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        dialog.dismiss();
+                                    }
+                                });
+                        builder.create().show();
+                        /*End of the modified NewPipe code extract*/
+                    }
+                }
+            }
+        });
     }
 
     public void initalizeBookmarks(NavigationView navigationView) {
@@ -468,7 +520,9 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void setUpTor() {
-        if (OrbotHelper.isOrbotInstalled(getApplicationContext())) {
+        // Tor
+        fabTor = (FloatingActionButton) findViewById(R.id.fab_tor);
+        if(OrbotHelper.isOrbotInstalled(getApplicationContext())) {
             fabTor.setVisibility(View.VISIBLE);
             if (sp.getBoolean("torEnabled", false)) {
                 torEnable();

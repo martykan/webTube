@@ -27,17 +27,6 @@
             android:layout_below="@+id/statusBarSpace"
             android:layout_centerHorizontal="true" />
 
-        <ProgressBar
-            android:id="@+id/progress"
-            style="?android:attr/progressBarStyleHorizontal"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_alignParentBottom="true"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentStart="true"
-            android:layout_marginBottom="-7dp"
-            android:progress="50" />
-
         <com.getbase.floatingactionbutton.FloatingActionsMenu
             android:id="@+id/fab"
             android:layout_width="wrap_content"
@@ -62,6 +51,15 @@
                 fab:fab_colorPressed="@color/white_pressed"
                 fab:fab_icon="@drawable/ic_vector_polygon_grey600_24dp"
                 fab:fab_title="Enable TOR" />
+
+            <com.getbase.floatingactionbutton.FloatingActionButton
+                android:id="@+id/fab_kodi"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                fab:fab_colorNormal="@color/white"
+                fab:fab_icon="@drawable/ic_cast_grey_24px"
+                fab:fab_title="Open in Kodi"
+                fab:fab_colorPressed="@color/white_pressed"/>
 
             <com.getbase.floatingactionbutton.FloatingActionButton
                 android:id="@+id/fab_browser"
