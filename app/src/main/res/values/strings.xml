@@ -19,4 +19,6 @@
     <string name="errorNoInternet">Oh no! You are not connected to the internet.</string>
     <string name="errorTor">Oh no! Tor is not working properly.</string>
     <string name="error">Oh no!</string>
+
+    <string name="homePageSet">Your homepage has been set to this page.</string>
 </resources>

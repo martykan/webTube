@@ -65,7 +65,7 @@ public class MainActivity extends AppCompatActivity {
     View.OnClickListener clickListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            webView.loadUrl("https://m.youtube.com/");
+            webView.loadUrl(sp.getString("homepage", "https://m.youtube.com/"));
         }
     };
 
@@ -241,7 +241,7 @@ public class MainActivity extends AppCompatActivity {
             // Deal with error messages
             public void onReceivedError(WebView view, int errorCode, String description, String failingUrl) {
                 if (description.toString().contains("NETWORK_CHANGED")) {
-                    webView.loadUrl("https://m.youtube.com/");
+                    webView.loadUrl(sp.getString("homepage", "https://m.youtube.com/"));
                 } else if (description.toString().contains("NAME_NOT_RESOLVED")) {
                     Snackbar.make(appWindow, getString(R.string.errorNoInternet), Snackbar.LENGTH_INDEFINITE).setAction(getString(R.string.refresh), clickListener).show();
                 } else if (description.toString().contains("PROXY_CONNECTION_FAILED")) {
@@ -304,7 +304,7 @@ public class MainActivity extends AppCompatActivity {
 
         // Load the page
         if (!loadUrlFromIntent(getIntent())) {
-            webView.loadUrl("https://m.youtube.com/");
+            webView.loadUrl(sp.getString("homepage", "https://m.youtube.com/"));
         }
     }
 
@@ -390,7 +390,18 @@ public class MainActivity extends AppCompatActivity {
         fabHome.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                webView.loadUrl("https://m.youtube.com/");
+                webView.loadUrl(sp.getString("homepage", "https://m.youtube.com/"));
+            }
+        });
+
+        fabHome.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) {
+                Snackbar.make(appWindow, getString(R.string.homePageSet), Snackbar.LENGTH_LONG).show();
+                SharedPreferences.Editor editor = sp.edit();
+                editor.putString("homepage", webView.getUrl());
+                editor.commit();
+                return true;
             }
         });
 
