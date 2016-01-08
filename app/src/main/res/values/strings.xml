@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">WebTube</string>
+    <string name="app_name" translatable="false">WebTube</string>
 
     <string name="home">Home</string>
     <string name="refresh">Refresh</string>
@@ -19,6 +19,10 @@
     <string name="errorNoInternet">Oh no! You are not connected to the internet.</string>
     <string name="errorTor">Oh no! Tor is not working properly.</string>
     <string name="error">Oh no!</string>
+
+    <string name="error_no_video">No Video!</string>
+    <string name="error_select_video_and_retry">Please select a video and try again.</string>
+    <string name="ok">OK</string>
 
     <string name="homePageSet">Your homepage has been set to this page.</string>
     <string name="homePageHelp">If you want to change the homepage, just hold the Home button and it changes to the current opened page.</string>

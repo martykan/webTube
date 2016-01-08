@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="addPage">Diese Seite hinzufügen</string>
+    <string name="bookmarks">Lesezeichen</string>
+    <string name="cancel">Abbrechen</string>
+    <string name="castToKodi">Mit Kodi abspielen</string>
+    <string name="disableTor">Tor deaktivieren</string>
+    <string name="enable">Aktivieren</string>
+    <string name="enableTor">Tor aktivieren</string>
+    <string name="error">Oje!</string>
+    <string name="errorNoInternet">Oje! Du hast momentan keine Internetverbinding.</string>
+    <string name="errorTor">Oje! Die Verbindung zum Tor-Netzwerk funktioniert nicht richtig.</string>
+    <string name="error_no_video">Kein Video ausgewählt!</string>
+    <string name="error_select_video_and_retry">Bitte wähle ein Video aus und versuche es erneut.</string>
+    <string name="home">Start</string>
+    <string name="homePageHelp">Halte den Start-Knopf gedrückt um die aktuelle Seite als Startseite festzulegen.</string>
+    <string name="homePageSet">Diese Seite ist jetzt deine Startseite.</string>
+    <string name="ok">OK</string>
+    <string name="openInBrowser">Im Browser öffnen</string>
+    <string name="refresh">Aktualisieren</string>
+    <string name="removePage">Diese Seite entfernen</string>
+    <string name="torWarning">Unverantwortliches Verhalten bei der Verwendung von Tor, wie etwa das Anmelden bei YouTube, wird deinen Internetverkehr deanonymisieren und kann zu schweren Schäden führen.</string>
+</resources>
