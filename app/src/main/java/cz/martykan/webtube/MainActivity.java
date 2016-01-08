@@ -197,7 +197,8 @@ public class MainActivity extends AppCompatActivity {
             }
 
             public void onLoadResource(WebView view, String url) {
-                if (!url.contains(".jpg")) {
+                if (!url.contains(".jpg") && !url.contains(".ico") && !url.contains(".css") && !url.contains(".js") && !url.contains("complete/search")) {
+                    Log.i("URL", url);
                     // Remove all iframes (to prevent WebRTC exploits)
                     webView.loadUrl("javascript:(function() {" +
                             "var iframes = document.getElementsByTagName('iframe');" +
@@ -224,7 +225,7 @@ public class MainActivity extends AppCompatActivity {
                     }
 
                     // To adapt the statusbar color
-                    if (Integer.valueOf(Build.VERSION.SDK_INT) >= 21) {
+                    if (Integer.valueOf(Build.VERSION.SDK_INT) >= 19) {
                         final View statusBarSpace = findViewById(R.id.statusBarSpace);
                         statusBarSpace.setVisibility(View.VISIBLE);
                         webView.evaluateJavascript("(function() { if(document.getElementById('player').style.visibility == 'hidden' || document.getElementById('player').innerHTML == '') { return 'not_video'; } else { return 'video'; } })();",
