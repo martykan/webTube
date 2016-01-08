@@ -1,131 +1,141 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.v4.widget.DrawerLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:fab="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/drawer_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context="cz.martykan.webtube.MainActivity">
 
-    <RelativeLayout
-        android:id="@+id/appWindow"
+    <android.support.v4.widget.DrawerLayout
+        android:id="@+id/drawer_layout"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <View
-            android:id="@+id/statusBarSpace"
+        <RelativeLayout
+            android:id="@+id/appWindow"
             android:layout_width="match_parent"
-            android:layout_height="24dp"
-            android:background="@color/colorPrimaryDark"
-            android:visibility="gone"></View>
+            android:layout_height="match_parent">
 
-        <WebView
-            android:id="@+id/webView"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_below="@+id/statusBarSpace"
-            android:layout_centerHorizontal="true" />
+            <View
+                android:id="@+id/statusBarSpace"
+                android:layout_width="match_parent"
+                android:layout_height="24dp"
+                android:background="@color/colorPrimaryDark"
+                android:visibility="gone"></View>
 
-        <ProgressBar
-            android:id="@+id/progress"
-            style="?android:attr/progressBarStyleHorizontal"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_alignParentBottom="true"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentStart="true"
-            android:layout_marginBottom="-7dp"
-            android:progress="50" />
+            <WebView
+                android:id="@+id/webView"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_below="@+id/statusBarSpace"
+                android:layout_centerHorizontal="true" />
+
+            <ProgressBar
+                android:id="@+id/progress"
+                style="?android:attr/progressBarStyleHorizontal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_alignParentBottom="true"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentStart="true"
+                android:layout_marginBottom="-7dp"
+                android:progress="50" />
 
 
-        <com.getbase.floatingactionbutton.FloatingActionsMenu
-            android:id="@+id/fab"
+            <com.getbase.floatingactionbutton.FloatingActionsMenu
+                android:id="@+id/fab"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentBottom="true"
+                android:layout_alignParentEnd="true"
+                android:layout_alignParentRight="true"
+                android:layout_marginBottom="16dp"
+                android:layout_marginEnd="16dp"
+                android:layout_marginRight="16dp"
+                fab:fab_addButtonColorNormal="@color/colorPrimary"
+                fab:fab_addButtonColorPressed="@color/colorPrimaryDark"
+                fab:fab_addButtonPlusIconColor="@color/white"
+                fab:fab_labelStyle="@style/menu_labels_style">
+
+                <com.getbase.floatingactionbutton.FloatingActionButton
+                    android:id="@+id/fab_tor"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:visibility="gone"
+                    fab:fab_colorNormal="@color/white"
+                    fab:fab_colorPressed="@color/white_pressed"
+                    fab:fab_icon="@drawable/ic_vector_polygon_grey600_24dp"
+                    fab:fab_title="@string/enableTor" />
+
+                <com.getbase.floatingactionbutton.FloatingActionButton
+                    android:id="@+id/fab_kodi"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:visibility="gone"
+                    fab:fab_colorNormal="@color/white"
+                    fab:fab_colorPressed="@color/white_pressed"
+                    fab:fab_icon="@drawable/ic_cast_grey_24px"
+                    fab:fab_title="@string/castToKodi" />
+
+                <com.getbase.floatingactionbutton.FloatingActionButton
+                    android:id="@+id/fab_browser"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    fab:fab_colorNormal="@color/white"
+                    fab:fab_colorPressed="@color/white_pressed"
+                    fab:fab_icon="@drawable/ic_web_grey600_24dp"
+                    fab:fab_title="@string/openInBrowser" />
+
+                <com.getbase.floatingactionbutton.FloatingActionButton
+                    android:id="@+id/fab_bookmarks"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    fab:fab_colorNormal="@color/white"
+                    fab:fab_colorPressed="@color/white_pressed"
+                    fab:fab_icon="@drawable/ic_star_grey600_24dp"
+                    fab:fab_title="@string/bookmarks" />
+
+                <com.getbase.floatingactionbutton.FloatingActionButton
+                    android:id="@+id/fab_refresh"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    fab:fab_colorNormal="@color/white"
+                    fab:fab_colorPressed="@color/white_pressed"
+                    fab:fab_icon="@drawable/ic_refresh_grey600_24dp"
+                    fab:fab_title="@string/refresh" />
+
+                <com.getbase.floatingactionbutton.FloatingActionButton
+                    android:id="@+id/fab_home"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    fab:fab_colorNormal="@color/white"
+                    fab:fab_colorPressed="@color/white_pressed"
+                    fab:fab_icon="@drawable/ic_home_grey600_24dp"
+                    fab:fab_title="@string/home" />
+
+            </com.getbase.floatingactionbutton.FloatingActionsMenu>
+        </RelativeLayout>
+
+        <android.support.design.widget.NavigationView
+            android:id="@+id/bookmarks_panel"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentBottom="true"
-            android:layout_alignParentEnd="true"
-            android:layout_alignParentRight="true"
-            android:layout_marginBottom="16dp"
-            android:layout_marginEnd="16dp"
-            android:layout_marginRight="16dp"
-            fab:fab_addButtonColorNormal="@color/colorPrimary"
-            fab:fab_addButtonColorPressed="@color/colorPrimaryDark"
-            fab:fab_addButtonPlusIconColor="@color/white"
-            fab:fab_labelStyle="@style/menu_labels_style">
-
-            <com.getbase.floatingactionbutton.FloatingActionButton
-                android:id="@+id/fab_tor"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:visibility="gone"
-                fab:fab_colorNormal="@color/white"
-                fab:fab_colorPressed="@color/white_pressed"
-                fab:fab_icon="@drawable/ic_vector_polygon_grey600_24dp"
-                fab:fab_title="@string/enableTor" />
-
-            <com.getbase.floatingactionbutton.FloatingActionButton
-                android:id="@+id/fab_kodi"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:visibility="gone"
-                fab:fab_colorNormal="@color/white"
-                fab:fab_colorPressed="@color/white_pressed"
-                fab:fab_icon="@drawable/ic_cast_grey_24px"
-                fab:fab_title="@string/castToKodi" />
-
-            <com.getbase.floatingactionbutton.FloatingActionButton
-                android:id="@+id/fab_browser"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                fab:fab_colorNormal="@color/white"
-                fab:fab_colorPressed="@color/white_pressed"
-                fab:fab_icon="@drawable/ic_web_grey600_24dp"
-                fab:fab_title="@string/openInBrowser" />
-
-            <com.getbase.floatingactionbutton.FloatingActionButton
-                android:id="@+id/fab_bookmarks"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                fab:fab_colorNormal="@color/white"
-                fab:fab_colorPressed="@color/white_pressed"
-                fab:fab_icon="@drawable/ic_star_grey600_24dp"
-                fab:fab_title="@string/bookmarks" />
-
-            <com.getbase.floatingactionbutton.FloatingActionButton
-                android:id="@+id/fab_refresh"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                fab:fab_colorNormal="@color/white"
-                fab:fab_colorPressed="@color/white_pressed"
-                fab:fab_icon="@drawable/ic_refresh_grey600_24dp"
-                fab:fab_title="@string/refresh" />
-
-            <com.getbase.floatingactionbutton.FloatingActionButton
-                android:id="@+id/fab_home"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                fab:fab_colorNormal="@color/white"
-                fab:fab_colorPressed="@color/white_pressed"
-                fab:fab_icon="@drawable/ic_home_grey600_24dp"
-                fab:fab_title="@string/home" />
-
-        </com.getbase.floatingactionbutton.FloatingActionsMenu>
-
-        <FrameLayout
-            android:id="@+id/customViewContainer"
-            android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:background="#000"
-            android:visibility="gone" />
-    </RelativeLayout>
+            android:layout_gravity="end"
+            app:headerLayout="@layout/bookmarks_header"
+            app:menu="@menu/bookmarks" />
 
-    <android.support.design.widget.NavigationView
-        android:id="@+id/bookmarks_panel"
-        android:layout_width="wrap_content"
+    </android.support.v4.widget.DrawerLayout>
+
+    <FrameLayout
+        android:id="@+id/customViewContainer"
+        android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_gravity="end"
-        app:headerLayout="@layout/bookmarks_header"
-        app:menu="@menu/bookmarks" />
+        android:background="@android:color/transparent"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentLeft="true"
+        android:clickable="false"
+        android:visibility="gone" />
 
-</android.support.v4.widget.DrawerLayout>
+</RelativeLayout>

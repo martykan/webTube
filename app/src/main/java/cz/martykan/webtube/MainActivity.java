@@ -1,5 +1,6 @@
 package cz.martykan.webtube;
 
+import android.app.ActionBar;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -18,7 +19,9 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
 import android.webkit.CookieManager;
@@ -27,8 +30,11 @@ import android.webkit.WebChromeClient;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
+import android.widget.AbsoluteLayout;
+import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.ProgressBar;
+import android.widget.RelativeLayout;
 
 import com.getbase.floatingactionbutton.FloatingActionButton;
 
@@ -110,7 +116,9 @@ public class MainActivity extends AppCompatActivity {
                     return;
                 }
                 mCustomView = view;
-                webView.setVisibility(View.GONE);
+                webView.loadUrl("javascript:(function() { document.body.style.overflowX = 'hidden'; })();");
+                webView.loadUrl("javascript:(function() { window.scrollTo(0, 0); })();");
+                drawerLayout.setVisibility(View.GONE);
                 customViewContainer.setVisibility(View.VISIBLE);
                 customViewContainer.addView(view);
 
@@ -127,7 +135,9 @@ public class MainActivity extends AppCompatActivity {
                 if (mCustomView == null)
                     return;
 
-                webView.setVisibility(View.VISIBLE);
+                webView.loadUrl("javascript:(function() { window.scrollTo(0, 0); })();");
+                webView.loadUrl("javascript:(function() { document.body.style.overflowX = 'scroll'; })();");
+                drawerLayout.setVisibility(View.VISIBLE);
                 customViewContainer.setVisibility(View.GONE);
 
                 mCustomView.setVisibility(View.GONE);
