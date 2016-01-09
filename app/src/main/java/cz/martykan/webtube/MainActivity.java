@@ -368,10 +368,7 @@ public class MainActivity extends AppCompatActivity {
 
     public void setUpWebview() {
         // To save login info
-        CookieManager.getInstance().setAcceptCookie(true);
-        if (Integer.valueOf(Build.VERSION.SDK_INT) >= 21) {
-            CookieManager.getInstance().setAcceptThirdPartyCookies(webView, true);
-        }
+       acceptCookies(true);
 
         // Some settings
         WebSettings webSettings = webView.getSettings();
@@ -587,11 +584,8 @@ public class MainActivity extends AppCompatActivity {
             fabTor.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    SharedPreferences.Editor spEdit = sp.edit();
                     if (sp.getBoolean("torEnabled", false)) {
-                        spEdit.putBoolean("torEnabled", false);
                         torDisable();
-                        fabTor.setTitle(getString(R.string.enableTor));
                     } else {
                         AlertDialog dialog = new AlertDialog.Builder(MainActivity.this).create();
                         dialog.setTitle(getString(R.string.enableTor) + "?");
@@ -600,11 +594,7 @@ public class MainActivity extends AppCompatActivity {
                         dialog.setButton(DialogInterface.BUTTON_POSITIVE, getString(R.string.enable),
                                 new DialogInterface.OnClickListener() {
                                     public void onClick(DialogInterface dialog, int buttonId) {
-                                        SharedPreferences.Editor spEdit = sp.edit();
-                                        spEdit.putBoolean("torEnabled", true);
                                         torEnable();
-                                        fabTor.setTitle(getString(R.string.disableTor));
-                                        spEdit.commit();
                                     }
                                 });
                         dialog.setButton(DialogInterface.BUTTON_NEGATIVE, getString(R.string.cancel),
@@ -615,28 +605,59 @@ public class MainActivity extends AppCompatActivity {
                                 });
                         dialog.show();
                     }
-                    spEdit.commit();
                 }
             });
         }
     }
 
     public void torEnable() {
-        if (!OrbotHelper.isOrbotRunning(getApplicationContext()))
-            OrbotHelper.requestStartTor(getApplicationContext());
-        try {
-            WebkitProxy.setProxy(MainActivity.class.getName(), getApplicationContext(), null, "localhost", 8118);
-        } catch (Exception e) {
-            e.printStackTrace();
+        acceptCookies(false);
+        deleteCookies();
+        //Make sure that all cookies are really deleted
+        if(!CookieManager.getInstance().hasCookies()) {
+            if (!OrbotHelper.isOrbotRunning(getApplicationContext()))
+                OrbotHelper.requestStartTor(getApplicationContext());
+            try {
+                WebkitProxy.setProxy(MainActivity.class.getName(), getApplicationContext(), null, "localhost", 8118);
+                SharedPreferences.Editor spEdit = sp.edit();
+                spEdit.putBoolean("torEnabled", true);
+                fabTor.setTitle(getString(R.string.disableTor));
+                spEdit.commit();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
     }
 
     public void torDisable() {
-        try {
-            WebkitProxy.resetProxy(MainActivity.class.getName(), getApplicationContext());
-        } catch (Exception e) {
-            e.printStackTrace();
+        deleteCookies();
+        //Make sure that all cookies are really deleted
+        if(!CookieManager.getInstance().hasCookies()) {
+            try {
+                WebkitProxy.resetProxy(MainActivity.class.getName(), getApplicationContext());
+                SharedPreferences.Editor spEdit = sp.edit();
+                spEdit.putBoolean("torEnabled", false);
+                fabTor.setTitle(getString(R.string.enableTor));
+                spEdit.commit();
+                acceptCookies(true);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
+    }
+
+    private void acceptCookies(boolean accept) {
+        CookieManager.getInstance().setAcceptCookie(accept);
+        if (Integer.valueOf(Build.VERSION.SDK_INT) >= 21) {
+            CookieManager.getInstance().setAcceptThirdPartyCookies(webView, accept);
+        }
+    }
+
+    public void deleteCookies(){
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            CookieManager.getInstance().removeAllCookies(null);
+        }
+        CookieManager.getInstance().removeAllCookie();
     }
 
     @Override
