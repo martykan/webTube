@@ -458,17 +458,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 if (!webView.getUrl().contains("/watch")) {
-                    AlertDialog dialog = new AlertDialog.Builder(MainActivity.this).create();
-                    dialog.setTitle(getString(R.string.error_no_video));
-                    dialog.setMessage(getString(R.string.error_select_video_and_retry));
-                    dialog.setCancelable(true);
-                    dialog.setButton(DialogInterface.BUTTON_POSITIVE, getString(R.string.ok),
-                            new DialogInterface.OnClickListener() {
-                                public void onClick(DialogInterface dialog, int buttonId) {
-                                    dialog.dismiss();
-                                }
-                            });
-                    dialog.show();
+                    show_noVideo_dialog();
                 } else {
                     try {
                         /*The following code is based on an extract from the source code of NewPipe (v0.7.2) (https://github.com/theScrabi/NewPipe),
@@ -486,6 +476,37 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         });
+
+        FloatingActionButton fabShare = (FloatingActionButton) findViewById(R.id.fab_share);
+        fabShare.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (!webView.getUrl().contains("/watch")) {
+                    show_noVideo_dialog();
+                } else {
+                    Intent shareIntent = new Intent();
+                    shareIntent.setAction(Intent.ACTION_SEND);
+                    shareIntent.putExtra(Intent.EXTRA_TEXT, webView.getUrl());
+                    shareIntent.setType("text/plain");
+                    startActivity(Intent.createChooser(shareIntent, getResources().getText(R.string.share_with)));
+                }
+            }
+        });
+
+    }
+
+    private void show_noVideo_dialog(){
+        AlertDialog dialog = new AlertDialog.Builder(MainActivity.this).create();
+        dialog.setTitle(getString(R.string.error_no_video));
+        dialog.setMessage(getString(R.string.error_select_video_and_retry));
+        dialog.setCancelable(true);
+        dialog.setButton(DialogInterface.BUTTON_POSITIVE, getString(R.string.ok),
+                new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int buttonId) {
+                        dialog.dismiss();
+                    }
+                });
+        dialog.show();
     }
 
     public void initalizeBookmarks(NavigationView navigationView) {
