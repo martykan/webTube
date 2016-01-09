@@ -1,6 +1,7 @@
 package cz.martykan.webtube;
 
 import android.app.ActionBar;
+import android.app.NotificationManager;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -13,6 +14,7 @@ import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.Snackbar;
+import android.support.v4.app.NotificationCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
@@ -25,6 +27,7 @@ import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
 import android.webkit.CookieManager;
+import android.webkit.JavascriptInterface;
 import android.webkit.ValueCallback;
 import android.webkit.WebChromeClient;
 import android.webkit.WebSettings;
@@ -198,7 +201,6 @@ public class MainActivity extends AppCompatActivity {
 
             public void onLoadResource(WebView view, String url) {
                 if (!url.contains(".jpg") && !url.contains(".ico") && !url.contains(".css") && !url.contains(".js") && !url.contains("complete/search")) {
-                    Log.i("URL", url);
                     // Remove all iframes (to prevent WebRTC exploits)
                     webView.loadUrl("javascript:(function() {" +
                             "var iframes = document.getElementsByTagName('iframe');" +
@@ -317,6 +319,45 @@ public class MainActivity extends AppCompatActivity {
         if (!loadUrlFromIntent(getIntent())) {
             webView.loadUrl(sp.getString("homepage", "https://m.youtube.com/"));
         }
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        if(webView.getUrl().contains("/watch")) {
+            if(Integer.valueOf(Build.VERSION.SDK_INT) >= 19) {
+                webView.evaluateJavascript("(function() { if(document.getElementsByTagName('video')[0].paused == false) { return 'playing'; } else { return 'stopped'; } })();", new ValueCallback<String>() {
+                    @Override
+                    public void onReceiveValue(String value) {
+                        Log.i("VALUE", value);
+                        if(value.equals("\"playing\"")) {
+                            showBackgroundPlaybackNotification();
+                        }
+                    }
+                });
+            }
+            else {
+                showBackgroundPlaybackNotification();
+            }
+        }
+    }
+
+    public void showBackgroundPlaybackNotification() {
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(this)
+                .setSmallIcon(R.drawable.ic_headphones_white_24dp)
+                .setOngoing(true)
+                .setColor(Color.parseColor("#E62118"))
+                .setContentTitle(getString(R.string.app_name))
+                .setContentText(webView.getTitle().replace(" - YouTube", ""));
+        NotificationManager manager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+        manager.notify(1337 - 420 * 69, builder.build());
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        NotificationManager manager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+        manager.cancel(1337 - 420 * 69);
     }
 
     @Override
