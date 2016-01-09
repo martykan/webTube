@@ -6,6 +6,7 @@
     <string name="bookmarks">Bookmarks</string>
     <string name="openInBrowser">Open in browser</string>
     <string name="castToKodi">Cast to Kodi</string>
+    <string name="share">Share</string>
     <string name="enableTor">Enable Tor</string>
     <string name="disableTor">Disable Tor</string>
 
@@ -23,6 +24,8 @@
     <string name="error_no_video">No Video!</string>
     <string name="error_select_video_and_retry">Please select a video and try again.</string>
     <string name="ok">OK</string>
+
+    <string name="share_with">Share with…</string>
 
     <string name="homePageSet">Your homepage has been set to this page.</string>
     <string name="homePageHelp">If you want to change the homepage, just hold the Home button and it changes to the current opened page.</string>

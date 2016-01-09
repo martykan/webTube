@@ -69,6 +69,15 @@
                     fab:fab_title="@string/enableTor" />
 
                 <com.getbase.floatingactionbutton.FloatingActionButton
+                    android:id="@+id/fab_share"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    fab:fab_colorNormal="@color/white"
+                    fab:fab_colorPressed="@color/white_pressed"
+                    fab:fab_icon="@drawable/ic_share_grey_24px"
+                    fab:fab_title="@string/share" />
+
+                <com.getbase.floatingactionbutton.FloatingActionButton
                     android:id="@+id/fab_kodi"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"

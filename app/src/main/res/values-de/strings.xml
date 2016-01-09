@@ -20,4 +20,6 @@
     <string name="refresh">Aktualisieren</string>
     <string name="removePage">Diese Seite entfernen</string>
     <string name="torWarning">Unverantwortliches Verhalten bei der Verwendung von Tor, wie etwa das Anmelden bei YouTube, wird deinen Internetverkehr deanonymisieren und kann zu schweren Schäden führen.</string>
+    <string name="share">Teilen</string>
+    <string name="share_with">Teilen mit…</string>
 </resources>
