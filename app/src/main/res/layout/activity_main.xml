@@ -22,109 +22,140 @@
                 android:layout_width="match_parent"
                 android:layout_height="24dp"
                 android:background="@color/colorPrimaryDark"
-                android:visibility="gone"></View>
+                android:visibility="gone">
 
-            <WebView
-                android:id="@+id/webView"
+            </View>
+
+            <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_below="@+id/statusBarSpace"
-                android:layout_centerHorizontal="true" />
+                android:layout_below="@id/statusBarSpace">
 
-            <ProgressBar
-                android:id="@+id/progress"
-                style="?android:attr/progressBarStyleHorizontal"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_alignParentBottom="true"
-                android:layout_alignParentLeft="true"
-                android:layout_alignParentStart="true"
-                android:layout_marginBottom="-7dp"
-                android:progress="50" />
-
-
-            <com.getbase.floatingactionbutton.FloatingActionsMenu
-                android:id="@+id/fab"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentBottom="true"
-                android:layout_alignParentEnd="true"
-                android:layout_alignParentRight="true"
-                android:layout_marginBottom="16dp"
-                android:layout_marginEnd="16dp"
-                android:layout_marginRight="16dp"
-                fab:fab_addButtonColorNormal="@color/colorPrimary"
-                fab:fab_addButtonColorPressed="@color/colorPrimaryDark"
-                fab:fab_addButtonPlusIconColor="@color/white"
-                fab:fab_labelStyle="@style/menu_labels_style">
-
-                <com.getbase.floatingactionbutton.FloatingActionButton
-                    android:id="@+id/fab_tor"
-                    android:layout_width="wrap_content"
+                <WebView
+                    android:id="@+id/webView"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:visibility="gone"
-                    fab:fab_colorNormal="@color/white"
-                    fab:fab_colorPressed="@color/white_pressed"
-                    fab:fab_icon="@drawable/ic_vector_polygon_grey600_24dp"
-                    fab:fab_title="@string/enableTor" />
+                    android:layout_above="@+id/relativeLayout2"
+                    android:layout_alignParentTop="true" />
 
-                <com.getbase.floatingactionbutton.FloatingActionButton
-                    android:id="@+id/fab_kodi"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:visibility="gone"
-                    fab:fab_colorNormal="@color/white"
-                    fab:fab_colorPressed="@color/white_pressed"
-                    fab:fab_icon="@drawable/ic_cast_grey_24px"
-                    fab:fab_title="@string/castToKodi" />
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="56dp"
+                    android:layout_alignParentBottom="true"
+                    android:id="@+id/relativeLayout2"
+                    android:background="@color/colorPrimary">
 
-                <com.getbase.floatingactionbutton.FloatingActionButton
-                    android:id="@+id/fab_share"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    fab:fab_colorNormal="@color/white"
-                    fab:fab_colorPressed="@color/white_pressed"
-                    fab:fab_icon="@drawable/ic_share_grey_24px"
-                    fab:fab_title="@string/share" />
+                    <RelativeLayout
+                        android:id="@+id/relativeLayout"
+                        android:layout_width="match_parent"
+                        android:layout_height="56dp"
+                        android:layout_alignParentBottom="true"
+                        android:layout_alignParentLeft="true"
+                        android:layout_alignParentStart="true"
+                        android:background="@color/colorPrimary">
 
-                <com.getbase.floatingactionbutton.FloatingActionButton
-                    android:id="@+id/fab_browser"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    fab:fab_colorNormal="@color/white"
-                    fab:fab_colorPressed="@color/white_pressed"
-                    fab:fab_icon="@drawable/ic_web_grey600_24dp"
-                    fab:fab_title="@string/openInBrowser" />
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_centerVertical="true"
+                            android:orientation="horizontal">
 
-                <com.getbase.floatingactionbutton.FloatingActionButton
-                    android:id="@+id/fab_bookmarks"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    fab:fab_colorNormal="@color/white"
-                    fab:fab_colorPressed="@color/white_pressed"
-                    fab:fab_icon="@drawable/ic_star_grey600_24dp"
-                    fab:fab_title="@string/bookmarks" />
+                            <RelativeLayout
+                                android:id="@+id/homeButton"
+                                android:layout_width="0dp"
+                                android:layout_height="match_parent"
+                                android:layout_weight="1">
 
-                <com.getbase.floatingactionbutton.FloatingActionButton
-                    android:id="@+id/fab_refresh"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    fab:fab_colorNormal="@color/white"
-                    fab:fab_colorPressed="@color/white_pressed"
-                    fab:fab_icon="@drawable/ic_refresh_grey600_24dp"
-                    fab:fab_title="@string/refresh" />
+                                <ImageView
+                                    android:id="@+id/ic_home"
+                                    android:layout_width="36dp"
+                                    android:layout_height="36dp"
+                                    android:layout_centerHorizontal="true"
+                                    android:scaleType="center"
+                                    android:src="@drawable/ic_home_white_24dp" />
+                            </RelativeLayout>
 
-                <com.getbase.floatingactionbutton.FloatingActionButton
-                    android:id="@+id/fab_home"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    fab:fab_colorNormal="@color/white"
-                    fab:fab_colorPressed="@color/white_pressed"
-                    fab:fab_icon="@drawable/ic_home_grey600_24dp"
-                    fab:fab_title="@string/home" />
+                            <RelativeLayout
+                                android:id="@+id/refreshButton"
+                                android:layout_width="0dp"
+                                android:layout_height="match_parent"
+                                android:layout_weight="1">
 
-            </com.getbase.floatingactionbutton.FloatingActionsMenu>
+                                <ImageView
+                                    android:id="@+id/ic_refresh"
+                                    android:layout_width="36dp"
+                                    android:layout_height="36dp"
+                                    android:layout_centerHorizontal="true"
+                                    android:scaleType="center"
+                                    android:src="@drawable/ic_refresh_white_24dp" />
+                            </RelativeLayout>
+
+                            <RelativeLayout
+                                android:id="@+id/browserButton"
+                                android:layout_width="0dp"
+                                android:layout_height="match_parent"
+                                android:layout_weight="1">
+
+                                <ImageView
+                                    android:id="@+id/ic_browser"
+                                    android:layout_width="36dp"
+                                    android:layout_height="36dp"
+                                    android:layout_centerHorizontal="true"
+                                    android:scaleType="center"
+                                    android:src="@drawable/ic_web_white_24dp" />
+                            </RelativeLayout>
+
+                            <RelativeLayout
+                                android:id="@+id/bookmarksButton"
+                                android:layout_width="0dp"
+                                android:layout_height="match_parent"
+                                android:layout_weight="1">
+
+                                <ImageView
+                                    android:id="@+id/ic_bookmarks"
+                                    android:layout_width="36dp"
+                                    android:layout_height="36dp"
+                                    android:layout_centerHorizontal="true"
+                                    android:scaleType="center"
+                                    android:src="@drawable/ic_star_white_24dp" />
+                            </RelativeLayout>
+
+                            <RelativeLayout
+                                android:id="@+id/moreButton"
+                                android:layout_width="0dp"
+                                android:layout_height="match_parent"
+                                android:layout_weight="1">
+
+                                <ImageView
+                                    android:id="@+id/ic_more"
+                                    android:layout_width="36dp"
+                                    android:layout_height="36dp"
+                                    android:layout_centerHorizontal="true"
+                                    android:scaleType="center"
+                                    android:src="@drawable/ic_dots_vertical_white_24dp" />
+                            </RelativeLayout>
+                        </LinearLayout>
+                    </RelativeLayout>
+
+                    <ProgressBar
+                        android:id="@+id/progress"
+                        style="?android:attr/progressBarStyleHorizontal"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@+id/relativeLayout"
+                        android:layout_alignParentLeft="true"
+                        android:layout_alignParentStart="true"
+                        android:progress="50"
+                        android:layout_marginTop="-7dp"
+                        android:layout_marginBottom="-7dp"
+                        android:progressTint="@color/white"
+                        android:indeterminateTint="@color/white"
+                        android:backgroundTint="@android:color/transparent"/>
+                </RelativeLayout>
+
+            </RelativeLayout>
         </RelativeLayout>
+
 
         <android.support.design.widget.NavigationView
             android:id="@+id/bookmarks_panel"
@@ -140,10 +171,10 @@
         android:id="@+id/customViewContainer"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="#000"
+        android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
         android:layout_alignParentTop="true"
-        android:layout_alignParentLeft="true"
+        android:background="#000"
         android:clickable="false"
         android:visibility="gone" />
 

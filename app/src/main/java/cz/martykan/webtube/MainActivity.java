@@ -1,5 +1,8 @@
 package cz.martykan.webtube;
 
+import android.animation.Animator;
+import android.animation.ObjectAnimator;
+import android.animation.PropertyValuesHolder;
 import android.app.ActionBar;
 import android.app.NotificationManager;
 import android.content.Context;
@@ -19,6 +22,7 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.DragEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
@@ -34,12 +38,13 @@ import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.AbsoluteLayout;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.FrameLayout;
+import android.widget.ImageView;
+import android.widget.ListAdapter;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
-
-import com.getbase.floatingactionbutton.FloatingActionButton;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -62,7 +67,6 @@ public class MainActivity extends AppCompatActivity {
     ProgressBar progress;
     View mCustomView;
     FrameLayout customViewContainer;
-    FloatingActionButton fabTor;
     DrawerLayout drawerLayout;
     NavigationView navigationView;
     SharedPreferences sp;
@@ -236,8 +240,10 @@ public class MainActivity extends AppCompatActivity {
                                     public void onReceiveValue(String value) {
                                         if (!value.toString().contains("not_video")) {
                                             statusBarSpace.setBackgroundColor(getApplication().getResources().getColor(R.color.colorWatch));
+                                            findViewById(R.id.relativeLayout).setBackgroundColor(getApplication().getResources().getColor(R.color.colorWatch));
                                         } else {
                                             statusBarSpace.setBackgroundColor(getApplication().getResources().getColor(R.color.colorPrimary));
+                                            findViewById(R.id.relativeLayout).setBackgroundColor(getApplication().getResources().getColor(R.color.colorPrimary));
                                         }
                                     }
                                 });
@@ -309,10 +315,9 @@ public class MainActivity extends AppCompatActivity {
         });
 
         // Floating action buttons
-        setUpFABs();
+        setUpMenu();
 
         // Tor
-        fabTor = (FloatingActionButton) findViewById(R.id.fab_tor);
         setUpTor();
 
         // Load the page
@@ -324,19 +329,18 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public void onPause() {
         super.onPause();
-        if(webView.getUrl().contains("/watch")) {
-            if(Integer.valueOf(Build.VERSION.SDK_INT) >= 19) {
+        if (webView.getUrl().contains("/watch")) {
+            if (Integer.valueOf(Build.VERSION.SDK_INT) >= 19) {
                 webView.evaluateJavascript("(function() { if(document.getElementsByTagName('video')[0].paused == false) { return 'playing'; } else { return 'stopped'; } })();", new ValueCallback<String>() {
                     @Override
                     public void onReceiveValue(String value) {
                         Log.i("VALUE", value);
-                        if(value.equals("\"playing\"")) {
+                        if (value.equals("\"playing\"")) {
                             showBackgroundPlaybackNotification();
                         }
                     }
                 });
-            }
-            else {
+            } else {
                 showBackgroundPlaybackNotification();
             }
         }
@@ -389,7 +393,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void homepageTutorial() {
-        if(!sp.getBoolean("homepageLearned", false)) {
+        if (!sp.getBoolean("homepageLearned", false)) {
             AlertDialog dialog = new AlertDialog.Builder(MainActivity.this).create();
             dialog.setTitle(getString(R.string.home));
             dialog.setMessage(getString(R.string.homePageHelp));
@@ -409,7 +413,7 @@ public class MainActivity extends AppCompatActivity {
 
     public void setUpWebview() {
         // To save login info
-       acceptCookies(true);
+        acceptCookies(true);
 
         // Some settings
         WebSettings webSettings = webView.getSettings();
@@ -437,35 +441,36 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    public void setUpFABs() {
-        FloatingActionButton fabBrowser = (FloatingActionButton) findViewById(R.id.fab_browser);
-        fabBrowser.setOnClickListener(new View.OnClickListener() {
+    public void setUpMenu() {
+        findViewById(R.id.browserButton).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                iconAnim(findViewById(R.id.browserButton));
                 startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(webView.getUrl())));
             }
         });
 
-        FloatingActionButton fabRefresh = (FloatingActionButton) findViewById(R.id.fab_refresh);
-        fabRefresh.setOnClickListener(new View.OnClickListener() {
+        findViewById(R.id.refreshButton).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                iconAnim(findViewById(R.id.refreshButton));
                 webView.reload();
             }
         });
 
-        FloatingActionButton fabHome = (FloatingActionButton) findViewById(R.id.fab_home);
-        fabHome.setOnClickListener(new View.OnClickListener() {
+        findViewById(R.id.homeButton).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                iconAnim(findViewById(R.id.homeButton));
                 homepageTutorial();
                 webView.loadUrl(sp.getString("homepage", "https://m.youtube.com/"));
             }
         });
 
-        fabHome.setOnLongClickListener(new View.OnLongClickListener() {
+        findViewById(R.id.homeButton).setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View v) {
+                iconAnim(findViewById(R.id.homeButton));
                 Snackbar.make(appWindow, getString(R.string.homePageSet), Snackbar.LENGTH_LONG).show();
                 SharedPreferences.Editor editor = sp.edit();
                 editor.putString("homepage", webView.getUrl());
@@ -474,66 +479,125 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        FloatingActionButton fabBookmarks = (FloatingActionButton) findViewById(R.id.fab_bookmarks);
-        fabBookmarks.setOnClickListener(new View.OnClickListener() {
+
+        findViewById(R.id.bookmarksButton).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 drawerLayout.openDrawer(findViewById(R.id.bookmarks_panel));
             }
         });
 
-        // Check if Kodi is installed
-        FloatingActionButton fabKodi = (FloatingActionButton) findViewById(R.id.fab_kodi);
-        PackageManager pm = getPackageManager();
-        try {
-            pm.getPackageInfo("org.xbmc.kore", PackageManager.GET_ACTIVITIES);
-            fabKodi.setVisibility(View.VISIBLE);
-        } catch (PackageManager.NameNotFoundException e) {
-            fabKodi.setVisibility(View.GONE);
-        }
-
-        fabKodi.setOnClickListener(new View.OnClickListener() {
+        findViewById(R.id.moreButton).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (!webView.getUrl().contains("/watch")) {
-                    show_noVideo_dialog();
-                } else {
-                    try {
-                        /*The following code is based on an extract from the source code of NewPipe (v0.7.2) (https://github.com/theScrabi/NewPipe),
-                        which is also licenced under version 3 of the GNU General Public License as published by the Free Software Foundation.
-                        The copyright owner of the original code is Christian Schabesberger <chris.schabesberger@mailbox.org>.
-                        All modifications were made on 06-Jan-2016*/
-                        Intent intent = new Intent(Intent.ACTION_VIEW);
-                        intent.setPackage("org.xbmc.kore");
-                        intent.setData(Uri.parse(webView.getUrl().replace("https", "http")));
-                        MainActivity.this.startActivity(intent);
-                        /*End of the modified NewPipe code extract*/
-                    } catch (Exception e) {
-                        e.printStackTrace();
+                AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+
+                final ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(
+                        MainActivity.this,
+                        android.R.layout.simple_list_item_1);
+                arrayAdapter.add(getString(R.string.share));
+
+                PackageManager pm = getPackageManager();
+                try {
+                    pm.getPackageInfo("org.xbmc.kore", PackageManager.GET_ACTIVITIES);
+                    arrayAdapter.add("Cast to Kodi");
+                } catch (PackageManager.NameNotFoundException e) {
+
+                }
+
+                if (OrbotHelper.isOrbotInstalled(getApplicationContext())) {
+                    if (sp.getBoolean("torEnabled", false) == false) {
+                        arrayAdapter.add(getString(R.string.enableTor));
+                    } else {
+                        arrayAdapter.add(getString(R.string.disableTor));
                     }
                 }
+
+                builder.setNegativeButton(
+                        getText(R.string.cancel),
+                        new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                dialog.dismiss();
+                            }
+                        });
+
+                builder.setAdapter(
+                        arrayAdapter,
+                        new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                if (arrayAdapter.getItem(which).equals(getString(R.string.share))) {
+                                    if (!webView.getUrl().contains("/watch")) {
+                                        show_noVideo_dialog();
+                                    } else {
+                                        Intent shareIntent = new Intent();
+                                        shareIntent.setAction(Intent.ACTION_SEND);
+                                        shareIntent.putExtra(Intent.EXTRA_TEXT, webView.getUrl());
+                                        shareIntent.setType("text/plain");
+                                        startActivity(Intent.createChooser(shareIntent, getResources().getText(R.string.share_with)));
+                                    }
+                                } else if (arrayAdapter.getItem(which).equals(getString(R.string.castToKodi))) {
+                                    if (!webView.getUrl().contains("/watch")) {
+                                        show_noVideo_dialog();
+                                    } else {
+                                        if (!webView.getUrl().contains("/watch")) {
+                                            show_noVideo_dialog();
+                                        } else {
+                                            try {
+                                                /*The following code is based on an extract from the source code of NewPipe (v0.7.2) (https://github.com/theScrabi/NewPipe),
+                                                which is also licenced under version 3 of the GNU General Public License as published by the Free Software Foundation.
+                                                The copyright owner of the original code is Christian Schabesberger <chris.schabesberger@mailbox.org>.
+                                                All modifications were made on 06-Jan-2016*/
+                                                Intent intent = new Intent(Intent.ACTION_VIEW);
+                                                intent.setPackage("org.xbmc.kore");
+                                                intent.setData(Uri.parse(webView.getUrl().replace("https", "http")));
+                                                MainActivity.this.startActivity(intent);
+                                                /*End of the modified NewPipe code extract*/
+                                            } catch (Exception e) {
+                                                e.printStackTrace();
+                                            }
+                                        }
+                                    }
+                                } else if (arrayAdapter.getItem(which).equals(getString(R.string.enableTor)) || arrayAdapter.getItem(which).equals(getString(R.string.disableTor))) {
+                                    if (sp.getBoolean("torEnabled", false)) {
+                                        torDisable();
+                                    } else {
+                                        AlertDialog alert = new AlertDialog.Builder(MainActivity.this).create();
+                                        alert.setTitle(getString(R.string.enableTor) + "?");
+                                        alert.setMessage(getString(R.string.torWarning));
+                                        alert.setCancelable(false);
+                                        alert.setButton(DialogInterface.BUTTON_POSITIVE, getString(R.string.enable),
+                                                new DialogInterface.OnClickListener() {
+                                                    public void onClick(DialogInterface dialog, int buttonId) {
+                                                        torEnable();
+                                                    }
+                                                });
+                                        alert.setButton(DialogInterface.BUTTON_NEGATIVE, getString(R.string.cancel),
+                                                new DialogInterface.OnClickListener() {
+                                                    public void onClick(DialogInterface dialog, int buttonId) {
+
+                                                    }
+                                                });
+                                        alert.show();
+                                    }
+                                }
+                            }
+                        });
+                builder.show();
             }
         });
-
-        FloatingActionButton fabShare = (FloatingActionButton) findViewById(R.id.fab_share);
-        fabShare.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (!webView.getUrl().contains("/watch")) {
-                    show_noVideo_dialog();
-                } else {
-                    Intent shareIntent = new Intent();
-                    shareIntent.setAction(Intent.ACTION_SEND);
-                    shareIntent.putExtra(Intent.EXTRA_TEXT, webView.getUrl());
-                    shareIntent.setType("text/plain");
-                    startActivity(Intent.createChooser(shareIntent, getResources().getText(R.string.share_with)));
-                }
-            }
-        });
-
     }
 
-    private void show_noVideo_dialog(){
+    private void iconAnim(View icon) {
+        Animator iconAnim = ObjectAnimator.ofPropertyValuesHolder(
+                icon,
+                PropertyValuesHolder.ofFloat("scaleX", 1f, 1.5f, 1f),
+                PropertyValuesHolder.ofFloat("scaleY", 1f, 1.5f, 1f));
+        iconAnim.start();
+    }
+
+    private void show_noVideo_dialog() {
         AlertDialog dialog = new AlertDialog.Builder(MainActivity.this).create();
         dialog.setTitle(getString(R.string.error_no_video));
         dialog.setMessage(getString(R.string.error_select_video_and_retry));
@@ -613,41 +677,10 @@ public class MainActivity extends AppCompatActivity {
 
     public void setUpTor() {
         // Tor
-        fabTor = (FloatingActionButton) findViewById(R.id.fab_tor);
         if (OrbotHelper.isOrbotInstalled(getApplicationContext())) {
-            fabTor.setVisibility(View.VISIBLE);
             if (sp.getBoolean("torEnabled", false)) {
                 torEnable();
-                fabTor.setTitle(getString(R.string.disableTor));
-            } else {
-                fabTor.setTitle(getString(R.string.enableTor));
             }
-            fabTor.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    if (sp.getBoolean("torEnabled", false)) {
-                        torDisable();
-                    } else {
-                        AlertDialog dialog = new AlertDialog.Builder(MainActivity.this).create();
-                        dialog.setTitle(getString(R.string.enableTor) + "?");
-                        dialog.setMessage(getString(R.string.torWarning));
-                        dialog.setCancelable(false);
-                        dialog.setButton(DialogInterface.BUTTON_POSITIVE, getString(R.string.enable),
-                                new DialogInterface.OnClickListener() {
-                                    public void onClick(DialogInterface dialog, int buttonId) {
-                                        torEnable();
-                                    }
-                                });
-                        dialog.setButton(DialogInterface.BUTTON_NEGATIVE, getString(R.string.cancel),
-                                new DialogInterface.OnClickListener() {
-                                    public void onClick(DialogInterface dialog, int buttonId) {
-
-                                    }
-                                });
-                        dialog.show();
-                    }
-                }
-            });
         }
     }
 
@@ -655,14 +688,13 @@ public class MainActivity extends AppCompatActivity {
         acceptCookies(false);
         deleteCookies();
         //Make sure that all cookies are really deleted
-        if(!CookieManager.getInstance().hasCookies()) {
+        if (!CookieManager.getInstance().hasCookies()) {
             if (!OrbotHelper.isOrbotRunning(getApplicationContext()))
                 OrbotHelper.requestStartTor(getApplicationContext());
             try {
                 WebkitProxy.setProxy(MainActivity.class.getName(), getApplicationContext(), null, "localhost", 8118);
                 SharedPreferences.Editor spEdit = sp.edit();
                 spEdit.putBoolean("torEnabled", true);
-                fabTor.setTitle(getString(R.string.disableTor));
                 spEdit.commit();
             } catch (Exception e) {
                 e.printStackTrace();
@@ -673,12 +705,11 @@ public class MainActivity extends AppCompatActivity {
     public void torDisable() {
         deleteCookies();
         //Make sure that all cookies are really deleted
-        if(!CookieManager.getInstance().hasCookies()) {
+        if (!CookieManager.getInstance().hasCookies()) {
             try {
                 WebkitProxy.resetProxy(MainActivity.class.getName(), getApplicationContext());
                 SharedPreferences.Editor spEdit = sp.edit();
                 spEdit.putBoolean("torEnabled", false);
-                fabTor.setTitle(getString(R.string.enableTor));
                 spEdit.commit();
                 acceptCookies(true);
             } catch (Exception e) {
@@ -694,7 +725,7 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    public void deleteCookies(){
+    public void deleteCookies() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             CookieManager.getInstance().removeAllCookies(null);
         }
