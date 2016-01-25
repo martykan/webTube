@@ -4,6 +4,7 @@ import android.animation.Animator;
 import android.animation.ObjectAnimator;
 import android.animation.PropertyValuesHolder;
 import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -49,6 +50,7 @@ import info.guardianproject.netcipher.web.WebkitProxy;
 
 public class MainActivity extends AppCompatActivity {
 
+    public static final int NOTIFICATION_ID = 1337 - 420 * 69;
     public static String LOG_TAG = "webTube";
     WebView webView;
     View appWindow;
@@ -341,9 +343,15 @@ public class MainActivity extends AppCompatActivity {
                 .setOngoing(true)
                 .setColor(Color.parseColor("#E62118"))
                 .setContentTitle(getString(R.string.app_name))
-                .setContentText(webView.getTitle().replace(" - YouTube", ""));
+                .setContentText(webView.getTitle().replace(" - YouTube", ""))
+                .setContentIntent(
+                        PendingIntent.getActivity(
+                                this.getApplicationContext(),
+                                NOTIFICATION_ID,
+                                new Intent(this.getApplicationContext(), MainActivity.class),
+                                PendingIntent.FLAG_UPDATE_CURRENT));
         NotificationManager manager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
-        manager.notify(1337 - 420 * 69, builder.build());
+        manager.notify(NOTIFICATION_ID, builder.build());
     }
 
     @Override
@@ -354,13 +362,13 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onDestroy() {
-        super.onDestroy();
         cancelNotification();
+        super.onDestroy();
     }
 
     private void cancelNotification() {
         NotificationManager manager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
-        manager.cancel(1337 - 420 * 69);
+        manager.cancel(NOTIFICATION_ID);
     }
 
     @Override
