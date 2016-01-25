@@ -50,20 +50,20 @@ import info.guardianproject.netcipher.web.WebkitProxy;
 
 public class MainActivity extends AppCompatActivity {
 
-    public static final int NOTIFICATION_ID = 1337 - 420 * 69;
-    public static String LOG_TAG = "webTube";
-    WebView webView;
-    View appWindow;
-    Window window;
-    ProgressBar progress;
-    View mCustomView;
-    FrameLayout customViewContainer;
-    DrawerLayout drawerLayout;
-    NavigationView navigationView;
-    SharedPreferences sp;
+    private static final int NOTIFICATION_ID = 1337 - 420 * 69;
+    private static final String LOG_TAG = "webTube";
+    private WebView webView;
+    private View appWindow;
+    private Window window;
+    private ProgressBar progress;
+    private View mCustomView;
+    private FrameLayout customViewContainer;
+    private DrawerLayout drawerLayout;
+    private NavigationView navigationView;
+    private SharedPreferences sp;
 
-    List<String> bookmarkUrls;
-    List<String> bookmarkTitles;
+    private List<String> bookmarkUrls;
+    private List<String> bookmarkTitles;
 
     // For the snackbar with error message
     View.OnClickListener clickListener = new View.OnClickListener() {
@@ -348,7 +348,9 @@ public class MainActivity extends AppCompatActivity {
                         PendingIntent.getActivity(
                                 this.getApplicationContext(),
                                 NOTIFICATION_ID,
-                                new Intent(this.getApplicationContext(), MainActivity.class),
+                                new Intent(this.getApplicationContext(), MainActivity.class)
+                                        .setAction(Intent.ACTION_VIEW)
+                                        .setData(Uri.parse(webView.getUrl())),
                                 PendingIntent.FLAG_UPDATE_CURRENT));
         NotificationManager manager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
         manager.notify(NOTIFICATION_ID, builder.build());
