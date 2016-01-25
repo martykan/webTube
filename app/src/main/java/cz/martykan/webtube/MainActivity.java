@@ -359,16 +359,6 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public void onResume() {
         super.onResume();
-        cancelNotification();
-    }
-
-    @Override
-    protected void onDestroy() {
-        cancelNotification();
-        super.onDestroy();
-    }
-
-    private void cancelNotification() {
         NotificationManager manager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
         manager.cancel(NOTIFICATION_ID);
     }
