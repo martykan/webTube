@@ -3,6 +3,7 @@ package cz.martykan.webtube;
 import android.animation.Animator;
 import android.animation.ObjectAnimator;
 import android.animation.PropertyValuesHolder;
+import android.app.Activity;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
@@ -18,6 +19,7 @@ import android.preference.PreferenceManager;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.NotificationCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
@@ -52,6 +54,7 @@ public class MainActivity extends AppCompatActivity {
 
     private static final int NOTIFICATION_ID = 1337 - 420 * 69;
     private static final String LOG_TAG = "webTube";
+    private static final int PORT_TOR = 8118;
     private WebView webView;
     private View appWindow;
     private Window window;
@@ -61,6 +64,7 @@ public class MainActivity extends AppCompatActivity {
     private DrawerLayout drawerLayout;
     private NavigationView navigationView;
     private SharedPreferences sp;
+    private Context mApplicationContext;
 
     private List<String> bookmarkUrls;
     private List<String> bookmarkTitles;
@@ -88,6 +92,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         // Gotta go fast!
+        mApplicationContext = getApplicationContext();
         getWindow().setFlags(
                 WindowManager.LayoutParams.FLAG_HARDWARE_ACCELERATED,
                 WindowManager.LayoutParams.FLAG_HARDWARE_ACCELERATED);
@@ -154,7 +159,7 @@ public class MainActivity extends AppCompatActivity {
                 progress.setProgress(percentage);
 
                 // For more advnaced loading status
-                if (Build.VERSION.SDK_INT >= 19) {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
                     if (percentage == 100) {
                         progress.setIndeterminate(true);
                     } else {
@@ -205,7 +210,7 @@ public class MainActivity extends AppCompatActivity {
                             "}})()");
 
                     // Gets rid of orange outlines
-                    if (Build.VERSION.SDK_INT >= 19) {
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
 
                         String css = "*, *:focus { " +
                                 " outline: none !important; -webkit-tap-highlight-color: rgba(255,255,255,0) !important; -webkit-tap-highlight-color: transparent !important; }" +
@@ -222,7 +227,7 @@ public class MainActivity extends AppCompatActivity {
                     }
 
                     // To adapt the statusbar color
-                    if (Build.VERSION.SDK_INT >= 19) {
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
                         final View statusBarSpace = findViewById(R.id.statusBarSpace);
                         statusBarSpace.setVisibility(View.VISIBLE);
                         webView.evaluateJavascript("(function() { if(document.getElementById('player').style.visibility == 'hidden' || document.getElementById('player').innerHTML == '') { return 'not_video'; } else { return 'video'; } })();",
@@ -230,11 +235,11 @@ public class MainActivity extends AppCompatActivity {
                                     @Override
                                     public void onReceiveValue(String value) {
                                         if (!value.contains("not_video")) {
-                                            statusBarSpace.setBackgroundColor(getApplication().getResources().getColor(R.color.colorWatch));
-                                            findViewById(R.id.relativeLayout).setBackgroundColor(getApplication().getResources().getColor(R.color.colorWatch));
+                                            statusBarSpace.setBackgroundColor(ContextCompat.getColor(mApplicationContext, R.color.colorWatch));
+                                            findViewById(R.id.relativeLayout).setBackgroundColor(ContextCompat.getColor(mApplicationContext, R.color.colorWatch));
                                         } else {
-                                            statusBarSpace.setBackgroundColor(getApplication().getResources().getColor(R.color.colorPrimary));
-                                            findViewById(R.id.relativeLayout).setBackgroundColor(getApplication().getResources().getColor(R.color.colorPrimary));
+                                            statusBarSpace.setBackgroundColor(ContextCompat.getColor(mApplicationContext, R.color.colorPrimary));
+                                            findViewById(R.id.relativeLayout).setBackgroundColor(ContextCompat.getColor(mApplicationContext, R.color.colorPrimary));
                                         }
                                     }
                                 });
@@ -280,12 +285,12 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void onDrawerClosed(View drawerView) {
-
+                /* Nothing */
             }
 
             @Override
             public void onDrawerStateChanged(int newState) {
-
+                /* Nothing */
             }
         });
         navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
@@ -321,7 +326,7 @@ public class MainActivity extends AppCompatActivity {
     public void onPause() {
         super.onPause();
         if (webView.getUrl().contains("/watch")) {
-            if (Build.VERSION.SDK_INT >= 19) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
                 webView.evaluateJavascript("(function() { if(document.getElementsByTagName('video')[0].paused == false) { return 'playing'; } else { return 'stopped'; } })();", new ValueCallback<String>() {
                     @Override
                     public void onReceiveValue(String value) {
@@ -346,9 +351,9 @@ public class MainActivity extends AppCompatActivity {
                 .setContentText(webView.getTitle().replace(" - YouTube", ""))
                 .setContentIntent(
                         PendingIntent.getActivity(
-                                this.getApplicationContext(),
+                                mApplicationContext,
                                 NOTIFICATION_ID,
-                                new Intent(this.getApplicationContext(), MainActivity.class)
+                                new Intent(mApplicationContext, MainActivity.class)
                                         .setAction(Intent.ACTION_VIEW)
                                         .setData(Uri.parse(webView.getUrl())),
                                 PendingIntent.FLAG_UPDATE_CURRENT));
@@ -422,7 +427,7 @@ public class MainActivity extends AppCompatActivity {
 
         webSettings.setDatabaseEnabled(true);
 
-        String cachePath = this.getApplicationContext()
+        String cachePath = mApplicationContext
                 .getDir("cache", Context.MODE_PRIVATE).getPath();
         webSettings.setAppCachePath(cachePath);
         webSettings.setAllowFileAccess(true);
@@ -504,7 +509,7 @@ public class MainActivity extends AppCompatActivity {
 
                 }
 
-                if (OrbotHelper.isOrbotInstalled(getApplicationContext())) {
+                if (OrbotHelper.isOrbotInstalled(mApplicationContext)) {
                     if (sp.getBoolean("torEnabled", false)) {
                         arrayAdapter.add(getString(R.string.disableTor));
                     } else {
@@ -654,7 +659,7 @@ public class MainActivity extends AppCompatActivity {
         String result = sp.getString("bookmarks", "[]");
         try {
             JSONArray bookmarksArray = new JSONArray(result);
-            if (Build.VERSION.SDK_INT >= 19) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
                 bookmarksArray.remove(bookmarkTitles.indexOf(title));
             } else {
                 final List<JSONObject> objs = asList(bookmarksArray);
@@ -676,7 +681,7 @@ public class MainActivity extends AppCompatActivity {
 
     public void setUpTor() {
         // Tor
-        if (OrbotHelper.isOrbotInstalled(getApplicationContext())) {
+        if (OrbotHelper.isOrbotInstalled(mApplicationContext)) {
             if (sp.getBoolean("torEnabled", false)) {
                 torEnable();
             }
@@ -688,10 +693,10 @@ public class MainActivity extends AppCompatActivity {
         deleteCookies();
         //Make sure that all cookies are really deleted
         if (!CookieManager.getInstance().hasCookies()) {
-            if (!OrbotHelper.isOrbotRunning(getApplicationContext()))
-                OrbotHelper.requestStartTor(getApplicationContext());
+            if (!OrbotHelper.isOrbotRunning(mApplicationContext))
+                OrbotHelper.requestStartTor(mApplicationContext);
             try {
-                WebkitProxy.setProxy(MainActivity.class.getName(), getApplicationContext(), null, "localhost", 8118);
+                WebkitProxy.setProxy(MainActivity.class.getName(), mApplicationContext, null, "localhost", PORT_TOR);
                 SharedPreferences.Editor spEdit = sp.edit();
                 spEdit.putBoolean("torEnabled", true);
                 spEdit.commit();
@@ -706,7 +711,7 @@ public class MainActivity extends AppCompatActivity {
         //Make sure that all cookies are really deleted
         if (!CookieManager.getInstance().hasCookies()) {
             try {
-                WebkitProxy.resetProxy(MainActivity.class.getName(), getApplicationContext());
+                WebkitProxy.resetProxy(MainActivity.class.getName(), mApplicationContext);
                 SharedPreferences.Editor spEdit = sp.edit();
                 spEdit.putBoolean("torEnabled", false);
                 spEdit.commit();
@@ -719,7 +724,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void acceptCookies(boolean accept) {
         CookieManager.getInstance().setAcceptCookie(accept);
-        if (Build.VERSION.SDK_INT >= 21) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             CookieManager.getInstance().setAcceptThirdPartyCookies(webView, accept);
         }
     }
