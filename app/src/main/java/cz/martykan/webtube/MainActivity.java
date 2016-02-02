@@ -3,7 +3,7 @@ package cz.martykan.webtube;
 import android.animation.Animator;
 import android.animation.ObjectAnimator;
 import android.animation.PropertyValuesHolder;
-import android.app.ActionBar;
+import android.app.Activity;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
@@ -19,33 +19,25 @@ import android.preference.PreferenceManager;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.NotificationCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
-import android.view.DragEvent;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.MotionEvent;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
 import android.webkit.CookieManager;
-import android.webkit.JavascriptInterface;
 import android.webkit.ValueCallback;
 import android.webkit.WebChromeClient;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
-import android.widget.AbsoluteLayout;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
 import android.widget.FrameLayout;
-import android.widget.ImageView;
-import android.widget.ListAdapter;
 import android.widget.ProgressBar;
-import android.widget.RelativeLayout;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -53,7 +45,6 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 
 import info.guardianproject.netcipher.proxy.OrbotHelper;
 import info.guardianproject.netcipher.web.WebkitProxy;
@@ -61,19 +52,22 @@ import info.guardianproject.netcipher.web.WebkitProxy;
 
 public class MainActivity extends AppCompatActivity {
 
-    public static String LOG_TAG = "webTube";
-    WebView webView;
-    View appWindow;
-    Window window;
-    ProgressBar progress;
-    View mCustomView;
-    FrameLayout customViewContainer;
-    DrawerLayout drawerLayout;
-    NavigationView navigationView;
-    SharedPreferences sp;
+    private static final int NOTIFICATION_ID = 1337 - 420 * 69;
+    private static final String LOG_TAG = "webTube";
+    private static final int PORT_TOR = 8118;
+    private WebView webView;
+    private View appWindow;
+    private Window window;
+    private ProgressBar progress;
+    private View mCustomView;
+    private FrameLayout customViewContainer;
+    private DrawerLayout drawerLayout;
+    private NavigationView navigationView;
+    private SharedPreferences sp;
+    private Context mApplicationContext;
 
-    List<String> bookmarkUrls;
-    List<String> bookmarkTitles;
+    private List<String> bookmarkUrls;
+    private List<String> bookmarkTitles;
 
     // For the snackbar with error message
     View.OnClickListener clickListener = new View.OnClickListener() {
@@ -85,7 +79,7 @@ public class MainActivity extends AppCompatActivity {
 
     public static List<JSONObject> asList(final JSONArray ja) {
         final int len = ja.length();
-        final ArrayList<JSONObject> result = new ArrayList<JSONObject>(len);
+        final ArrayList<JSONObject> result = new ArrayList<>(len);
         for (int i = 0; i < len; i++) {
             final JSONObject obj = ja.optJSONObject(i);
             if (obj != null) {
@@ -98,6 +92,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         // Gotta go fast!
+        mApplicationContext = getApplicationContext();
         getWindow().setFlags(
                 WindowManager.LayoutParams.FLAG_HARDWARE_ACCELERATED,
                 WindowManager.LayoutParams.FLAG_HARDWARE_ACCELERATED);
@@ -164,7 +159,7 @@ public class MainActivity extends AppCompatActivity {
                 progress.setProgress(percentage);
 
                 // For more advnaced loading status
-                if (Integer.valueOf(Build.VERSION.SDK_INT) >= 19) {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
                     if (percentage == 100) {
                         progress.setIndeterminate(true);
                     } else {
@@ -215,7 +210,7 @@ public class MainActivity extends AppCompatActivity {
                             "}})()");
 
                     // Gets rid of orange outlines
-                    if (Integer.valueOf(Build.VERSION.SDK_INT) >= 19) {
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
 
                         String css = "*, *:focus { " +
                                 " outline: none !important; -webkit-tap-highlight-color: rgba(255,255,255,0) !important; -webkit-tap-highlight-color: transparent !important; }" +
@@ -232,19 +227,19 @@ public class MainActivity extends AppCompatActivity {
                     }
 
                     // To adapt the statusbar color
-                    if (Integer.valueOf(Build.VERSION.SDK_INT) >= 19) {
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
                         final View statusBarSpace = findViewById(R.id.statusBarSpace);
                         statusBarSpace.setVisibility(View.VISIBLE);
                         webView.evaluateJavascript("(function() { if(document.getElementById('player').style.visibility == 'hidden' || document.getElementById('player').innerHTML == '') { return 'not_video'; } else { return 'video'; } })();",
                                 new ValueCallback<String>() {
                                     @Override
                                     public void onReceiveValue(String value) {
-                                        if (!value.toString().contains("not_video")) {
-                                            statusBarSpace.setBackgroundColor(getApplication().getResources().getColor(R.color.colorWatch));
-                                            findViewById(R.id.relativeLayout).setBackgroundColor(getApplication().getResources().getColor(R.color.colorWatch));
+                                        if (!value.contains("not_video")) {
+                                            statusBarSpace.setBackgroundColor(ContextCompat.getColor(mApplicationContext, R.color.colorWatch));
+                                            findViewById(R.id.relativeLayout).setBackgroundColor(ContextCompat.getColor(mApplicationContext, R.color.colorWatch));
                                         } else {
-                                            statusBarSpace.setBackgroundColor(getApplication().getResources().getColor(R.color.colorPrimary));
-                                            findViewById(R.id.relativeLayout).setBackgroundColor(getApplication().getResources().getColor(R.color.colorPrimary));
+                                            statusBarSpace.setBackgroundColor(ContextCompat.getColor(mApplicationContext, R.color.colorPrimary));
+                                            findViewById(R.id.relativeLayout).setBackgroundColor(ContextCompat.getColor(mApplicationContext, R.color.colorPrimary));
                                         }
                                     }
                                 });
@@ -260,11 +255,11 @@ public class MainActivity extends AppCompatActivity {
 
             // Deal with error messages
             public void onReceivedError(WebView view, int errorCode, String description, String failingUrl) {
-                if (description.toString().contains("NETWORK_CHANGED")) {
+                if (description.contains("NETWORK_CHANGED")) {
                     webView.loadUrl(sp.getString("homepage", "https://m.youtube.com/"));
-                } else if (description.toString().contains("NAME_NOT_RESOLVED")) {
+                } else if (description.contains("NAME_NOT_RESOLVED")) {
                     Snackbar.make(appWindow, getString(R.string.errorNoInternet), Snackbar.LENGTH_INDEFINITE).setAction(getString(R.string.refresh), clickListener).show();
-                } else if (description.toString().contains("PROXY_CONNECTION_FAILED")) {
+                } else if (description.contains("PROXY_CONNECTION_FAILED")) {
                     Snackbar.make(appWindow, getString(R.string.errorTor), Snackbar.LENGTH_INDEFINITE).setAction(getString(R.string.refresh), clickListener).show();
                 } else {
                     Snackbar.make(appWindow, getString(R.string.error) + " " + description, Snackbar.LENGTH_INDEFINITE).setAction(getString(R.string.refresh), clickListener).show();
@@ -290,12 +285,12 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void onDrawerClosed(View drawerView) {
-
+                /* Nothing */
             }
 
             @Override
             public void onDrawerStateChanged(int newState) {
-
+                /* Nothing */
             }
         });
         navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
@@ -332,7 +327,7 @@ public class MainActivity extends AppCompatActivity {
         super.onPause();
         try {
             if (webView.getUrl().contains("/watch")) {
-                if (Integer.valueOf(Build.VERSION.SDK_INT) >= 19) {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
                     webView.evaluateJavascript("(function() { if(document.getElementsByTagName('video')[0].paused == false) { return 'playing'; } else { return 'stopped'; } })();", new ValueCallback<String>() {
                         @Override
                         public void onReceiveValue(String value) {
@@ -354,25 +349,30 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void showBackgroundPlaybackNotification() {
-        Intent showIntent = new Intent(this, MainActivity.class);
-        PendingIntent contentIntent = PendingIntent.getActivity(this, 0, showIntent, 0);
         NotificationCompat.Builder builder = new NotificationCompat.Builder(this)
                 .setSmallIcon(R.drawable.ic_headphones_white_24dp)
                 .setOngoing(true)
                 .setColor(Color.parseColor("#E62118"))
                 .setContentTitle(getString(R.string.app_name))
                 .setContentText(webView.getTitle().replace(" - YouTube", ""))
-                .setContentIntent(contentIntent)
-                .setAutoCancel(true);
+                .setAutoCancel(true)
+                .setContentIntent(
+                        PendingIntent.getActivity(
+                                mApplicationContext,
+                                NOTIFICATION_ID,
+                                new Intent(mApplicationContext, MainActivity.class)
+                                        .setAction(Intent.ACTION_VIEW)
+                                        .setData(Uri.parse(webView.getUrl())),
+                                PendingIntent.FLAG_UPDATE_CURRENT));
         NotificationManager manager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
-        manager.notify(1337 - 420 * 69, builder.build());
+        manager.notify(NOTIFICATION_ID, builder.build());
     }
 
     @Override
     public void onResume() {
         super.onResume();
         NotificationManager manager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
-        manager.cancel(1337 - 420 * 69);
+        manager.cancel(NOTIFICATION_ID);
     }
 
     @Override
@@ -441,7 +441,7 @@ public class MainActivity extends AppCompatActivity {
 
         webSettings.setDatabaseEnabled(true);
 
-        String cachePath = this.getApplicationContext()
+        String cachePath = mApplicationContext
                 .getDir("cache", Context.MODE_PRIVATE).getPath();
         webSettings.setAppCachePath(cachePath);
         webSettings.setAllowFileAccess(true);
@@ -510,7 +510,7 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
                 AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
 
-                final ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(
+                final ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(
                         MainActivity.this,
                         android.R.layout.simple_list_item_1);
                 arrayAdapter.add(getString(R.string.share));
@@ -523,11 +523,11 @@ public class MainActivity extends AppCompatActivity {
 
                 }
 
-                if (OrbotHelper.isOrbotInstalled(getApplicationContext())) {
-                    if (sp.getBoolean("torEnabled", false) == false) {
-                        arrayAdapter.add(getString(R.string.enableTor));
-                    } else {
+                if (OrbotHelper.isOrbotInstalled(mApplicationContext)) {
+                    if (sp.getBoolean("torEnabled", false)) {
                         arrayAdapter.add(getString(R.string.disableTor));
+                    } else {
+                        arrayAdapter.add(getString(R.string.enableTor));
                     }
                 }
 
@@ -630,8 +630,8 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void initalizeBookmarks(NavigationView navigationView) {
-        bookmarkUrls = new ArrayList<String>();
-        bookmarkTitles = new ArrayList<String>();
+        bookmarkUrls = new ArrayList<>();
+        bookmarkTitles = new ArrayList<>();
 
         final Menu menu = navigationView.getMenu();
         menu.clear();
@@ -673,7 +673,7 @@ public class MainActivity extends AppCompatActivity {
         String result = sp.getString("bookmarks", "[]");
         try {
             JSONArray bookmarksArray = new JSONArray(result);
-            if (Integer.valueOf(Build.VERSION.SDK_INT) >= 19) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
                 bookmarksArray.remove(bookmarkTitles.indexOf(title));
             } else {
                 final List<JSONObject> objs = asList(bookmarksArray);
@@ -695,7 +695,7 @@ public class MainActivity extends AppCompatActivity {
 
     public void setUpTor() {
         // Tor
-        if (OrbotHelper.isOrbotInstalled(getApplicationContext())) {
+        if (OrbotHelper.isOrbotInstalled(mApplicationContext)) {
             if (sp.getBoolean("torEnabled", false)) {
                 torEnable();
             }
@@ -707,10 +707,10 @@ public class MainActivity extends AppCompatActivity {
         deleteCookies();
         //Make sure that all cookies are really deleted
         if (!CookieManager.getInstance().hasCookies()) {
-            if (!OrbotHelper.isOrbotRunning(getApplicationContext()))
-                OrbotHelper.requestStartTor(getApplicationContext());
+            if (!OrbotHelper.isOrbotRunning(mApplicationContext))
+                OrbotHelper.requestStartTor(mApplicationContext);
             try {
-                WebkitProxy.setProxy(MainActivity.class.getName(), getApplicationContext(), null, "localhost", 8118);
+                WebkitProxy.setProxy(MainActivity.class.getName(), mApplicationContext, null, "localhost", PORT_TOR);
                 SharedPreferences.Editor spEdit = sp.edit();
                 spEdit.putBoolean("torEnabled", true);
                 spEdit.commit();
@@ -725,7 +725,7 @@ public class MainActivity extends AppCompatActivity {
         //Make sure that all cookies are really deleted
         if (!CookieManager.getInstance().hasCookies()) {
             try {
-                WebkitProxy.resetProxy(MainActivity.class.getName(), getApplicationContext());
+                WebkitProxy.resetProxy(MainActivity.class.getName(), mApplicationContext);
                 SharedPreferences.Editor spEdit = sp.edit();
                 spEdit.putBoolean("torEnabled", false);
                 spEdit.commit();
@@ -738,7 +738,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void acceptCookies(boolean accept) {
         CookieManager.getInstance().setAcceptCookie(accept);
-        if (Integer.valueOf(Build.VERSION.SDK_INT) >= 21) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             CookieManager.getInstance().setAcceptThirdPartyCookies(webView, accept);
         }
     }
