@@ -4,6 +4,7 @@ import android.animation.Animator;
 import android.animation.ObjectAnimator;
 import android.animation.PropertyValuesHolder;
 import android.app.Activity;
+import android.app.AlarmManager;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
@@ -718,6 +719,7 @@ public class MainActivity extends AppCompatActivity {
                 e.printStackTrace();
             }
         }
+        webView.reload();
     }
 
     public void torDisable() {
@@ -725,7 +727,7 @@ public class MainActivity extends AppCompatActivity {
         //Make sure that all cookies are really deleted
         if (!CookieManager.getInstance().hasCookies()) {
             try {
-                WebkitProxy.resetProxy(MainActivity.class.getName(), mApplicationContext);
+                WebkitProxy.resetProxy(MainActivity.class.getName(), getApplicationContext());
                 SharedPreferences.Editor spEdit = sp.edit();
                 spEdit.putBoolean("torEnabled", false);
                 spEdit.commit();
@@ -734,6 +736,12 @@ public class MainActivity extends AppCompatActivity {
                 e.printStackTrace();
             }
         }
+
+        Intent mStartActivity = new Intent(this, MainActivity.class);
+        PendingIntent mPendingIntent = PendingIntent.getActivity(this, 12374, mStartActivity, PendingIntent.FLAG_CANCEL_CURRENT);
+        AlarmManager mgr = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
+        mgr.set(AlarmManager.RTC, System.currentTimeMillis() + 100, mPendingIntent);
+        System.exit(0);
     }
 
     private void acceptCookies(boolean accept) {
