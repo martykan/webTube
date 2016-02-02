@@ -44,6 +44,10 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.StringReader;
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
+import java.net.UnknownServiceException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -301,8 +305,34 @@ public class MainActivity extends AppCompatActivity {
                     if (!webView.getTitle().equals("YouTube")) {
                         addBookmark(webView.getTitle().replace(" - YouTube", ""), webView.getUrl());
                     }
+                    else if (webView.getUrl().contains("/results")) {
+                        int startPosition = webView.getUrl().indexOf("q=") + "q=".length();
+                        int endPosition = webView.getUrl().indexOf("&", startPosition);
+                        String title = webView.getUrl().substring(startPosition, endPosition);
+                        try {
+                            title = URLDecoder.decode(title, "UTF-8");
+                        }
+                        catch (UnsupportedEncodingException e) {
+                            title = URLDecoder.decode(title);
+                        }
+                        addBookmark(title + " - Search", webView.getUrl());
+                    }
                 } else if (menuItem.getTitle() == getString(R.string.removePage)) {
-                    removeBookmark(webView.getTitle().replace(" - YouTube", ""));
+                    if (webView.getUrl().contains("/results")) {
+                        int startPosition = webView.getUrl().indexOf("q=") + "q=".length();
+                        int endPosition = webView.getUrl().indexOf("&", startPosition);
+                        String title = webView.getUrl().substring(startPosition, endPosition);
+                        try {
+                            title = URLDecoder.decode(title, "UTF-8");
+                        }
+                        catch (UnsupportedEncodingException e) {
+                            title = URLDecoder.decode(title);
+                        }
+                        removeBookmark(title + " - Search");
+                    }
+                    else {
+                        removeBookmark(webView.getTitle().replace(" - YouTube", ""));
+                    }
                 } else {
                     webView.loadUrl(bookmarkUrls.get(bookmarkTitles.indexOf(menuItem.getTitle())));
                     drawerLayout.closeDrawers();
