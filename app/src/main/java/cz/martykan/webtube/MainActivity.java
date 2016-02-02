@@ -60,6 +60,7 @@ public class MainActivity extends AppCompatActivity {
     private static final int NOTIFICATION_ID = 1337 - 420 * 69;
     private static final String LOG_TAG = "webTube";
     private static final int PORT_TOR = 8118;
+    String time;
     private WebView webView;
     private View appWindow;
     private Window window;
@@ -69,11 +70,6 @@ public class MainActivity extends AppCompatActivity {
     private DrawerLayout drawerLayout;
     private NavigationView navigationView;
     private SharedPreferences sp;
-    private Context mApplicationContext;
-
-    private List<String> bookmarkUrls;
-    private List<String> bookmarkTitles;
-
     // For the snackbar with error message
     View.OnClickListener clickListener = new View.OnClickListener() {
         @Override
@@ -81,6 +77,10 @@ public class MainActivity extends AppCompatActivity {
             webView.loadUrl(sp.getString("homepage", "https://m.youtube.com/"));
         }
     };
+    private Context mApplicationContext;
+    private List<String> bookmarkUrls;
+    private List<String> bookmarkTimelessUrls;
+    private List<String> bookmarkTitles;
 
     public static List<JSONObject> asList(final JSONArray ja) {
         final int len = ja.length();
@@ -303,16 +303,36 @@ public class MainActivity extends AppCompatActivity {
             public boolean onNavigationItemSelected(MenuItem menuItem) {
                 if (menuItem.getTitle() == getString(R.string.addPage)) {
                     if (!webView.getTitle().equals("YouTube")) {
-                        addBookmark(webView.getTitle().replace(" - YouTube", ""), webView.getUrl());
-                    }
-                    else if (webView.getUrl().contains("/results")) {
+                        if (webView.getUrl().contains("/watch") && Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+                            time = "0";
+                            webView.evaluateJavascript("(function() { return document.getElementsByTagName('video')[0].currentTime; })();", new ValueCallback<String>() {
+                                @Override
+                                public void onReceiveValue(String value) {
+                                    Log.i("VALUE", value);
+                                    time = value;
+                                    String url = webView.getUrl();
+                                    try {
+                                        time = time.substring(0, time.indexOf("."));
+                                    } catch (Exception e) {
+                                        e.printStackTrace();
+                                        time = "0";
+                                    }
+                                    if (url.contains("&t=")) {
+                                        url = url.substring(0, url.indexOf("&t="));
+                                    }
+                                    addBookmark(webView.getTitle().replace(" - YouTube", ""), url + "&t=" + time);
+                                }
+                            });
+                        } else {
+                            addBookmark(webView.getTitle().replace(" - YouTube", ""), webView.getUrl());
+                        }
+                    } else if (webView.getUrl().contains("/results")) {
                         int startPosition = webView.getUrl().indexOf("q=") + "q=".length();
                         int endPosition = webView.getUrl().indexOf("&", startPosition);
                         String title = webView.getUrl().substring(startPosition, endPosition);
                         try {
                             title = URLDecoder.decode(title, "UTF-8");
-                        }
-                        catch (UnsupportedEncodingException e) {
+                        } catch (UnsupportedEncodingException e) {
                             title = URLDecoder.decode(title);
                         }
                         addBookmark(title + " - Search", webView.getUrl());
@@ -324,13 +344,11 @@ public class MainActivity extends AppCompatActivity {
                         String title = webView.getUrl().substring(startPosition, endPosition);
                         try {
                             title = URLDecoder.decode(title, "UTF-8");
-                        }
-                        catch (UnsupportedEncodingException e) {
+                        } catch (UnsupportedEncodingException e) {
                             title = URLDecoder.decode(title);
                         }
                         removeBookmark(title + " - Search");
-                    }
-                    else {
+                    } else {
                         removeBookmark(webView.getTitle().replace(" - YouTube", ""));
                     }
                 } else {
@@ -372,8 +390,7 @@ public class MainActivity extends AppCompatActivity {
                     showBackgroundPlaybackNotification();
                 }
             }
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             // When the WebView is not loaded it crashes
             e.printStackTrace();
         }
@@ -662,6 +679,7 @@ public class MainActivity extends AppCompatActivity {
 
     public void initalizeBookmarks(NavigationView navigationView) {
         bookmarkUrls = new ArrayList<>();
+        bookmarkTimelessUrls = new ArrayList<>();
         bookmarkTitles = new ArrayList<>();
 
         final Menu menu = navigationView.getMenu();
@@ -674,15 +692,29 @@ public class MainActivity extends AppCompatActivity {
                 menu.add(bookmark.getString("title")).setIcon(R.drawable.ic_star_grey600_24dp);
                 bookmarkTitles.add(bookmark.getString("title"));
                 bookmarkUrls.add(bookmark.getString("url"));
+                String timeless = bookmark.getString("url");
+                if (timeless.contains("&t=")) {
+                    timeless = timeless.substring(0, timeless.indexOf("&t="));
+                }
+                bookmarkTimelessUrls.add(timeless);
             }
         } catch (JSONException e) {
             e.printStackTrace();
         }
 
-        if (!bookmarkUrls.contains(webView.getUrl())) {
-            menu.add(getString(R.string.addPage)).setIcon(R.drawable.ic_plus_grey600_24dp);
-        } else {
+        String url = "";
+        try {
+            url = webView.getUrl();
+            if (url.contains("&t=")) {
+                url = url.substring(0, url.indexOf("&t="));
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        if (bookmarkUrls.contains(webView.getUrl()) || bookmarkTitles.contains(webView.getTitle().replace("'", "\\'")) || bookmarkTimelessUrls.contains(url)) {
             menu.add(getString(R.string.removePage)).setIcon(R.drawable.ic_close_grey600_24dp);
+        } else {
+            menu.add(getString(R.string.addPage)).setIcon(R.drawable.ic_plus_grey600_24dp);
         }
     }
 
@@ -690,7 +722,7 @@ public class MainActivity extends AppCompatActivity {
         String result = sp.getString("bookmarks", "[]");
         try {
             JSONArray bookmarksArray = new JSONArray(result);
-            bookmarksArray.put(new JSONObject("{'title':'" + title + "','url':'" + url + "'}"));
+            bookmarksArray.put(new JSONObject("{'title':'" + title.replace("'", "\\'") + "','url':'" + url + "'}"));
             SharedPreferences.Editor editor = sp.edit();
             editor.putString("bookmarks", bookmarksArray.toString());
             editor.commit();
