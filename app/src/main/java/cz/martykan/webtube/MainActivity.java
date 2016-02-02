@@ -5,6 +5,7 @@ import android.animation.ObjectAnimator;
 import android.animation.PropertyValuesHolder;
 import android.app.ActionBar;
 import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -329,30 +330,40 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public void onPause() {
         super.onPause();
-        if (webView.getUrl().contains("/watch")) {
-            if (Integer.valueOf(Build.VERSION.SDK_INT) >= 19) {
-                webView.evaluateJavascript("(function() { if(document.getElementsByTagName('video')[0].paused == false) { return 'playing'; } else { return 'stopped'; } })();", new ValueCallback<String>() {
-                    @Override
-                    public void onReceiveValue(String value) {
-                        Log.i("VALUE", value);
-                        if (value.equals("\"playing\"")) {
-                            showBackgroundPlaybackNotification();
+        try {
+            if (webView.getUrl().contains("/watch")) {
+                if (Integer.valueOf(Build.VERSION.SDK_INT) >= 19) {
+                    webView.evaluateJavascript("(function() { if(document.getElementsByTagName('video')[0].paused == false) { return 'playing'; } else { return 'stopped'; } })();", new ValueCallback<String>() {
+                        @Override
+                        public void onReceiveValue(String value) {
+                            Log.i("VALUE", value);
+                            if (value.equals("\"playing\"")) {
+                                showBackgroundPlaybackNotification();
+                            }
                         }
-                    }
-                });
-            } else {
-                showBackgroundPlaybackNotification();
+                    });
+                } else {
+                    showBackgroundPlaybackNotification();
+                }
             }
+        }
+        catch (Exception e) {
+            // When the WebView is not loaded it crashes
+            e.printStackTrace();
         }
     }
 
     public void showBackgroundPlaybackNotification() {
+        Intent showIntent = new Intent(this, MainActivity.class);
+        PendingIntent contentIntent = PendingIntent.getActivity(this, 0, showIntent, 0);
         NotificationCompat.Builder builder = new NotificationCompat.Builder(this)
                 .setSmallIcon(R.drawable.ic_headphones_white_24dp)
                 .setOngoing(true)
                 .setColor(Color.parseColor("#E62118"))
                 .setContentTitle(getString(R.string.app_name))
-                .setContentText(webView.getTitle().replace(" - YouTube", ""));
+                .setContentText(webView.getTitle().replace(" - YouTube", ""))
+                .setContentIntent(contentIntent)
+                .setAutoCancel(true);
         NotificationManager manager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
         manager.notify(1337 - 420 * 69, builder.build());
     }
@@ -360,6 +371,13 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public void onResume() {
         super.onResume();
+        NotificationManager manager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+        manager.cancel(1337 - 420 * 69);
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
         NotificationManager manager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
         manager.cancel(1337 - 420 * 69);
     }
