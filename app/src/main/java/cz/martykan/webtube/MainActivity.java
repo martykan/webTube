@@ -132,9 +132,10 @@ public class MainActivity extends AppCompatActivity {
 
                 View decorView = getWindow().getDecorView();
                 // Hide the status bar.
-                int uiOptions = View.SYSTEM_UI_FLAG_FULLSCREEN;
-                decorView.setSystemUiVisibility(uiOptions);
-
+                decorView.setSystemUiVisibility(View.SYSTEM_UI_FLAG_FULLSCREEN);
+                if(Build.VERSION.SDK_INT == Build.VERSION_CODES.KITKAT) {
+                    decorView.setSystemUiVisibility(View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION | View.SYSTEM_UI_FLAG_FULLSCREEN);
+                }
             }
 
             @Override
@@ -232,7 +233,7 @@ public class MainActivity extends AppCompatActivity {
                     }
 
                     // To adapt the statusbar color
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+                    if (Build.VERSION.SDK_INT > Build.VERSION_CODES.KITKAT) {
                         final View statusBarSpace = findViewById(R.id.statusBarSpace);
                         statusBarSpace.setVisibility(View.VISIBLE);
                         webView.evaluateJavascript("(function() { if(document.getElementById('player').style.visibility == 'hidden' || document.getElementById('player').innerHTML == '') { return 'not_video'; } else { return 'video'; } })();",
