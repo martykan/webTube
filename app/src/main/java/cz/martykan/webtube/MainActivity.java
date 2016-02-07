@@ -709,13 +709,14 @@ public class MainActivity extends AppCompatActivity {
             if (url.contains("&t=")) {
                 url = url.substring(0, url.indexOf("&t="));
             }
+
+            if (bookmarkUrls.contains(webView.getUrl()) || bookmarkTitles.contains(webView.getTitle().replace("'", "\\'")) || bookmarkTimelessUrls.contains(url)) {
+                menu.add(getString(R.string.removePage)).setIcon(R.drawable.ic_close_grey600_24dp);
+            } else {
+                menu.add(getString(R.string.addPage)).setIcon(R.drawable.ic_plus_grey600_24dp);
+            }
         } catch (Exception e) {
             e.printStackTrace();
-        }
-        if (bookmarkUrls.contains(webView.getUrl()) || bookmarkTitles.contains(webView.getTitle().replace("'", "\\'")) || bookmarkTimelessUrls.contains(url)) {
-            menu.add(getString(R.string.removePage)).setIcon(R.drawable.ic_close_grey600_24dp);
-        } else {
-            menu.add(getString(R.string.addPage)).setIcon(R.drawable.ic_plus_grey600_24dp);
         }
     }
 
