@@ -61,7 +61,7 @@ public class MainActivity extends AppCompatActivity {
     private static final String LOG_TAG = "webTube";
     private static final int PORT_TOR = 8118;
     String time;
-    private WebView webView;
+    private static WebView webView;
     private View appWindow;
     private Window window;
     private ProgressBar progress;
@@ -402,6 +402,7 @@ public class MainActivity extends AppCompatActivity {
                 .setSmallIcon(R.drawable.ic_headphones_white_24dp)
                 .setOngoing(true)
                 .setColor(Color.parseColor("#E62118"))
+                .addAction(R.drawable.ic_pause_grey600_24dp, "PAUSE", NotificationCloser.getDismissIntent(NOTIFICATION_ID, MainActivity.this))
                 .setContentTitle(getString(R.string.app_name))
                 .setContentText(webView.getTitle().replace(" - YouTube", ""))
                 .setAutoCancel(true)
@@ -417,6 +418,10 @@ public class MainActivity extends AppCompatActivity {
         manager.notify(NOTIFICATION_ID, builder.build());
     }
 
+    public static void pauseVideo() {
+        webView.loadUrl("javascript:document.getElementsByTagName('video')[0].pause();");
+    }
+
     @Override
     public void onResume() {
         super.onResume();
@@ -428,7 +433,7 @@ public class MainActivity extends AppCompatActivity {
     public void onDestroy() {
         super.onDestroy();
         NotificationManager manager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
-        manager.cancel(1337 - 420 * 69);
+        manager.cancel(NOTIFICATION_ID);
     }
 
     @Override

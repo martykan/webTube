@@ -69,6 +69,7 @@
 
             </intent-filter>
         </activity>
+        <activity android:name=".NotificationCloser" android:taskAffinity="" android:excludeFromRecents="true"></activity>
     </application>
 
 </manifest>
