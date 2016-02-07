@@ -10,6 +10,7 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
@@ -82,6 +83,8 @@ public class MainActivity extends AppCompatActivity {
     private List<String> bookmarkTimelessUrls;
     private List<String> bookmarkTitles;
 
+    MediaButtonIntentReceiver mMediaButtonReceiver;
+
     public static List<JSONObject> asList(final JSONArray ja) {
         final int len = ja.length();
         final ArrayList<JSONObject> result = new ArrayList<>(len);
@@ -114,6 +117,11 @@ public class MainActivity extends AppCompatActivity {
         sp = PreferenceManager.getDefaultSharedPreferences(this);
         drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
         navigationView = (NavigationView) findViewById(R.id.bookmarks_panel);
+
+        mMediaButtonReceiver = new MediaButtonIntentReceiver();
+        IntentFilter mediaFilter = new IntentFilter(Intent.ACTION_MEDIA_BUTTON);
+        mediaFilter.setPriority(IntentFilter.SYSTEM_HIGH_PRIORITY);
+        registerReceiver(mMediaButtonReceiver, mediaFilter);
 
         webView.setWebChromeClient(new WebChromeClient() {
             // Fullscreen playback
@@ -434,6 +442,7 @@ public class MainActivity extends AppCompatActivity {
         super.onDestroy();
         NotificationManager manager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
         manager.cancel(NOTIFICATION_ID);
+        unregisterReceiver(mMediaButtonReceiver);
     }
 
     @Override
