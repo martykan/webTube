@@ -3,7 +3,6 @@ package cz.martykan.webtube;
 import android.animation.Animator;
 import android.animation.ObjectAnimator;
 import android.animation.PropertyValuesHolder;
-import android.app.Activity;
 import android.app.AlarmManager;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
@@ -44,10 +43,8 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.StringReader;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
-import java.net.UnknownServiceException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -133,7 +130,7 @@ public class MainActivity extends AppCompatActivity {
                 View decorView = getWindow().getDecorView();
                 // Hide the status bar.
                 decorView.setSystemUiVisibility(View.SYSTEM_UI_FLAG_FULLSCREEN);
-                if(Build.VERSION.SDK_INT == Build.VERSION_CODES.KITKAT) {
+                if (Build.VERSION.SDK_INT == Build.VERSION_CODES.KITKAT) {
                     decorView.setSystemUiVisibility(View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION | View.SYSTEM_UI_FLAG_FULLSCREEN);
                 }
             }
@@ -391,9 +388,10 @@ public class MainActivity extends AppCompatActivity {
                     showBackgroundPlaybackNotification();
                 }
             }
+            pauseWebView();
         } catch (Exception e) {
             // When the WebView is not loaded it crashes
-            e.printStackTrace();
+            Log.e(LOG_TAG, "Problem accessing WebView.", e);
         }
     }
 
@@ -422,6 +420,7 @@ public class MainActivity extends AppCompatActivity {
         super.onResume();
         NotificationManager manager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
         manager.cancel(NOTIFICATION_ID);
+        resumeWebView();
     }
 
     @Override
@@ -436,6 +435,18 @@ public class MainActivity extends AppCompatActivity {
         super.onNewIntent(intent);
 
         loadUrlFromIntent(intent);
+    }
+
+    private void pauseWebView() {
+        if (webView != null) {
+            webView.onPause();
+        }
+    }
+
+    private void resumeWebView() {
+        if (webView != null) {
+            webView.onResume();
+        }
     }
 
     /**
