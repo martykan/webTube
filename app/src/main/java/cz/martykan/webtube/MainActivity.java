@@ -724,6 +724,10 @@ public class MainActivity extends AppCompatActivity {
                 url = url.substring(0, url.indexOf("&t="));
             }
 
+            if(url.contains("/results")) {
+                url = url.replace("+", "%20");
+            }
+
             if (bookmarkUrls.contains(webView.getUrl()) || bookmarkTitles.contains(webView.getTitle().replace("'", "\\'")) || bookmarkTimelessUrls.contains(url)) {
                 menu.add(getString(R.string.removePage)).setIcon(R.drawable.ic_close_grey600_24dp);
             } else {
