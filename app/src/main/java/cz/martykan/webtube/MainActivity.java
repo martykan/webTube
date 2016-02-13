@@ -575,13 +575,15 @@ public class MainActivity extends AppCompatActivity {
 
                 final ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(
                         MainActivity.this,
-                        android.R.layout.simple_list_item_1);
+                        R.layout.list_item);
                 arrayAdapter.add(getString(R.string.share));
+
+                builder.setTitle(getString(R.string.menu));
 
                 PackageManager pm = getPackageManager();
                 try {
                     pm.getPackageInfo("org.xbmc.kore", PackageManager.GET_ACTIVITIES);
-                    arrayAdapter.add("Cast to Kodi");
+                    arrayAdapter.add(getString(R.string.castToKodi));
                 } catch (PackageManager.NameNotFoundException e) {
 
                 }

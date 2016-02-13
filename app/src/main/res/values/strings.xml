@@ -9,6 +9,7 @@
     <string name="share">Share</string>
     <string name="enableTor">Enable Tor</string>
     <string name="disableTor">Disable Tor</string>
+    <string name="menu">Menu</string>
 
     <string name="torWarning">Using Tor irresponsibly, like signing in to your YouTube account, will deanonymize your traffic and only make it worse.</string>
     <string name="enable">Enable</string>
