@@ -61,8 +61,9 @@ public class MainActivity extends AppCompatActivity {
     private static final int NOTIFICATION_ID = 1337 - 420 * 69;
     private static final String LOG_TAG = "webTube";
     private static final int PORT_TOR = 8118;
-    String time;
     private static WebView webView;
+    String time;
+    MediaButtonIntentReceiver mMediaButtonReceiver;
     private View appWindow;
     private Window window;
     private ProgressBar progress;
@@ -83,8 +84,6 @@ public class MainActivity extends AppCompatActivity {
     private List<String> bookmarkTimelessUrls;
     private List<String> bookmarkTitles;
 
-    MediaButtonIntentReceiver mMediaButtonReceiver;
-
     public static List<JSONObject> asList(final JSONArray ja) {
         final int len = ja.length();
         final ArrayList<JSONObject> result = new ArrayList<>(len);
@@ -95,6 +94,10 @@ public class MainActivity extends AppCompatActivity {
             }
         }
         return result;
+    }
+
+    public static void pauseVideo() {
+        webView.loadUrl("javascript:document.getElementsByTagName('video')[0].pause();");
     }
 
     @Override
@@ -141,7 +144,7 @@ public class MainActivity extends AppCompatActivity {
                 View decorView = getWindow().getDecorView();
                 // Hide the status bar.
                 decorView.setSystemUiVisibility(View.SYSTEM_UI_FLAG_FULLSCREEN);
-                if(Build.VERSION.SDK_INT == Build.VERSION_CODES.KITKAT) {
+                if (Build.VERSION.SDK_INT == Build.VERSION_CODES.KITKAT) {
                     decorView.setSystemUiVisibility(View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION | View.SYSTEM_UI_FLAG_FULLSCREEN);
                 }
             }
@@ -307,6 +310,7 @@ public class MainActivity extends AppCompatActivity {
                 /* Nothing */
             }
         });
+
         navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
             @Override
             public boolean onNavigationItemSelected(MenuItem menuItem) {
@@ -424,10 +428,6 @@ public class MainActivity extends AppCompatActivity {
                                 PendingIntent.FLAG_UPDATE_CURRENT));
         NotificationManager manager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
         manager.notify(NOTIFICATION_ID, builder.build());
-    }
-
-    public static void pauseVideo() {
-        webView.loadUrl("javascript:document.getElementsByTagName('video')[0].pause();");
     }
 
     @Override
@@ -707,6 +707,7 @@ public class MainActivity extends AppCompatActivity {
             for (int i = 0; i < bookmarksArray.length(); i++) {
                 JSONObject bookmark = bookmarksArray.getJSONObject(i);
                 menu.add(bookmark.getString("title")).setIcon(R.drawable.ic_star_grey600_24dp);
+
                 bookmarkTitles.add(bookmark.getString("title"));
                 bookmarkUrls.add(bookmark.getString("url"));
                 String timeless = bookmark.getString("url");
@@ -726,7 +727,7 @@ public class MainActivity extends AppCompatActivity {
                 url = url.substring(0, url.indexOf("&t="));
             }
 
-            if(url.contains("/results")) {
+            if (url.contains("/results")) {
                 url = url.replace("+", "%20");
             }
 
