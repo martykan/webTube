@@ -3,7 +3,6 @@ package cz.martykan.webtube;
 import android.animation.Animator;
 import android.animation.ObjectAnimator;
 import android.animation.PropertyValuesHolder;
-import android.app.Activity;
 import android.app.AlarmManager;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
@@ -45,10 +44,8 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.StringReader;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
-import java.net.UnknownServiceException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -403,9 +400,10 @@ public class MainActivity extends AppCompatActivity {
                     showBackgroundPlaybackNotification();
                 }
             }
+            pauseWebView();
         } catch (Exception e) {
             // When the WebView is not loaded it crashes
-            e.printStackTrace();
+            Log.e(LOG_TAG, "Problem accessing WebView.", e);
         }
     }
 
@@ -435,6 +433,7 @@ public class MainActivity extends AppCompatActivity {
         super.onResume();
         NotificationManager manager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
         manager.cancel(NOTIFICATION_ID);
+        resumeWebView();
     }
 
     @Override
@@ -450,6 +449,18 @@ public class MainActivity extends AppCompatActivity {
         super.onNewIntent(intent);
 
         loadUrlFromIntent(intent);
+    }
+
+    private void pauseWebView() {
+        if (webView != null) {
+            webView.onPause();
+        }
+    }
+
+    private void resumeWebView() {
+        if (webView != null) {
+            webView.onResume();
+        }
     }
 
     /**
