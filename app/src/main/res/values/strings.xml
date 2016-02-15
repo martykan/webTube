@@ -13,7 +13,6 @@
 
     <string name="torWarning">Using Tor irresponsibly, like signing in to your YouTube account, will deanonymize your traffic and only make it worse.</string>
     <string name="enable">Enable</string>
-    <string name="cancel">Cancel</string>
 
     <string name="addPage">Add this page</string>
     <string name="removePage">Remove this page</string>
@@ -24,7 +23,6 @@
 
     <string name="error_no_video">No Video!</string>
     <string name="error_select_video_and_retry">Please select a video and try again.</string>
-    <string name="ok">OK</string>
 
     <string name="share_with">Share with…</string>
 
