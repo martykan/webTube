@@ -1,9 +1,54 @@
-*.iml
+*~
+
+# Gradle
+.gradle/
 .gradle
-/local.properties
-/.idea/workspace.xml
-/.idea/libraries
+build/
+/*/build/
+
+# User-specific configurations
+local.properties
+
+.idea
+.idea/libraries/
+.idea/runConfigurations.xml
+.idea/gradle.xml
+.idea/workspace.xml
+.idea/tasks.xml
+.idea/.name
+.idea/compiler.xml
+.idea/copyright/profiles_settings.xml
+.idea/encodings.xml
+.idea/misc.xml
+.idea/modules.xml
+.idea/scopes/scope_settings.xml
+.idea/vcs.xml
+*.iml
+
+# OS-specific files
 .DS_Store
-/build
-/captures
-.directory
+.DS_Store?
+._*
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Built application files
+*.apk
+*.ap_
+
+# Files for the Dalvik VM
+*.dex
+
+# Java class files
+*.class
+
+# Generated files
+bin/
+gen/
+
+local.properties
+proguard/
+*.log
+.navigation/
+
