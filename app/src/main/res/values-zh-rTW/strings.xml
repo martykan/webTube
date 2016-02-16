@@ -10,7 +10,6 @@
 
     <string name="torWarning">不正確的使用Tor, 像是登入YouTube帳號, 會讓您失去透過Tor匿名的功能.</string>
     <string name="enable">啟用</string>
-    <string name="cancel">取消</string>
 
     <string name="addPage">加入本頁</string>
     <string name="removePage">移除本頁</string>
@@ -21,7 +20,6 @@
 
     <string name="error_no_video">沒有影片!</string>
     <string name="error_select_video_and_retry">請選擇影片並重試.</string>
-    <string name="ok">確定</string>
 
     <string name="share_with">分享…</string>
 

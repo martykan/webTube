@@ -3,7 +3,6 @@ package cz.martykan.webtube;
 import android.animation.Animator;
 import android.animation.ObjectAnimator;
 import android.animation.PropertyValuesHolder;
-import android.app.Activity;
 import android.app.AlarmManager;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
@@ -45,10 +44,8 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.StringReader;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
-import java.net.UnknownServiceException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -57,15 +54,16 @@ import info.guardianproject.netcipher.web.WebkitProxy;
 
 
 public class MainActivity extends AppCompatActivity {
+    public static final String PREF_TOR_ENABLED = "torEnabled";
+    private static final int PORT_TOR = 8118;
 
     private static final int NOTIFICATION_ID = 1337 - 420 * 69;
     private static final String LOG_TAG = "webTube";
-    private static final int PORT_TOR = 8118;
+
     private static WebView webView;
     String time;
     MediaButtonIntentReceiver mMediaButtonReceiver;
     private View appWindow;
-    private Window window;
     private ProgressBar progress;
     private View mCustomView;
     private FrameLayout customViewContainer;
@@ -113,7 +111,6 @@ public class MainActivity extends AppCompatActivity {
 
         webView = (WebView) findViewById(R.id.webView);
         appWindow = findViewById(R.id.appWindow);
-        window = this.getWindow();
         progress = (ProgressBar) findViewById(R.id.progress);
         customViewContainer = (FrameLayout) findViewById(R.id.customViewContainer);
 
@@ -144,7 +141,7 @@ public class MainActivity extends AppCompatActivity {
                 View decorView = getWindow().getDecorView();
                 // Hide the status bar.
                 decorView.setSystemUiVisibility(View.SYSTEM_UI_FLAG_FULLSCREEN);
-                if (Build.VERSION.SDK_INT == Build.VERSION_CODES.KITKAT) {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
                     decorView.setSystemUiVisibility(View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION | View.SYSTEM_UI_FLAG_FULLSCREEN);
                 }
             }
@@ -177,11 +174,7 @@ public class MainActivity extends AppCompatActivity {
 
                 // For more advnaced loading status
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-                    if (percentage == 100) {
-                        progress.setIndeterminate(true);
-                    } else {
-                        progress.setIndeterminate(false);
-                    }
+                    progress.setIndeterminate(percentage == 100);
                     webView.evaluateJavascript("(function() { return document.getElementsByClassName('_mks')[0] != null; })();",
                             new ValueCallback<String>() {
                                 @Override
@@ -211,9 +204,8 @@ public class MainActivity extends AppCompatActivity {
                     view.getContext().startActivity(
                             new Intent(Intent.ACTION_VIEW, Uri.parse(url)));
                     return true;
-                } else {
-                    return false;
                 }
+                return false;
             }
 
             public void onLoadResource(WebView view, String url) {
@@ -250,14 +242,10 @@ public class MainActivity extends AppCompatActivity {
                         webView.evaluateJavascript("(function() { if(document.getElementById('player').style.visibility == 'hidden' || document.getElementById('player').innerHTML == '') { return 'not_video'; } else { return 'video'; } })();",
                                 new ValueCallback<String>() {
                                     @Override
-                                    public void onReceiveValue(String value) {
-                                        if (!value.contains("not_video")) {
-                                            statusBarSpace.setBackgroundColor(ContextCompat.getColor(mApplicationContext, R.color.colorWatch));
-                                            findViewById(R.id.relativeLayout).setBackgroundColor(ContextCompat.getColor(mApplicationContext, R.color.colorWatch));
-                                        } else {
-                                            statusBarSpace.setBackgroundColor(ContextCompat.getColor(mApplicationContext, R.color.colorPrimary));
-                                            findViewById(R.id.relativeLayout).setBackgroundColor(ContextCompat.getColor(mApplicationContext, R.color.colorPrimary));
-                                        }
+                                    public void onReceiveValue(final String value) {
+                                        int colorId = value.contains("not_video") ? R.color.colorPrimary : R.color.colorWatch;
+                                        statusBarSpace.setBackgroundColor(ContextCompat.getColor(mApplicationContext, colorId));
+                                        findViewById(R.id.relativeLayout).setBackgroundColor(ContextCompat.getColor(mApplicationContext, colorId));
                                     }
                                 });
                     }
@@ -313,8 +301,9 @@ public class MainActivity extends AppCompatActivity {
 
         navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
             @Override
-            public boolean onNavigationItemSelected(MenuItem menuItem) {
-                if (menuItem.getTitle() == getString(R.string.addPage)) {
+            public boolean onNavigationItemSelected(final MenuItem menuItem) {
+                final String menuItemTitle = menuItem.getTitle().toString();
+                if (menuItemTitle.equals(getString(R.string.addPage))) {
                     if (!webView.getTitle().equals("YouTube")) {
                         if (webView.getUrl().contains("/watch") && Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
                             time = "0";
@@ -350,7 +339,7 @@ public class MainActivity extends AppCompatActivity {
                         }
                         addBookmark(title + " - Search", webView.getUrl());
                     }
-                } else if (menuItem.getTitle() == getString(R.string.removePage)) {
+                } else if (menuItemTitle.equals(getString(R.string.removePage))) {
                     if (webView.getUrl().contains("/results")) {
                         int startPosition = webView.getUrl().indexOf("q=") + "q=".length();
                         int endPosition = webView.getUrl().indexOf("&", startPosition);
@@ -365,7 +354,7 @@ public class MainActivity extends AppCompatActivity {
                         removeBookmark(webView.getTitle().replace(" - YouTube", ""));
                     }
                 } else {
-                    webView.loadUrl(bookmarkUrls.get(bookmarkTitles.indexOf(menuItem.getTitle())));
+                    webView.loadUrl(bookmarkUrls.get(bookmarkTitles.indexOf(menuItemTitle)));
                     drawerLayout.closeDrawers();
                 }
                 return true;
@@ -589,7 +578,7 @@ public class MainActivity extends AppCompatActivity {
                 }
 
                 if (OrbotHelper.isOrbotInstalled(mApplicationContext)) {
-                    if (sp.getBoolean("torEnabled", false)) {
+                    if (sp.getBoolean(PREF_TOR_ENABLED, false)) {
                         arrayAdapter.add(getString(R.string.disableTor));
                     } else {
                         arrayAdapter.add(getString(R.string.enableTor));
@@ -597,7 +586,7 @@ public class MainActivity extends AppCompatActivity {
                 }
 
                 builder.setNegativeButton(
-                        getText(R.string.cancel),
+                        getText(android.R.string.cancel),
                         new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
@@ -643,7 +632,7 @@ public class MainActivity extends AppCompatActivity {
                                         }
                                     }
                                 } else if (arrayAdapter.getItem(which).equals(getString(R.string.enableTor)) || arrayAdapter.getItem(which).equals(getString(R.string.disableTor))) {
-                                    if (sp.getBoolean("torEnabled", false)) {
+                                    if (sp.getBoolean(PREF_TOR_ENABLED, false)) {
                                         torDisable();
                                     } else {
                                         AlertDialog alert = new AlertDialog.Builder(MainActivity.this).create();
@@ -656,7 +645,7 @@ public class MainActivity extends AppCompatActivity {
                                                         torEnable();
                                                     }
                                                 });
-                                        alert.setButton(DialogInterface.BUTTON_NEGATIVE, getString(R.string.cancel),
+                                        alert.setButton(DialogInterface.BUTTON_NEGATIVE, getString(android.R.string.cancel),
                                                 new DialogInterface.OnClickListener() {
                                                     public void onClick(DialogInterface dialog, int buttonId) {
 
@@ -685,7 +674,7 @@ public class MainActivity extends AppCompatActivity {
         dialog.setTitle(getString(R.string.error_no_video));
         dialog.setMessage(getString(R.string.error_select_video_and_retry));
         dialog.setCancelable(true);
-        dialog.setButton(DialogInterface.BUTTON_POSITIVE, getString(R.string.ok),
+        dialog.setButton(DialogInterface.BUTTON_POSITIVE, getString(android.R.string.ok).toUpperCase(),
                 new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int buttonId) {
                         dialog.dismiss();
@@ -782,7 +771,7 @@ public class MainActivity extends AppCompatActivity {
     public void setUpTor() {
         // Tor
         if (OrbotHelper.isOrbotInstalled(mApplicationContext)) {
-            if (sp.getBoolean("torEnabled", false)) {
+            if (sp.getBoolean(PREF_TOR_ENABLED, false)) {
                 torEnable();
             }
         }
@@ -798,7 +787,7 @@ public class MainActivity extends AppCompatActivity {
             try {
                 WebkitProxy.setProxy(MainActivity.class.getName(), mApplicationContext, null, "localhost", PORT_TOR);
                 SharedPreferences.Editor spEdit = sp.edit();
-                spEdit.putBoolean("torEnabled", true);
+                spEdit.putBoolean(PREF_TOR_ENABLED, true);
                 spEdit.commit();
             } catch (Exception e) {
                 e.printStackTrace();
@@ -814,7 +803,7 @@ public class MainActivity extends AppCompatActivity {
             try {
                 WebkitProxy.resetProxy(MainActivity.class.getName(), getApplicationContext());
                 SharedPreferences.Editor spEdit = sp.edit();
-                spEdit.putBoolean("torEnabled", false);
+                spEdit.putBoolean(PREF_TOR_ENABLED, false);
                 spEdit.commit();
                 acceptCookies(true);
             } catch (Exception e) {
