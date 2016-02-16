@@ -20,7 +20,6 @@ import android.preference.PreferenceManager;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.NotificationCompat;
-import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
@@ -28,14 +27,11 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.Window;
 import android.view.WindowManager;
 import android.webkit.CookieManager;
 import android.webkit.ValueCallback;
-import android.webkit.WebChromeClient;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
-import android.webkit.WebViewClient;
 import android.widget.ArrayAdapter;
 import android.widget.FrameLayout;
 import android.widget.ProgressBar;
@@ -54,9 +50,6 @@ import info.guardianproject.netcipher.web.WebkitProxy;
 
 
 public class MainActivity extends AppCompatActivity {
-    public static final String PREF_TOR_ENABLED = "torEnabled";
-    private static final int PORT_TOR = 8118;
-
     private static final int NOTIFICATION_ID = 1337 - 420 * 69;
     private static final String LOG_TAG = "webTube";
 
@@ -65,7 +58,6 @@ public class MainActivity extends AppCompatActivity {
     MediaButtonIntentReceiver mMediaButtonReceiver;
     private View appWindow;
     private ProgressBar progress;
-    private View mCustomView;
     private FrameLayout customViewContainer;
     private DrawerLayout drawerLayout;
     private NavigationView navigationView;
@@ -78,21 +70,10 @@ public class MainActivity extends AppCompatActivity {
         }
     };
     private Context mApplicationContext;
-    private List<String> bookmarkUrls;
-    private List<String> bookmarkTimelessUrls;
-    private List<String> bookmarkTitles;
 
-    public static List<JSONObject> asList(final JSONArray ja) {
-        final int len = ja.length();
-        final ArrayList<JSONObject> result = new ArrayList<>(len);
-        for (int i = 0; i < len; i++) {
-            final JSONObject obj = ja.optJSONObject(i);
-            if (obj != null) {
-                result.add(obj);
-            }
-        }
-        return result;
-    }
+    TorHelper torHelper;
+    BookmarkManager bookmarkManager;
+    MenuHelper menuHelper;
 
     public static void pauseVideo() {
         webView.loadUrl("javascript:document.getElementsByTagName('video')[0].pause();");
@@ -100,8 +81,8 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        // Gotta go fast!
         mApplicationContext = getApplicationContext();
+        // Set HW acceleration flags
         getWindow().setFlags(
                 WindowManager.LayoutParams.FLAG_HARDWARE_ACCELERATED,
                 WindowManager.LayoutParams.FLAG_HARDWARE_ACCELERATED);
@@ -118,174 +99,33 @@ public class MainActivity extends AppCompatActivity {
         drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
         navigationView = (NavigationView) findViewById(R.id.bookmarks_panel);
 
+        // Recieve pause event from headset
         mMediaButtonReceiver = new MediaButtonIntentReceiver();
         IntentFilter mediaFilter = new IntentFilter(Intent.ACTION_MEDIA_BUTTON);
         mediaFilter.setPriority(IntentFilter.SYSTEM_HIGH_PRIORITY);
         registerReceiver(mMediaButtonReceiver, mediaFilter);
 
-        webView.setWebChromeClient(new WebChromeClient() {
-            // Fullscreen playback
-            @Override
-            public void onShowCustomView(View view, CustomViewCallback callback) {
-                if (mCustomView != null) {
-                    callback.onCustomViewHidden();
-                    return;
-                }
-                mCustomView = view;
-                webView.loadUrl("javascript:(function() { document.body.style.overflowX = 'hidden'; })();");
-                webView.loadUrl("javascript:(function() { window.scrollTo(0, 0); })();");
-                drawerLayout.setVisibility(View.GONE);
-                customViewContainer.setVisibility(View.VISIBLE);
-                customViewContainer.addView(view);
+        // Set up WebChromeClient
+        webView.setWebChromeClient(new WebTubeChromeClient(webView, progress, customViewContainer, drawerLayout, getWindow().getDecorView()));
 
-                View decorView = getWindow().getDecorView();
-                // Hide the status bar.
-                decorView.setSystemUiVisibility(View.SYSTEM_UI_FLAG_FULLSCREEN);
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-                    decorView.setSystemUiVisibility(View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION | View.SYSTEM_UI_FLAG_FULLSCREEN);
-                }
-            }
+        // Set up WebViewClient
+        webView.setWebViewClient(new WebTubeWebViewClient(this, appWindow, clickListener, findViewById(R.id.statusBarSpace), findViewById(R.id.relativeLayout)));
 
-            @Override
-            public void onHideCustomView() {
-                super.onHideCustomView();
-                if (mCustomView == null)
-                    return;
-
-                webView.loadUrl("javascript:(function() { window.scrollTo(0, 0); })();");
-                webView.loadUrl("javascript:(function() { document.body.style.overflowX = 'scroll'; })();");
-                drawerLayout.setVisibility(View.VISIBLE);
-                customViewContainer.setVisibility(View.GONE);
-
-                mCustomView.setVisibility(View.GONE);
-                customViewContainer.removeView(mCustomView);
-                mCustomView = null;
-
-                View decorView = getWindow().getDecorView();
-                // Show the status bar.
-                int uiOptions = View.SYSTEM_UI_FLAG_VISIBLE;
-                decorView.setSystemUiVisibility(uiOptions);
-            }
-
-            // Progressbar
-            public void onProgressChanged(WebView view, int percentage) {
-                progress.setVisibility(View.VISIBLE);
-                progress.setProgress(percentage);
-
-                // For more advnaced loading status
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-                    progress.setIndeterminate(percentage == 100);
-                    webView.evaluateJavascript("(function() { return document.getElementsByClassName('_mks')[0] != null; })();",
-                            new ValueCallback<String>() {
-                                @Override
-                                public void onReceiveValue(String value) {
-                                    if (value.equals("false")) {
-                                        progress.setVisibility(View.INVISIBLE);
-                                    } else {
-                                        onProgressChanged(webView, 100);
-                                    }
-                                }
-                            });
-                } else {
-                    if (percentage == 100) {
-                        progress.setVisibility(View.GONE);
-                    }
-                }
-            }
-
-
-        });
-
-        webView.setWebViewClient(new WebViewClient() {
-            // Open links in a browser window (except for sign-in dialogs and YouTube URLs)
-            @Override
-            public boolean shouldOverrideUrlLoading(WebView view, String url) {
-                if (url != null && url.startsWith("http") && !url.contains("accounts.google.") && !url.contains("youtube.")) {
-                    view.getContext().startActivity(
-                            new Intent(Intent.ACTION_VIEW, Uri.parse(url)));
-                    return true;
-                }
-                return false;
-            }
-
-            public void onLoadResource(WebView view, String url) {
-                if (!url.contains(".jpg") && !url.contains(".ico") && !url.contains(".css") && !url.contains(".js") && !url.contains("complete/search")) {
-                    // Remove all iframes (to prevent WebRTC exploits)
-                    webView.loadUrl("javascript:(function() {" +
-                            "var iframes = document.getElementsByTagName('iframe');" +
-                            "for(i=0;i<=iframes.length;i++){" +
-                            "if(typeof iframes[0] != 'undefined')" +
-                            "iframes[0].outerHTML = '';" +
-                            "}})()");
-
-                    // Gets rid of orange outlines
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-
-                        String css = "*, *:focus { " +
-                                " outline: none !important; -webkit-tap-highlight-color: rgba(255,255,255,0) !important; -webkit-tap-highlight-color: transparent !important; }" +
-                                " ._mfd { padding-top: 2px !important; } ";
-                        webView.loadUrl("javascript:(function() {" +
-                                "if(document.getElementById('webTubeStyle') == null){" +
-                                "var parent = document.getElementsByTagName('head').item(0);" +
-                                "var style = document.createElement('style');" +
-                                "style.id = 'webTubeStyle';" +
-                                "style.type = 'text/css';" +
-                                "style.innerHTML = '" + css + "';" +
-                                "parent.appendChild(style);" +
-                                "}})()");
-                    }
-
-                    // To adapt the statusbar color
-                    if (Build.VERSION.SDK_INT > Build.VERSION_CODES.KITKAT) {
-                        final View statusBarSpace = findViewById(R.id.statusBarSpace);
-                        statusBarSpace.setVisibility(View.VISIBLE);
-                        webView.evaluateJavascript("(function() { if(document.getElementById('player').style.visibility == 'hidden' || document.getElementById('player').innerHTML == '') { return 'not_video'; } else { return 'video'; } })();",
-                                new ValueCallback<String>() {
-                                    @Override
-                                    public void onReceiveValue(final String value) {
-                                        int colorId = value.contains("not_video") ? R.color.colorPrimary : R.color.colorWatch;
-                                        statusBarSpace.setBackgroundColor(ContextCompat.getColor(mApplicationContext, colorId));
-                                        findViewById(R.id.relativeLayout).setBackgroundColor(ContextCompat.getColor(mApplicationContext, colorId));
-                                    }
-                                });
-                    }
-                }
-            }
-
-            @Override
-            public void onPageFinished(WebView view, String url) {
-                super.onPageFinished(view, url);
-                initalizeBookmarks(navigationView);
-            }
-
-            // Deal with error messages
-            public void onReceivedError(WebView view, int errorCode, String description, String failingUrl) {
-                if (description.contains("NETWORK_CHANGED")) {
-                    webView.loadUrl(sp.getString("homepage", "https://m.youtube.com/"));
-                } else if (description.contains("NAME_NOT_RESOLVED")) {
-                    Snackbar.make(appWindow, getString(R.string.errorNoInternet), Snackbar.LENGTH_INDEFINITE).setAction(getString(R.string.refresh), clickListener).show();
-                } else if (description.contains("PROXY_CONNECTION_FAILED")) {
-                    Snackbar.make(appWindow, getString(R.string.errorTor), Snackbar.LENGTH_INDEFINITE).setAction(getString(R.string.refresh), clickListener).show();
-                } else {
-                    Snackbar.make(appWindow, getString(R.string.error) + " " + description, Snackbar.LENGTH_INDEFINITE).setAction(getString(R.string.refresh), clickListener).show();
-                }
-            }
-        });
-
-        // Set up webView
+        // Set up WebView
         setUpWebview();
 
         // Initialize bookmarks panel
-        initalizeBookmarks(navigationView);
+        bookmarkManager = new BookmarkManager(this, webView);
+        bookmarkManager.initalizeBookmarks(navigationView);
         drawerLayout.setDrawerListener(new DrawerLayout.DrawerListener() {
             @Override
             public void onDrawerSlide(View drawerView, float slideOffset) {
-                initalizeBookmarks(navigationView);
+                bookmarkManager.initalizeBookmarks(navigationView);
             }
 
             @Override
             public void onDrawerOpened(View drawerView) {
-                initalizeBookmarks(navigationView);
+                bookmarkManager.initalizeBookmarks(navigationView);
             }
 
             @Override
@@ -299,73 +139,15 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
-            @Override
-            public boolean onNavigationItemSelected(final MenuItem menuItem) {
-                final String menuItemTitle = menuItem.getTitle().toString();
-                if (menuItemTitle.equals(getString(R.string.addPage))) {
-                    if (!webView.getTitle().equals("YouTube")) {
-                        if (webView.getUrl().contains("/watch") && Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-                            time = "0";
-                            webView.evaluateJavascript("(function() { return document.getElementsByTagName('video')[0].currentTime; })();", new ValueCallback<String>() {
-                                @Override
-                                public void onReceiveValue(String value) {
-                                    Log.i("VALUE", value);
-                                    time = value;
-                                    String url = webView.getUrl();
-                                    try {
-                                        time = time.substring(0, time.indexOf("."));
-                                    } catch (Exception e) {
-                                        e.printStackTrace();
-                                        time = "0";
-                                    }
-                                    if (url.contains("&t=")) {
-                                        url = url.substring(0, url.indexOf("&t="));
-                                    }
-                                    addBookmark(webView.getTitle().replace(" - YouTube", ""), url + "&t=" + time);
-                                }
-                            });
-                        } else {
-                            addBookmark(webView.getTitle().replace(" - YouTube", ""), webView.getUrl());
-                        }
-                    } else if (webView.getUrl().contains("/results")) {
-                        int startPosition = webView.getUrl().indexOf("q=") + "q=".length();
-                        int endPosition = webView.getUrl().indexOf("&", startPosition);
-                        String title = webView.getUrl().substring(startPosition, endPosition);
-                        try {
-                            title = URLDecoder.decode(title, "UTF-8");
-                        } catch (UnsupportedEncodingException e) {
-                            title = URLDecoder.decode(title);
-                        }
-                        addBookmark(title + " - Search", webView.getUrl());
-                    }
-                } else if (menuItemTitle.equals(getString(R.string.removePage))) {
-                    if (webView.getUrl().contains("/results")) {
-                        int startPosition = webView.getUrl().indexOf("q=") + "q=".length();
-                        int endPosition = webView.getUrl().indexOf("&", startPosition);
-                        String title = webView.getUrl().substring(startPosition, endPosition);
-                        try {
-                            title = URLDecoder.decode(title, "UTF-8");
-                        } catch (UnsupportedEncodingException e) {
-                            title = URLDecoder.decode(title);
-                        }
-                        removeBookmark(title + " - Search");
-                    } else {
-                        removeBookmark(webView.getTitle().replace(" - YouTube", ""));
-                    }
-                } else {
-                    webView.loadUrl(bookmarkUrls.get(bookmarkTitles.indexOf(menuItemTitle)));
-                    drawerLayout.closeDrawers();
-                }
-                return true;
-            }
-        });
+        navigationView.setNavigationItemSelectedListener(new BookmarkSelectedListener(this, webView, bookmarkManager, drawerLayout));
 
-        // Floating action buttons
-        setUpMenu();
+        // Menu helper
+        menuHelper = new MenuHelper(this, webView, torHelper, appWindow);
+        menuHelper.setUpMenu(findViewById(R.id.browserButton), findViewById(R.id.refreshButton), findViewById(R.id.homeButton), findViewById(R.id.bookmarksButton), findViewById(R.id.moreButton), drawerLayout, findViewById(R.id.bookmarks_panel));
 
         // Tor
-        setUpTor();
+        torHelper = new TorHelper(mApplicationContext, webView);
+        torHelper.setUpTor();
 
         // Load the page
         if (!loadUrlFromIntent(getIntent())) {
@@ -441,12 +223,6 @@ public class MainActivity extends AppCompatActivity {
         loadUrlFromIntent(intent);
     }
 
-    /**
-     * Tries to load URL in WebView if Intent contains required data. Also see Intent filter in manifest.
-     *
-     * @param intent may contain required data
-     * @return {@code true} if data is loaded from URL or URL is already loaded, else {@code false}
-     */
     private boolean loadUrlFromIntent(final Intent intent) {
 
         if (Intent.ACTION_VIEW.equals(intent.getAction()) && intent.getData() != null) {
@@ -462,28 +238,9 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    public void homepageTutorial() {
-        if (!sp.getBoolean("homepageLearned", false)) {
-            AlertDialog dialog = new AlertDialog.Builder(MainActivity.this).create();
-            dialog.setTitle(getString(R.string.home));
-            dialog.setMessage(getString(R.string.homePageHelp));
-            dialog.setCancelable(false);
-            dialog.setButton(DialogInterface.BUTTON_POSITIVE, "OK",
-                    new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog, int buttonId) {
-                            dialog.dismiss();
-                            SharedPreferences.Editor editor = sp.edit();
-                            editor.putBoolean("homepageLearned", true);
-                            editor.commit();
-                        }
-                    });
-            dialog.show();
-        }
-    }
-
     public void setUpWebview() {
         // To save login info
-        acceptCookies(true);
+        CookieHelper.acceptCookies(webView, true);
 
         // Some settings
         WebSettings webSettings = webView.getSettings();
@@ -509,327 +266,6 @@ public class MainActivity extends AppCompatActivity {
         webView.setScrollbarFadingEnabled(true);
         webView.setNetworkAvailable(true);
 
-    }
-
-    public void setUpMenu() {
-        findViewById(R.id.browserButton).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                iconAnim(findViewById(R.id.browserButton));
-                startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(webView.getUrl())));
-            }
-        });
-
-        findViewById(R.id.refreshButton).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                iconAnim(findViewById(R.id.refreshButton));
-                webView.reload();
-            }
-        });
-
-        findViewById(R.id.homeButton).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                iconAnim(findViewById(R.id.homeButton));
-                homepageTutorial();
-                webView.loadUrl(sp.getString("homepage", "https://m.youtube.com/"));
-            }
-        });
-
-        findViewById(R.id.homeButton).setOnLongClickListener(new View.OnLongClickListener() {
-            @Override
-            public boolean onLongClick(View v) {
-                iconAnim(findViewById(R.id.homeButton));
-                Snackbar.make(appWindow, getString(R.string.homePageSet), Snackbar.LENGTH_LONG).show();
-                SharedPreferences.Editor editor = sp.edit();
-                editor.putString("homepage", webView.getUrl());
-                editor.commit();
-                return true;
-            }
-        });
-
-
-        findViewById(R.id.bookmarksButton).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                drawerLayout.openDrawer(findViewById(R.id.bookmarks_panel));
-            }
-        });
-
-        findViewById(R.id.moreButton).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
-
-                final ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(
-                        MainActivity.this,
-                        R.layout.list_item);
-                arrayAdapter.add(getString(R.string.share));
-
-                builder.setTitle(getString(R.string.menu));
-
-                PackageManager pm = getPackageManager();
-                try {
-                    pm.getPackageInfo("org.xbmc.kore", PackageManager.GET_ACTIVITIES);
-                    arrayAdapter.add(getString(R.string.castToKodi));
-                } catch (PackageManager.NameNotFoundException e) {
-
-                }
-
-                if (OrbotHelper.isOrbotInstalled(mApplicationContext)) {
-                    if (sp.getBoolean(PREF_TOR_ENABLED, false)) {
-                        arrayAdapter.add(getString(R.string.disableTor));
-                    } else {
-                        arrayAdapter.add(getString(R.string.enableTor));
-                    }
-                }
-
-                builder.setNegativeButton(
-                        getText(android.R.string.cancel),
-                        new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                dialog.dismiss();
-                            }
-                        });
-
-                builder.setAdapter(
-                        arrayAdapter,
-                        new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                if (arrayAdapter.getItem(which).equals(getString(R.string.share))) {
-                                    if (!webView.getUrl().contains("/watch")) {
-                                        show_noVideo_dialog();
-                                    } else {
-                                        Intent shareIntent = new Intent();
-                                        shareIntent.setAction(Intent.ACTION_SEND);
-                                        shareIntent.putExtra(Intent.EXTRA_TEXT, webView.getUrl());
-                                        shareIntent.setType("text/plain");
-                                        startActivity(Intent.createChooser(shareIntent, getResources().getText(R.string.share_with)));
-                                    }
-                                } else if (arrayAdapter.getItem(which).equals(getString(R.string.castToKodi))) {
-                                    if (!webView.getUrl().contains("/watch")) {
-                                        show_noVideo_dialog();
-                                    } else {
-                                        if (!webView.getUrl().contains("/watch")) {
-                                            show_noVideo_dialog();
-                                        } else {
-                                            try {
-                                                /*The following code is based on an extract from the source code of NewPipe (v0.7.2) (https://github.com/theScrabi/NewPipe),
-                                                which is also licenced under version 3 of the GNU General Public License as published by the Free Software Foundation.
-                                                The copyright owner of the original code is Christian Schabesberger <chris.schabesberger@mailbox.org>.
-                                                All modifications were made on 06-Jan-2016*/
-                                                Intent intent = new Intent(Intent.ACTION_VIEW);
-                                                intent.setPackage("org.xbmc.kore");
-                                                intent.setData(Uri.parse(webView.getUrl().replace("https", "http")));
-                                                MainActivity.this.startActivity(intent);
-                                                /*End of the modified NewPipe code extract*/
-                                            } catch (Exception e) {
-                                                e.printStackTrace();
-                                            }
-                                        }
-                                    }
-                                } else if (arrayAdapter.getItem(which).equals(getString(R.string.enableTor)) || arrayAdapter.getItem(which).equals(getString(R.string.disableTor))) {
-                                    if (sp.getBoolean(PREF_TOR_ENABLED, false)) {
-                                        torDisable();
-                                    } else {
-                                        AlertDialog alert = new AlertDialog.Builder(MainActivity.this).create();
-                                        alert.setTitle(getString(R.string.enableTor) + "?");
-                                        alert.setMessage(getString(R.string.torWarning));
-                                        alert.setCancelable(false);
-                                        alert.setButton(DialogInterface.BUTTON_POSITIVE, getString(R.string.enable),
-                                                new DialogInterface.OnClickListener() {
-                                                    public void onClick(DialogInterface dialog, int buttonId) {
-                                                        torEnable();
-                                                    }
-                                                });
-                                        alert.setButton(DialogInterface.BUTTON_NEGATIVE, getString(android.R.string.cancel),
-                                                new DialogInterface.OnClickListener() {
-                                                    public void onClick(DialogInterface dialog, int buttonId) {
-
-                                                    }
-                                                });
-                                        alert.show();
-                                    }
-                                }
-                            }
-                        });
-                builder.show();
-            }
-        });
-    }
-
-    private void iconAnim(View icon) {
-        Animator iconAnim = ObjectAnimator.ofPropertyValuesHolder(
-                icon,
-                PropertyValuesHolder.ofFloat("scaleX", 1f, 1.5f, 1f),
-                PropertyValuesHolder.ofFloat("scaleY", 1f, 1.5f, 1f));
-        iconAnim.start();
-    }
-
-    private void show_noVideo_dialog() {
-        AlertDialog dialog = new AlertDialog.Builder(MainActivity.this).create();
-        dialog.setTitle(getString(R.string.error_no_video));
-        dialog.setMessage(getString(R.string.error_select_video_and_retry));
-        dialog.setCancelable(true);
-        dialog.setButton(DialogInterface.BUTTON_POSITIVE, getString(android.R.string.ok).toUpperCase(),
-                new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int buttonId) {
-                        dialog.dismiss();
-                    }
-                });
-        dialog.show();
-    }
-
-    public void initalizeBookmarks(NavigationView navigationView) {
-        bookmarkUrls = new ArrayList<>();
-        bookmarkTimelessUrls = new ArrayList<>();
-        bookmarkTitles = new ArrayList<>();
-
-        final Menu menu = navigationView.getMenu();
-        menu.clear();
-        String result = sp.getString("bookmarks", "[]");
-        try {
-            JSONArray bookmarksArray = new JSONArray(result);
-            for (int i = 0; i < bookmarksArray.length(); i++) {
-                JSONObject bookmark = bookmarksArray.getJSONObject(i);
-                menu.add(bookmark.getString("title")).setIcon(R.drawable.ic_star_grey600_24dp);
-
-                bookmarkTitles.add(bookmark.getString("title"));
-                bookmarkUrls.add(bookmark.getString("url"));
-                String timeless = bookmark.getString("url");
-                if (timeless.contains("&t=")) {
-                    timeless = timeless.substring(0, timeless.indexOf("&t="));
-                }
-                bookmarkTimelessUrls.add(timeless);
-            }
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-
-        String url = "";
-        try {
-            url = webView.getUrl();
-            if (url.contains("&t=")) {
-                url = url.substring(0, url.indexOf("&t="));
-            }
-
-            if (url.contains("/results")) {
-                url = url.replace("+", "%20");
-            }
-
-            if (bookmarkUrls.contains(webView.getUrl()) || bookmarkTitles.contains(webView.getTitle().replace("'", "\\'")) || bookmarkTimelessUrls.contains(url)) {
-                menu.add(getString(R.string.removePage)).setIcon(R.drawable.ic_close_grey600_24dp);
-            } else {
-                menu.add(getString(R.string.addPage)).setIcon(R.drawable.ic_plus_grey600_24dp);
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
-    public void addBookmark(String title, String url) {
-        String result = sp.getString("bookmarks", "[]");
-        try {
-            JSONArray bookmarksArray = new JSONArray(result);
-            bookmarksArray.put(new JSONObject("{'title':'" + title.replace("'", "\\'") + "','url':'" + url + "'}"));
-            SharedPreferences.Editor editor = sp.edit();
-            editor.putString("bookmarks", bookmarksArray.toString());
-            editor.commit();
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-        initalizeBookmarks(navigationView);
-    }
-
-    public void removeBookmark(String title) {
-        String result = sp.getString("bookmarks", "[]");
-        try {
-            JSONArray bookmarksArray = new JSONArray(result);
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-                bookmarksArray.remove(bookmarkTitles.indexOf(title));
-            } else {
-                final List<JSONObject> objs = asList(bookmarksArray);
-                objs.remove(bookmarkTitles.indexOf(title));
-                final JSONArray out = new JSONArray();
-                for (final JSONObject obj : objs) {
-                    out.put(obj);
-                }
-                bookmarksArray = out;
-            }
-            SharedPreferences.Editor editor = sp.edit();
-            editor.putString("bookmarks", bookmarksArray.toString());
-            editor.commit();
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-        initalizeBookmarks(navigationView);
-    }
-
-    public void setUpTor() {
-        // Tor
-        if (OrbotHelper.isOrbotInstalled(mApplicationContext)) {
-            if (sp.getBoolean(PREF_TOR_ENABLED, false)) {
-                torEnable();
-            }
-        }
-    }
-
-    public void torEnable() {
-        acceptCookies(false);
-        deleteCookies();
-        //Make sure that all cookies are really deleted
-        if (!CookieManager.getInstance().hasCookies()) {
-            if (!OrbotHelper.isOrbotRunning(mApplicationContext))
-                OrbotHelper.requestStartTor(mApplicationContext);
-            try {
-                WebkitProxy.setProxy(MainActivity.class.getName(), mApplicationContext, null, "localhost", PORT_TOR);
-                SharedPreferences.Editor spEdit = sp.edit();
-                spEdit.putBoolean(PREF_TOR_ENABLED, true);
-                spEdit.commit();
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
-        webView.reload();
-    }
-
-    public void torDisable() {
-        deleteCookies();
-        //Make sure that all cookies are really deleted
-        if (!CookieManager.getInstance().hasCookies()) {
-            try {
-                WebkitProxy.resetProxy(MainActivity.class.getName(), getApplicationContext());
-                SharedPreferences.Editor spEdit = sp.edit();
-                spEdit.putBoolean(PREF_TOR_ENABLED, false);
-                spEdit.commit();
-                acceptCookies(true);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
-
-        Intent mStartActivity = new Intent(this, MainActivity.class);
-        PendingIntent mPendingIntent = PendingIntent.getActivity(this, 12374, mStartActivity, PendingIntent.FLAG_CANCEL_CURRENT);
-        AlarmManager mgr = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
-        mgr.set(AlarmManager.RTC, System.currentTimeMillis() + 100, mPendingIntent);
-        System.exit(0);
-    }
-
-    private void acceptCookies(boolean accept) {
-        CookieManager.getInstance().setAcceptCookie(accept);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            CookieManager.getInstance().setAcceptThirdPartyCookies(webView, accept);
-        }
-    }
-
-    public void deleteCookies() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            CookieManager.getInstance().removeAllCookies(null);
-        }
-        CookieManager.getInstance().removeAllCookie();
     }
 
     @Override
