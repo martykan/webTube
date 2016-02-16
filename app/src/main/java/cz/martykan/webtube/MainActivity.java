@@ -141,13 +141,13 @@ public class MainActivity extends AppCompatActivity {
 
         navigationView.setNavigationItemSelectedListener(new BookmarkSelectedListener(this, webView, bookmarkManager, drawerLayout));
 
-        // Menu helper
-        menuHelper = new MenuHelper(this, webView, torHelper, appWindow);
-        menuHelper.setUpMenu(findViewById(R.id.browserButton), findViewById(R.id.refreshButton), findViewById(R.id.homeButton), findViewById(R.id.bookmarksButton), findViewById(R.id.moreButton), drawerLayout, findViewById(R.id.bookmarks_panel));
-
         // Tor
         torHelper = new TorHelper(mApplicationContext, webView);
         torHelper.setUpTor();
+
+        // Menu helper
+        menuHelper = new MenuHelper(this, webView, torHelper, appWindow);
+        menuHelper.setUpMenu(findViewById(R.id.browserButton), findViewById(R.id.refreshButton), findViewById(R.id.homeButton), findViewById(R.id.bookmarksButton), findViewById(R.id.moreButton), drawerLayout, findViewById(R.id.bookmarks_panel));
 
         // Load the page
         if (!loadUrlFromIntent(getIntent())) {
