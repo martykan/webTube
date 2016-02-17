@@ -28,4 +28,5 @@
 
     <string name="homePageSet">Your homepage has been set to this page.</string>
     <string name="homePageHelp">If you want to change the homepage, just hold the Home button and it changes to the current opened page.</string>
+    <string name="set_as_home">Set as home</string>
 </resources>

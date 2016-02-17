@@ -23,6 +23,7 @@ import android.support.v4.app.NotificationCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.ActionMenuView;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -109,7 +110,7 @@ public class MainActivity extends AppCompatActivity {
         webView.setWebChromeClient(new WebTubeChromeClient(webView, progress, customViewContainer, drawerLayout, getWindow().getDecorView()));
 
         // Set up WebViewClient
-        webView.setWebViewClient(new WebTubeWebViewClient(this, appWindow, clickListener, findViewById(R.id.statusBarSpace), findViewById(R.id.relativeLayout)));
+        webView.setWebViewClient(new WebTubeWebViewClient(this, appWindow, clickListener, findViewById(R.id.statusBarSpace), findViewById(R.id.menu_main)));
 
         // Set up WebView
         setUpWebview();
@@ -146,8 +147,12 @@ public class MainActivity extends AppCompatActivity {
         torHelper.setUpTor();
 
         // Menu helper
+        ActionMenuView actionMenu = (ActionMenuView) findViewById(R.id.menu_main);
         menuHelper = new MenuHelper(this, webView, torHelper, appWindow);
-        menuHelper.setUpMenu(findViewById(R.id.browserButton), findViewById(R.id.refreshButton), findViewById(R.id.homeButton), findViewById(R.id.bookmarksButton), findViewById(R.id.moreButton), drawerLayout, findViewById(R.id.bookmarks_panel));
+        getMenuInflater().inflate(R.menu.menu_main, actionMenu.getMenu());
+        menuHelper.setUpMenu(actionMenu, drawerLayout, findViewById(R.id.bookmarks_panel));
+        actionMenu.setOverflowIcon(getResources().getDrawable(R.drawable.ic_dots_vertical_white_24dp));
+
 
         // Load the page
         if (!loadUrlFromIntent(getIntent())) {
