@@ -45,104 +45,21 @@
                     android:id="@+id/relativeLayout2"
                     android:background="@color/colorPrimary">
 
-                    <RelativeLayout
-                        android:id="@+id/relativeLayout"
+                    <android.support.v7.widget.ActionMenuView
+                        android:id="@+id/menu_main"
                         android:layout_width="match_parent"
-                        android:layout_height="56dp"
+                        android:layout_height="?attr/actionBarSize"
                         android:layout_alignParentBottom="true"
-                        android:layout_alignParentLeft="true"
-                        android:layout_alignParentStart="true"
-                        android:background="@color/colorPrimary">
+                        android:layout_gravity="center"
+                        android:background="?attr/colorPrimary" />
 
-                        <LinearLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_centerVertical="true"
-                            android:orientation="horizontal">
-
-                            <RelativeLayout
-                                android:id="@+id/homeButton"
-                                android:layout_width="0dp"
-                                android:layout_height="match_parent"
-                                android:layout_weight="1">
-
-                                <ImageView
-                                    android:id="@+id/ic_home"
-                                    android:layout_width="36dp"
-                                    android:layout_height="36dp"
-                                    android:layout_centerHorizontal="true"
-                                    android:scaleType="center"
-                                    android:src="@drawable/ic_home_white_24dp" />
-                            </RelativeLayout>
-
-                            <RelativeLayout
-                                android:id="@+id/refreshButton"
-                                android:layout_width="0dp"
-                                android:layout_height="match_parent"
-                                android:layout_weight="1">
-
-                                <ImageView
-                                    android:id="@+id/ic_refresh"
-                                    android:layout_width="36dp"
-                                    android:layout_height="36dp"
-                                    android:layout_centerHorizontal="true"
-                                    android:scaleType="center"
-                                    android:src="@drawable/ic_refresh_white_24dp" />
-                            </RelativeLayout>
-
-                            <RelativeLayout
-                                android:id="@+id/browserButton"
-                                android:layout_width="0dp"
-                                android:layout_height="match_parent"
-                                android:layout_weight="1">
-
-                                <ImageView
-                                    android:id="@+id/ic_browser"
-                                    android:layout_width="36dp"
-                                    android:layout_height="36dp"
-                                    android:layout_centerHorizontal="true"
-                                    android:scaleType="center"
-                                    android:src="@drawable/ic_web_white_24dp" />
-                            </RelativeLayout>
-
-                            <RelativeLayout
-                                android:id="@+id/bookmarksButton"
-                                android:layout_width="0dp"
-                                android:layout_height="match_parent"
-                                android:layout_weight="1">
-
-                                <ImageView
-                                    android:id="@+id/ic_bookmarks"
-                                    android:layout_width="36dp"
-                                    android:layout_height="36dp"
-                                    android:layout_centerHorizontal="true"
-                                    android:scaleType="center"
-                                    android:src="@drawable/ic_star_white_24dp" />
-                            </RelativeLayout>
-
-                            <RelativeLayout
-                                android:id="@+id/moreButton"
-                                android:layout_width="0dp"
-                                android:layout_height="match_parent"
-                                android:layout_weight="1">
-
-                                <ImageView
-                                    android:id="@+id/ic_more"
-                                    android:layout_width="36dp"
-                                    android:layout_height="36dp"
-                                    android:layout_centerHorizontal="true"
-                                    android:scaleType="center"
-                                    android:src="@drawable/ic_dots_vertical_white_24dp" />
-                            </RelativeLayout>
-                        </LinearLayout>
-                    </RelativeLayout>
 
                     <ProgressBar
                         android:id="@+id/progress"
                         style="?android:attr/progressBarStyleHorizontal"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_below="@+id/relativeLayout"
+                        android:layout_below="@+id/menu_main"
                         android:layout_alignParentLeft="true"
                         android:layout_alignParentStart="true"
                         android:progress="50"

@@ -21,4 +21,5 @@
     <string name="share">Teilen</string>
     <string name="share_with">Teilen mit…</string>
     <string name="menu">Menü</string>
+    <string name="set_as_home">Als Startseite festlegen</string>
 </resources>
