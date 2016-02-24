@@ -7,37 +7,37 @@
     <item
         android:id="@+id/action_home"
         android:title="@string/home"
-        android:icon="@drawable/ic_home_white_48dp"
+        android:icon="@drawable/ic_home_white_24dp"
         app:showAsAction="always" />
 
     <item
         android:id="@+id/action_refresh"
         android:title="@string/refresh"
-        android:icon="@drawable/ic_refresh_white_48dp"
+        android:icon="@drawable/ic_refresh_white_24dp"
         app:showAsAction="always" />
 
     <item
         android:id="@+id/action_share"
         android:title="@string/share"
-        android:icon="@drawable/ic_share_white_48dp"
+        android:icon="@drawable/ic_share_variant_white_24dp"
         app:showAsAction="always" />
 
     <item
         android:id="@+id/action_bookmarks"
         android:title="@string/bookmarks"
-        android:icon="@drawable/ic_star_white_48dp"
+        android:icon="@drawable/ic_star_white_24dp"
         app:showAsAction="always" />
 
     <item
         android:id="@+id/action_web"
         android:title="@string/openInBrowser"
-        android:icon="@drawable/ic_web_white_48dp"
+        android:icon="@drawable/ic_web_grey600_24dp"
         app:showAsAction="never" />
 
     <item
         android:id="@+id/action_set_as_home"
         android:title="@string/set_as_home"
-        android:icon="@drawable/ic_web_white_48dp"
+        android:icon="@drawable/ic_home_grey600_24dp"
         app:showAsAction="never" />
 
     <item
@@ -46,7 +46,7 @@
         android:checked="false"
         android:title="@string/enableTor"
         android:enabled="false"
-        android:icon="@drawable/ic_vector_polygon_white_48dp"
+        android:icon="@drawable/ic_vector_polygon_grey600_24dp"
         app:showAsAction="never" />
 
     <item
