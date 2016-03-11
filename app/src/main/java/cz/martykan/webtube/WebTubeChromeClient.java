@@ -3,6 +3,7 @@ package cz.martykan.webtube;
 import android.content.Context;
 import android.os.Build;
 import android.support.v4.widget.DrawerLayout;
+import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.webkit.ValueCallback;
@@ -76,11 +77,11 @@ public class WebTubeChromeClient extends WebChromeClient {
         // For more advnaced loading status
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
             progress.setIndeterminate(percentage == 100);
-            view.evaluateJavascript("(function() { return document.getElementsByClassName('_mks')[0] != null; })();",
+            view.evaluateJavascript("(function() { return document.readyState == \"complete\"; })();",
                     new ValueCallback<String>() {
                         @Override
                         public void onReceiveValue(String value) {
-                            if (value.equals("false")) {
+                            if (value.equals("true")) {
                                 progress.setVisibility(View.INVISIBLE);
                             } else {
                                 onProgressChanged(webView, 100);
