@@ -205,6 +205,14 @@ public class MenuHelper implements ActionMenuView.OnMenuItemClickListener {
                     Log.d("WebTube",e.getMessage());
                 }
                 return  true;
+
+            case R.id.action_download:
+                if (!webView.getUrl().contains("/watch")) {
+                    show_noVideo_dialog();
+                } else {
+                    new Downloader(context).download(webView.getUrl());
+                }
+                return true;
         }
 
         return false;

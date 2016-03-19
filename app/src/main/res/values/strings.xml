@@ -30,4 +30,5 @@
     <string name="homePageHelp">If you want to change the homepage, just hold the Home button and it changes to the current opened page.</string>
     <string name="set_as_home">Set as home</string>
     <string name="playInBackground">Play in background</string>
+    <string name="download">Download</string>
 </resources>

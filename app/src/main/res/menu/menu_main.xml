@@ -54,6 +54,11 @@
         app:showAsAction="never" />
 
     <item
+        android:id="@+id/action_download"
+        android:title="@string/download"
+        app:showAsAction="never" />
+
+    <item
         android:id="@+id/action_cast_to_kodi"
         android:enabled="false"
         android:title="@string/castToKodi"
