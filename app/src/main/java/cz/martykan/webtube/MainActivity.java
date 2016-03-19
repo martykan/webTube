@@ -51,7 +51,6 @@ import info.guardianproject.netcipher.web.WebkitProxy;
 
 
 public class MainActivity extends AppCompatActivity {
-    private static final int NOTIFICATION_ID = 1337 - 420 * 69;
     private static final String LOG_TAG = "webTube";
 
     private static WebView webView;
@@ -73,6 +72,7 @@ public class MainActivity extends AppCompatActivity {
     private Context mApplicationContext;
 
     TorHelper torHelper;
+    BackgroundPlayHelper backgroundPlayHelper;
     BookmarkManager bookmarkManager;
     MenuHelper menuHelper;
 
@@ -146,9 +146,11 @@ public class MainActivity extends AppCompatActivity {
         torHelper = new TorHelper(mApplicationContext, webView);
         torHelper.setUpTor();
 
+        backgroundPlayHelper = new BackgroundPlayHelper(mApplicationContext, webView);
+
         // Menu helper
         ActionMenuView actionMenu = (ActionMenuView) findViewById(R.id.menu_main);
-        menuHelper = new MenuHelper(this, webView, torHelper, appWindow);
+        menuHelper = new MenuHelper(this, webView, torHelper, backgroundPlayHelper, appWindow);
         getMenuInflater().inflate(R.menu.menu_main, actionMenu.getMenu());
         menuHelper.setUpMenu(actionMenu, drawerLayout, findViewById(R.id.bookmarks_panel));
         actionMenu.setOverflowIcon(getResources().getDrawable(R.drawable.ic_dots_vertical_white_24dp));
@@ -163,68 +165,30 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public void onPause() {
         super.onPause();
-        try {
-            if (webView.getUrl().contains("/watch")) {
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-                    webView.evaluateJavascript("(function() { if(document.getElementsByTagName('video')[0].paused == false) { return 'playing'; } else { return 'stopped'; } })();", new ValueCallback<String>() {
-                        @Override
-                        public void onReceiveValue(String value) {
-                            Log.i("VALUE", value);
-                            if (value.equals("\"playing\"")) {
-                                showBackgroundPlaybackNotification();
-                            }
-                        }
-                    });
-                } else {
-                    showBackgroundPlaybackNotification();
-                }
-            }
-        } catch (Exception e) {
-            // When the WebView is not loaded it crashes
-            e.printStackTrace();
+        if(backgroundPlayHelper.isBackgroundPlayEnabled()) {
+            backgroundPlayHelper.playInBackground();
         }
-    }
-
-    public void showBackgroundPlaybackNotification() {
-        NotificationCompat.Builder builder = new NotificationCompat.Builder(this)
-                .setSmallIcon(R.drawable.ic_headphones_white_24dp)
-                .setOngoing(true)
-                .setColor(Color.parseColor("#E62118"))
-                .addAction(R.drawable.ic_pause_grey600_24dp, "PAUSE", NotificationCloser.getDismissIntent(NOTIFICATION_ID, MainActivity.this))
-                .setContentTitle(getString(R.string.app_name))
-                .setContentText(webView.getTitle().replace(" - YouTube", ""))
-                .setAutoCancel(true)
-                .setContentIntent(
-                        PendingIntent.getActivity(
-                                mApplicationContext,
-                                NOTIFICATION_ID,
-                                new Intent(mApplicationContext, MainActivity.class)
-                                        .setAction(Intent.ACTION_VIEW)
-                                        .setData(Uri.parse(webView.getUrl())),
-                                PendingIntent.FLAG_UPDATE_CURRENT));
-        NotificationManager manager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
-        manager.notify(NOTIFICATION_ID, builder.build());
+        else {
+            pauseVideo();
+        }
     }
 
     @Override
     public void onResume() {
         super.onResume();
-        NotificationManager manager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
-        manager.cancel(NOTIFICATION_ID);
+        backgroundPlayHelper.hideBackgroundPlaybackNotification();
     }
 
     @Override
     public void onDestroy() {
         super.onDestroy();
-        NotificationManager manager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
-        manager.cancel(NOTIFICATION_ID);
+        backgroundPlayHelper.hideBackgroundPlaybackNotification();
         unregisterReceiver(mMediaButtonReceiver);
     }
 
     @Override
     protected void onNewIntent(final Intent intent) {
         super.onNewIntent(intent);
-
         loadUrlFromIntent(intent);
     }
 

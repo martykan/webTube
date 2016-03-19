@@ -31,13 +31,18 @@
     <item
         android:id="@+id/action_web"
         android:title="@string/openInBrowser"
-        android:icon="@drawable/ic_web_grey600_24dp"
         app:showAsAction="never" />
 
     <item
         android:id="@+id/action_set_as_home"
         android:title="@string/set_as_home"
-        android:icon="@drawable/ic_home_grey600_24dp"
+        app:showAsAction="never" />
+
+    <item
+        android:id="@+id/action_backgroundPlay"
+        android:checkable="true"
+        android:checked="true"
+        android:title="@string/playInBackground"
         app:showAsAction="never" />
 
     <item
@@ -46,14 +51,12 @@
         android:checked="false"
         android:title="@string/enableTor"
         android:enabled="false"
-        android:icon="@drawable/ic_vector_polygon_grey600_24dp"
         app:showAsAction="never" />
 
     <item
         android:id="@+id/action_cast_to_kodi"
         android:enabled="false"
         android:title="@string/castToKodi"
-        android:icon="@drawable/ic_cast_grey_24px"
         app:showAsAction="never" />
 
 </menu>

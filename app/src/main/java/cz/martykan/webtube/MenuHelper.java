@@ -27,16 +27,18 @@ public class MenuHelper implements ActionMenuView.OnMenuItemClickListener {
     Context context;
     WebView webView;
     TorHelper torHelper;
+    BackgroundPlayHelper backgroundPlayHelper;
     View appWindow;
     ActionMenuView actionMenu;
     SharedPreferences sp;
     DrawerLayout drawerLayout;
     View bookmarksPanel;
 
-    public MenuHelper(Context context, WebView webView, TorHelper torHelper, View appWindow) {
+    public MenuHelper(Context context, WebView webView, TorHelper torHelper, BackgroundPlayHelper backgroundPlayHelper, View appWindow) {
         this.context = context;
         this.webView = webView;
         this.torHelper = torHelper;
+        this.backgroundPlayHelper = backgroundPlayHelper;
         this.appWindow = appWindow;
 
         sp = PreferenceManager.getDefaultSharedPreferences(context);
@@ -72,6 +74,8 @@ public class MenuHelper implements ActionMenuView.OnMenuItemClickListener {
         // Enable special buttons
         Menu menu = actionMenu.getMenu();
         PackageManager pm = context.getPackageManager();
+
+        menu.findItem(R.id.action_backgroundPlay).setChecked(sp.getBoolean(BackgroundPlayHelper.PREF_BACKGROUND_PLAY_ENABLED, true));
 
         // Tor button
         if (OrbotHelper.isOrbotInstalled(context.getApplicationContext())) {
@@ -160,6 +164,16 @@ public class MenuHelper implements ActionMenuView.OnMenuItemClickListener {
                     }
                 }
                 return true;
+
+            case R.id.action_backgroundPlay:
+                if (sp.getBoolean(BackgroundPlayHelper.PREF_BACKGROUND_PLAY_ENABLED, true)) {
+                    backgroundPlayHelper.disableBackgroundPlay();
+                    item.setChecked(false);
+                } else {
+                    backgroundPlayHelper.enableBackgroundPlay();
+                    item.setChecked(true);
+                }
+                return  true;
 
             case R.id.action_tor:
                 try {
