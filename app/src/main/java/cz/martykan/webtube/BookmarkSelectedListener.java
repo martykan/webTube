@@ -77,7 +77,12 @@ public class BookmarkSelectedListener implements NavigationView.OnNavigationItem
                 }
                 bookmarkManager.removeBookmark(title + " - Search");
             } else {
-                bookmarkManager.removeBookmark(webView.getTitle().replace(" - YouTube", ""));
+                try {
+                    bookmarkManager.removeBookmark(webView.getTitle().replace(" - YouTube", ""));
+                }
+                catch (Exception e) {
+                    // To prevent crashing when page is not loaded
+                }
             }
         } else {
             webView.loadUrl(bookmarkManager.getUrl(menuItemTitle));
