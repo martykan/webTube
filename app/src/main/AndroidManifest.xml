@@ -69,7 +69,12 @@
 
             </intent-filter>
         </activity>
-        <activity android:name=".NotificationCloser" android:taskAffinity="" android:excludeFromRecents="true"></activity>
+        <activity android:name=".NotificationCloser" android:taskAffinity="" android:excludeFromRecents="true" android:theme="@android:style/Theme.Translucent.NoTitleBar"></activity>
+        <receiver android:name=".MediaButtonIntentReceiver">
+            <intent-filter android:priority="100000">
+                <action android:name="android.intent.action.MEDIA_BUTTON" />
+            </intent-filter>
+        </receiver>
     </application>
 
 </manifest>

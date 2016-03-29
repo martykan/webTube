@@ -6,6 +6,7 @@ import android.animation.PropertyValuesHolder;
 import android.app.AlarmManager;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -13,6 +14,7 @@ import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
+import android.media.AudioManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -55,7 +57,6 @@ public class MainActivity extends AppCompatActivity {
 
     private static WebView webView;
     String time;
-    MediaButtonIntentReceiver mMediaButtonReceiver;
     private View appWindow;
     private ProgressBar progress;
     private FrameLayout customViewContainer;
@@ -76,8 +77,30 @@ public class MainActivity extends AppCompatActivity {
     BookmarkManager bookmarkManager;
     MenuHelper menuHelper;
 
+    public static void toggleVideo() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+            webView.evaluateJavascript("(function() { return document.getElementsByTagName('video')[0].paused; })();",
+                    new ValueCallback<String>() {
+                        @Override
+                        public void onReceiveValue(String value) {
+                            if (value.equals("true")) {
+                                playVideo();
+                            } else {
+                                pauseVideo();
+                            }
+                        }
+                    });
+        } else {
+            pauseVideo();
+        }
+    }
+
     public static void pauseVideo() {
         webView.loadUrl("javascript:document.getElementsByTagName('video')[0].pause();");
+    }
+
+    public static void playVideo() {
+        webView.loadUrl("javascript:document.getElementsByTagName('video')[0].play();");
     }
 
     @Override
@@ -100,11 +123,9 @@ public class MainActivity extends AppCompatActivity {
         drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
         navigationView = (NavigationView) findViewById(R.id.bookmarks_panel);
 
-        // Recieve pause event from headset
-        mMediaButtonReceiver = new MediaButtonIntentReceiver();
-        IntentFilter mediaFilter = new IntentFilter(Intent.ACTION_MEDIA_BUTTON);
-        mediaFilter.setPriority(IntentFilter.SYSTEM_HIGH_PRIORITY);
-        registerReceiver(mMediaButtonReceiver, mediaFilter);
+        // Set up media button reciever
+        ((AudioManager) getSystemService(AUDIO_SERVICE)).registerMediaButtonEventReceiver(
+                new ComponentName(getPackageName(), MediaButtonIntentReceiver.class.getName()));
 
         // Set up WebChromeClient
         webView.setWebChromeClient(new WebTubeChromeClient(webView, progress, customViewContainer, drawerLayout, getWindow().getDecorView()));
@@ -183,7 +204,8 @@ public class MainActivity extends AppCompatActivity {
     public void onDestroy() {
         super.onDestroy();
         backgroundPlayHelper.hideBackgroundPlaybackNotification();
-        unregisterReceiver(mMediaButtonReceiver);
+        ((AudioManager) getSystemService(AUDIO_SERVICE)).unregisterMediaButtonEventReceiver(
+                new ComponentName(getPackageName(), MediaButtonIntentReceiver.class.getName()));
     }
 
     @Override
