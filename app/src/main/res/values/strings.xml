@@ -6,6 +6,7 @@
     <string name="bookmarks">Bookmarks</string>
     <string name="openInBrowser">Open in browser</string>
     <string name="castToKodi">Cast to Kodi</string>
+    <string name="acceptCookies">Accept cookies</string>
     <string name="share">Share</string>
     <string name="enableTor">Enable Tor</string>
     <string name="disableTor">Disable Tor</string>

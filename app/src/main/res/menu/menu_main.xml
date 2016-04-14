@@ -59,6 +59,13 @@
         app:showAsAction="never" />
 
     <item
+        android:id="@+id/action_accept_cookies"
+        android:title="@string/acceptCookies"
+        android:checkable="true"
+        android:checked="true"
+        app:showAsAction="never" />
+
+    <item
         android:id="@+id/action_cast_to_kodi"
         android:enabled="false"
         android:title="@string/castToKodi"
