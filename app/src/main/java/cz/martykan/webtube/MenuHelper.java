@@ -34,6 +34,8 @@ public class MenuHelper implements ActionMenuView.OnMenuItemClickListener {
     DrawerLayout drawerLayout;
     View bookmarksPanel;
 
+    public static final String PREF_COOKIES_ENABLED = "cookiesEnabled";
+
     public MenuHelper(Context context, WebView webView, TorHelper torHelper, BackgroundPlayHelper backgroundPlayHelper, View appWindow) {
         this.context = context;
         this.webView = webView;
@@ -76,6 +78,7 @@ public class MenuHelper implements ActionMenuView.OnMenuItemClickListener {
         PackageManager pm = context.getPackageManager();
 
         menu.findItem(R.id.action_backgroundPlay).setChecked(sp.getBoolean(BackgroundPlayHelper.PREF_BACKGROUND_PLAY_ENABLED, true));
+        menu.findItem(R.id.action_accept_cookies).setChecked(sp.getBoolean(PREF_COOKIES_ENABLED,true));
 
         // Tor button
         if (OrbotHelper.isOrbotInstalled(context.getApplicationContext())) {
@@ -176,10 +179,12 @@ public class MenuHelper implements ActionMenuView.OnMenuItemClickListener {
                 return  true;
 
             case R.id.action_tor:
+                final MenuItem cookieItem = actionMenu.getMenu().findItem(R.id.action_accept_cookies);
                 try {
                     if (sp.getBoolean(TorHelper.PREF_TOR_ENABLED, false)) {
                         torHelper.torDisable();
                         item.setChecked(false);
+                        cookieItem.setChecked(sp.getBoolean(PREF_COOKIES_ENABLED, true)).setEnabled(true);
                     } else {
                         AlertDialog alert = new AlertDialog.Builder(context).create();
                         alert.setTitle(context.getString(R.string.enableTor) + "?");
@@ -190,6 +195,7 @@ public class MenuHelper implements ActionMenuView.OnMenuItemClickListener {
                                     public void onClick(DialogInterface dialog, int buttonId) {
                                         torHelper.torEnable();
                                         item.setChecked(true);
+                                        cookieItem.setChecked(false).setEnabled(false);
                                     }
                                 });
                         alert.setButton(DialogInterface.BUTTON_NEGATIVE, context.getString(android.R.string.cancel),
@@ -213,6 +219,20 @@ public class MenuHelper implements ActionMenuView.OnMenuItemClickListener {
                     new Downloader(context).download(webView.getUrl());
                 }
                 return true;
+
+            case R.id.action_accept_cookies:
+                if (sp.getBoolean(PREF_COOKIES_ENABLED, true)) {
+                    CookieHelper.acceptCookies(webView,false);
+                    CookieHelper.deleteCookies();
+                    item.setChecked(false);
+                } else {
+                    CookieHelper.acceptCookies(webView,true);
+                    item.setChecked(true);
+                }
+                SharedPreferences.Editor spEdit = sp.edit();
+                spEdit.putBoolean(PREF_COOKIES_ENABLED,!sp.getBoolean(PREF_COOKIES_ENABLED,true));
+                spEdit.commit();
+                return  true;
         }
 
         return false;

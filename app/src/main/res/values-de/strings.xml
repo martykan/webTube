@@ -22,4 +22,5 @@
     <string name="share_with">Teilen mit…</string>
     <string name="menu">Menü</string>
     <string name="set_as_home">Als Startseite festlegen</string>
+    <string name="acceptCookies">Cookies akzeptieren</string>
 </resources>
