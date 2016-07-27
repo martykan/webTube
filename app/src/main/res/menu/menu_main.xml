@@ -70,5 +70,11 @@
         android:enabled="false"
         android:title="@string/castToKodi"
         app:showAsAction="never" />
+    <item
+        android:id="@+id/action_landscape_fullscreen"
+        android:checkable="true"
+        android:checked="false"
+        android:title="@string/landscapeFullscreen"
+        app:showAsAction="never" />
 
 </menu>

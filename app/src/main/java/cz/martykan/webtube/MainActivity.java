@@ -128,7 +128,7 @@ public class MainActivity extends AppCompatActivity {
                 new ComponentName(getPackageName(), MediaButtonIntentReceiver.class.getName()));
 
         // Set up WebChromeClient
-        webView.setWebChromeClient(new WebTubeChromeClient(webView, progress, customViewContainer, drawerLayout, getWindow().getDecorView()));
+        webView.setWebChromeClient(new WebTubeChromeClient(this, webView, progress, customViewContainer, drawerLayout, getWindow().getDecorView()));
 
         // Set up WebViewClient
         webView.setWebViewClient(new WebTubeWebViewClient(this, appWindow, clickListener, findViewById(R.id.statusBarSpace), findViewById(R.id.menu_main)));
