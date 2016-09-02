@@ -1,0 +1,33 @@
+<resources>
+    <string name="home">Начало</string>
+    <string name="refresh">Презареди</string>
+    <string name="bookmarks">Отметки</string>
+    <string name="openInBrowser">Отвори в браузър</string>
+    <string name="castToKodi">Предаване чрез Kodi</string>
+    <string name="acceptCookies">Позволяване на бисквитки</string>
+    <string name="share">Сподели</string>
+    <string name="enableTor">Включи Tor</string>
+    <string name="disableTor">Изключи Tor</string>
+    <string name="menu">Меню</string>
+
+    <string name="torWarning">Безрасъдното използване на Tor, като влизането във Вашия YouTube профил, ще деанонимизира Вашия трафик и само ще влоши нещата.</string>
+    <string name="enable">Включи</string>
+
+    <string name="addPage">Добави тази страница</string>
+    <string name="removePage">Премахни тази страница</string>
+
+    <string name="errorNoInternet">О не! Не сте свързани с Интернет.</string>
+    <string name="errorTor">О не! Tor не работи правилно.</string>
+    <string name="error">О не!</string>
+
+    <string name="error_no_video">Няма видео!</string>
+    <string name="error_select_video_and_retry">Изберете видео и опитайте отново.</string>
+
+    <string name="share_with">Сподели с…</string>
+
+    <string name="homePageSet">Текущата страница беше успешно зададена като начална.</string>
+    <string name="homePageHelp">Ако искате да промените началната страница, задръжте бутона Начало и отворената страница ще стане начална.</string>
+    <string name="set_as_home">Задай като начало</string>
+    <string name="playInBackground">Пусни във фонов режим</string>
+    <string name="download">Изтегли</string>
+</resources>
