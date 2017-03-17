@@ -35,6 +35,7 @@ public class MenuHelper implements ActionMenuView.OnMenuItemClickListener {
     View bookmarksPanel;
 
     public static final String PREF_COOKIES_ENABLED = "cookiesEnabled";
+    public static final String PREF_LANDSCAPE_FULLSCREEN = "landscapeFullscreenEnabled";
 
     public MenuHelper(Context context, WebView webView, TorHelper torHelper, BackgroundPlayHelper backgroundPlayHelper, View appWindow) {
         this.context = context;
@@ -79,6 +80,7 @@ public class MenuHelper implements ActionMenuView.OnMenuItemClickListener {
 
         menu.findItem(R.id.action_backgroundPlay).setChecked(sp.getBoolean(BackgroundPlayHelper.PREF_BACKGROUND_PLAY_ENABLED, true));
         menu.findItem(R.id.action_accept_cookies).setChecked(sp.getBoolean(PREF_COOKIES_ENABLED,true));
+        menu.findItem(R.id.action_landscape_fullscreen).setChecked(sp.getBoolean(PREF_LANDSCAPE_FULLSCREEN,false));
 
         // Tor button
         if (OrbotHelper.isOrbotInstalled(context.getApplicationContext())) {
@@ -111,6 +113,8 @@ public class MenuHelper implements ActionMenuView.OnMenuItemClickListener {
 
     @Override
     public boolean onMenuItemClick(final MenuItem item) {
+        SharedPreferences.Editor spEdit = sp.edit();
+
         switch(item.getItemId()){
             case R.id.action_web:
                 context.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(webView.getUrl())));
@@ -229,10 +233,19 @@ public class MenuHelper implements ActionMenuView.OnMenuItemClickListener {
                     CookieHelper.acceptCookies(webView,true);
                     item.setChecked(true);
                 }
-                SharedPreferences.Editor spEdit = sp.edit();
                 spEdit.putBoolean(PREF_COOKIES_ENABLED,!sp.getBoolean(PREF_COOKIES_ENABLED,true));
                 spEdit.commit();
                 return  true;
+
+            case R.id.action_landscape_fullscreen:
+                if (sp.getBoolean(PREF_LANDSCAPE_FULLSCREEN, false)) {
+                    item.setChecked(false);
+                } else {
+                    item.setChecked(true);
+                }
+                spEdit.putBoolean(PREF_LANDSCAPE_FULLSCREEN,!sp.getBoolean(PREF_LANDSCAPE_FULLSCREEN,false));
+                spEdit.commit();
+                return true;
         }
 
         return false;

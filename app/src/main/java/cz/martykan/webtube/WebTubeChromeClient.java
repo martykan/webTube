@@ -1,7 +1,11 @@
 package cz.martykan.webtube;
 
+import android.app.Activity;
 import android.content.Context;
+import android.content.SharedPreferences;
+import android.content.pm.ActivityInfo;
 import android.os.Build;
+import android.preference.PreferenceManager;
 import android.support.v4.widget.DrawerLayout;
 import android.util.Log;
 import android.view.View;
@@ -12,21 +16,28 @@ import android.webkit.WebView;
 import android.widget.FrameLayout;
 import android.widget.ProgressBar;
 
+import static cz.martykan.webtube.MenuHelper.PREF_LANDSCAPE_FULLSCREEN;
+
 public class WebTubeChromeClient extends WebChromeClient {
 
+    Activity activity;
     View mCustomView;
     ProgressBar progress;
     WebView webView;
     FrameLayout customViewContainer;
     DrawerLayout drawerLayout;
     View decorView;
+    SharedPreferences sp;
 
-    public WebTubeChromeClient(WebView webView, ProgressBar progress, FrameLayout customViewContainer, DrawerLayout drawerLayout, View decorView) {
+    public WebTubeChromeClient(Activity activity, WebView webView, ProgressBar progress, FrameLayout customViewContainer, DrawerLayout drawerLayout, View decorView) {
+        this.activity = activity;
         this.webView = webView;
         this.progress = progress;
         this.customViewContainer = customViewContainer;
         this.drawerLayout = drawerLayout;
         this.decorView = decorView;
+
+        sp = PreferenceManager.getDefaultSharedPreferences(activity);
     }
 
     // Fullscreen playback
@@ -48,6 +59,10 @@ public class WebTubeChromeClient extends WebChromeClient {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
             decorView.setSystemUiVisibility(View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION | View.SYSTEM_UI_FLAG_FULLSCREEN);
         }
+
+        if (sp.getBoolean(PREF_LANDSCAPE_FULLSCREEN, false)) {
+            activity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+        }
     }
 
     @Override
@@ -67,6 +82,8 @@ public class WebTubeChromeClient extends WebChromeClient {
 
         // Show the status bar.
         decorView.setSystemUiVisibility(View.SYSTEM_UI_FLAG_VISIBLE);
+
+        activity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_USER);
     }
 
     // Progressbar

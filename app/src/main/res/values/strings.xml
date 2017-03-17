@@ -32,4 +32,7 @@
     <string name="set_as_home">Set as home</string>
     <string name="playInBackground">Play in background</string>
     <string name="download">Download</string>
+
+    <string name="landscapeFullscreen">Use landscape in fullscreen</string>
+    <string name="options_menu">Options</string>
 </resources>

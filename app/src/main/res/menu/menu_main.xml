@@ -38,37 +38,51 @@
         android:title="@string/set_as_home"
         app:showAsAction="never" />
 
-    <item
-        android:id="@+id/action_backgroundPlay"
-        android:checkable="true"
-        android:checked="true"
-        android:title="@string/playInBackground"
-        app:showAsAction="never" />
-
-    <item
-        android:id="@+id/action_tor"
-        android:checkable="true"
-        android:checked="false"
-        android:title="@string/enableTor"
-        android:enabled="false"
-        app:showAsAction="never" />
 
     <item
         android:id="@+id/action_download"
         android:title="@string/download"
         app:showAsAction="never" />
 
-    <item
-        android:id="@+id/action_accept_cookies"
-        android:title="@string/acceptCookies"
-        android:checkable="true"
-        android:checked="true"
-        app:showAsAction="never" />
 
     <item
         android:id="@+id/action_cast_to_kodi"
         android:enabled="false"
         android:title="@string/castToKodi"
         app:showAsAction="never" />
+
+    <item
+        android:id="@+id/options_menu"
+        android:title="@string/options_menu">
+        <menu>
+            <item
+                android:id="@+id/action_backgroundPlay"
+                android:checkable="true"
+                android:checked="true"
+                android:title="@string/playInBackground"
+                app:showAsAction="never" />
+
+            <item
+                android:id="@+id/action_tor"
+                android:checkable="true"
+                android:checked="false"
+                android:title="@string/enableTor"
+                android:enabled="false"
+                app:showAsAction="never" />
+            <item
+                android:id="@+id/action_accept_cookies"
+                android:title="@string/acceptCookies"
+                android:checkable="true"
+                android:checked="true"
+                app:showAsAction="never" />
+
+            <item
+                android:id="@+id/action_landscape_fullscreen"
+                android:checkable="true"
+                android:checked="false"
+                android:title="@string/landscapeFullscreen"
+                app:showAsAction="never" />
+        </menu>
+    </item>
 
 </menu>
