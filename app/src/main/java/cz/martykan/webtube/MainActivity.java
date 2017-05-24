@@ -96,10 +96,12 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public static void pauseVideo() {
+        webView.setKeepScreenOn(false);
         webView.loadUrl("javascript:document.getElementsByTagName('video')[0].pause();");
     }
 
     public static void playVideo() {
+        webView.setKeepScreenOn(true);
         webView.loadUrl("javascript:document.getElementsByTagName('video')[0].play();");
     }
 
@@ -123,7 +125,7 @@ public class MainActivity extends AppCompatActivity {
         drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
         navigationView = (NavigationView) findViewById(R.id.bookmarks_panel);
 
-        // Set up media button reciever
+        // Set up media button receiver
         ((AudioManager) getSystemService(AUDIO_SERVICE)).registerMediaButtonEventReceiver(
                 new ComponentName(getPackageName(), MediaButtonIntentReceiver.class.getName()));
 
