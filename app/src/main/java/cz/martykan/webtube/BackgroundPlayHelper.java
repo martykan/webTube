@@ -14,7 +14,7 @@ import android.util.Log;
 import android.webkit.ValueCallback;
 import android.webkit.WebView;
 
-public class BackgroundPlayHelper {
+public class BackgroundPlayHelper extends Thread {
     public static final String PREF_BACKGROUND_PLAY_ENABLED = "backgroundPlayEnabled";
     private static final int NOTIFICATION_ID = 1337 - 420 * 69;
 
