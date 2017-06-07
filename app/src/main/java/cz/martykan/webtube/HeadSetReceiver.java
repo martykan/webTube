@@ -1,7 +1,8 @@
 package cz.martykan.webtube;
 
 import android.content.BroadcastReceiver;
-import android.content.*;
+import android.content.Context;
+import android.content.Intent;
 import android.util.Log;
 
 public class HeadSetReceiver extends BroadcastReceiver {
@@ -17,6 +18,8 @@ public class HeadSetReceiver extends BroadcastReceiver {
                     break;
                 case 1:
                     Log.i("Value", "Headset plugged");
+                    break;
+                default:
                     break;
             }
         }

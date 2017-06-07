@@ -203,7 +203,7 @@ public class MainActivity extends AppCompatActivity {
     public void onResume() {
         super.onResume();
         backgroundPlayHelper.hideBackgroundPlaybackNotification();
-        
+
         IntentFilter filter = new IntentFilter(Intent.ACTION_HEADSET_PLUG);
         registerReceiver(headSetReceiver, filter);
     }
