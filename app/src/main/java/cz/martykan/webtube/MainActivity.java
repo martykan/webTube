@@ -6,6 +6,7 @@ import android.animation.PropertyValuesHolder;
 import android.app.AlarmManager;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
+import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -63,6 +64,7 @@ public class MainActivity extends AppCompatActivity {
     private DrawerLayout drawerLayout;
     private NavigationView navigationView;
     private SharedPreferences sp;
+    private BroadcastReceiver headSetReceiver;
     // For the snackbar with error message
     View.OnClickListener clickListener = new View.OnClickListener() {
         @Override
@@ -181,6 +183,9 @@ public class MainActivity extends AppCompatActivity {
         if (!loadUrlFromIntent(getIntent())) {
             webView.loadUrl(sp.getString("homepage", "https://m.youtube.com/"));
         }
+
+        //Unplug Headphone detector
+        headSetReceiver = new HeadSetReceiver();
     }
 
     @Override
@@ -198,6 +203,9 @@ public class MainActivity extends AppCompatActivity {
     public void onResume() {
         super.onResume();
         backgroundPlayHelper.hideBackgroundPlaybackNotification();
+        
+        IntentFilter filter = new IntentFilter(Intent.ACTION_HEADSET_PLUG);
+        registerReceiver(headSetReceiver, filter);
     }
 
     @Override
