@@ -26,8 +26,8 @@
 
     <string name="share_with">Partager avec…</string>
 
-    <string name="homePageSet">Votre page d'accueil a été réglée sur cette page.</string>
-    <string name="homePageHelp">Si vous voulez changer la page d'acceuil, maintenez appuyé le bouton Home et elle changera pour la page actuellement ouverte.</string>
+    <string name="homePageSet">Votre page d\'accueil a été réglée sur cette page.</string>
+    <string name="homePageHelp">Si vous voulez changer la page d\'acceuil, maintenez appuyé le bouton Home et elle changera pour la page actuellement ouverte.</string>
     <string name="set_as_home">Définir comme acceuil</string>
     <string name="playInBackground">Lire en arrière-plan</string>
     <string name="download">Télécharger</string>
