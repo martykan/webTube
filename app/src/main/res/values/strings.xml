@@ -22,13 +22,13 @@
     <string name="errorTor">Oh no! Tor is not working properly.</string>
     <string name="error">Oh no!</string>
 
-    <string name="error_no_video">No Video!</string>
+    <string name="error_no_video">No video!</string>
     <string name="error_select_video_and_retry">Please select a video and try again.</string>
 
     <string name="share_with">Share with…</string>
 
     <string name="homePageSet">Your homepage has been set to this page.</string>
-    <string name="homePageHelp">If you want to change the homepage, just hold the Home button and it changes to the current opened page.</string>
+    <string name="homePageHelp">If you want to change the homepage, just hold the Home button for it to change to the currently opened page.</string>
     <string name="set_as_home">Set as home</string>
     <string name="playInBackground">Play in background</string>
     <string name="download">Download</string>
