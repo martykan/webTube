@@ -16,7 +16,7 @@
 
     <string name="errorNoInternet">無可用連線.</string>
     <string name="errorTor">Tor無法正常運作.</string>
-    <string name="error">Oh no!</string>
+    <string name="error">不好了！</string>
 
     <string name="error_no_video">沒有影片!</string>
     <string name="error_select_video_and_retry">請選擇影片並重試.</string>
@@ -25,4 +25,9 @@
 
     <string name="homePageSet">您的首頁已被設定為本頁面.</string>
     <string name="homePageHelp">想更改首頁的話, 只需按住房子圖案的按鈕, 首頁將修改為目前頁面.</string>
+    <string name="menu">菜單</string>
+    <string name="set_as_home">設置為家</string>
+    <string name="acceptCookies">接受Cookie</string>
+    <string name="playInBackground">在後台播放</string>
+    <string name="download">下載</string>
 </resources>
