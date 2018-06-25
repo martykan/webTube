@@ -22,6 +22,6 @@
     <string name="removePage">Remover esta página</string>
     <string name="set_as_home">Definir como início.</string>
     <string name="share">Compartilhar</string>
-    <string name="share_with">Compartilhar com...</string>
+    <string name="share_with">Compartilhar com…</string>
     <string name="torWarning">Usar o Tor de maneira irresponsável, como entrar com sua conta do YouTube, não irá fazer seu tráfego ficar anônimo e só irá piorar.</string>
 </resources>
