@@ -22,7 +22,7 @@ public class Downloader {
         catch (Exception e) {
             e.printStackTrace();
         }
-        context.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("http://keepvid.com/?url=" + encodedURL)));
+        context.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("https://www.ytbmp4.com/search?q=" + encodedURL)));
 
     }
 }
