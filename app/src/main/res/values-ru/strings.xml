@@ -8,8 +8,8 @@
     <string name="enable">Включить</string>
     <string name="enableTor">Включить Tor</string>
     <string name="error">О нет!</string>
-    <string name="errorNoInternet"> О нет! Вы не подключены к Интернету.</string>
-    <string name="errorTor"> О нет! Tor не работает должным образом.</string>
+    <string name="errorNoInternet">О нет! Вы не подключены к Интернету.</string>
+    <string name="errorTor">О нет! Tor не работает должным образом.</string>
     <string name="error_no_video">Нет видео!</string>
     <string name="error_select_video_and_retry">Пожалуйста, выберите видео и попробуйте ещё раз.</string>
     <string name="home">Домой</string>
