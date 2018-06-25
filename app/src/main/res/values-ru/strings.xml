@@ -20,4 +20,9 @@
     <string name="share">Поделиться</string>
     <string name="share_with">Поделиться с…</string>
     <string name="torWarning">Безответственное поведение при использовании Tor, например, при входе в YouTube, деанонимизирует ваш интернет-трафик и может привести к серьезным последствиям.</string>
+    <string name="menu">Меню</string>
+    <string name="download">Скачать</string>
+    <string name="playInBackground">Играть в фоновом режиме</string>
+    <string name="set_as_home">Установить как дом</string>
+    <string name="acceptCookies">Принимать куки</string>
 </resources>
