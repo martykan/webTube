@@ -1,35 +1,29 @@
 <resources>
     <string name="app_name" translatable="false">WebTube</string>
 
-    <string name="home">Home</string>
-    <string name="refresh">Refresh</string>
-    <string name="bookmarks">Bookmarks</string>
-    <string name="openInBrowser">Open in browser</string>
-    <string name="castToKodi">Cast to Kodi</string>
     <string name="acceptCookies">Accept cookies</string>
-    <string name="share">Share</string>
-    <string name="enableTor">Enable Tor</string>
-    <string name="disableTor">Disable Tor</string>
-    <string name="menu">Menu</string>
-
-    <string name="torWarning">Using Tor irresponsibly, like signing in to your YouTube account, will deanonymize your traffic and only make it worse.</string>
-    <string name="enable">Enable</string>
-
     <string name="addPage">Add this page</string>
-    <string name="removePage">Remove this page</string>
-
+    <string name="bookmarks">Bookmarks</string>
+    <string name="castToKodi">Cast to Kodi</string>
+    <string name="disableTor">Disable Tor</string>
+    <string name="download">Download</string>
+    <string name="enable">Enable</string>
+    <string name="enableTor">Enable Tor</string>
+    <string name="error">Oh no!</string>
     <string name="errorNoInternet">Oh no! You are not connected to the internet.</string>
     <string name="errorTor">Oh no! Tor is not working properly.</string>
-    <string name="error">Oh no!</string>
-
     <string name="error_no_video">No video!</string>
     <string name="error_select_video_and_retry">Please select a video and try again.</string>
-
-    <string name="share_with">Share with…</string>
-
-    <string name="homePageSet">Your homepage has been set to this page.</string>
+    <string name="home">Home</string>
     <string name="homePageHelp">If you want to change the homepage, just hold the Home button for it to change to the currently opened page.</string>
-    <string name="set_as_home">Set as home</string>
+    <string name="homePageSet">Your homepage has been set to this page.</string>
+    <string name="menu">Menu</string>
+    <string name="openInBrowser">Open in browser</string>
     <string name="playInBackground">Play in background</string>
-    <string name="download">Download</string>
+    <string name="refresh">Refresh</string>
+    <string name="removePage">Remove this page</string>
+    <string name="set_as_home">Set as home</string>
+    <string name="share">Share</string>
+    <string name="share_with">Share with…</string>
+    <string name="torWarning">Using Tor irresponsibly, like signing in to your YouTube account, will deanonymize your traffic and only make it worse.</string>
 </resources>
