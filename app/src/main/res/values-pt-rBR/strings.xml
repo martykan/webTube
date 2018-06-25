@@ -1,35 +1,27 @@
 <resources>
-    <string name="app_name" translatable="false">WebTube</string>
-
-    <string name="home">Início</string>
-    <string name="refresh">Atualizar</string>
-    <string name="bookmarks">Favoritos</string>
-    <string name="openInBrowser">Abrir no navegador</string>
-    <string name="castToKodi">Transmitir para o Kodi</string>
     <string name="acceptCookies">Aceitar cookies</string>
-    <string name="share">Compartilhar</string>
-    <string name="enableTor">Ativar Tor</string>
-    <string name="disableTor">Desativar Tor</string>
-    <string name="menu">Menu</string>
-
-    <string name="torWarning">Usar o Tor de maneira irresponsável, como entrar com sua conta do YouTube, não irá fazer seu tráfego ficar anônimo e só irá piorar.</string>
-    <string name="enable">Ativar</string>
-
     <string name="addPage">Adicionar esta página</string>
-    <string name="removePage">Remover esta página</string>
-
+    <string name="bookmarks">Favoritos</string>
+    <string name="castToKodi">Transmitir para o Kodi</string>
+    <string name="disableTor">Desativar Tor</string>
+    <string name="download">Baixar</string>
+    <string name="enable">Ativar</string>
+    <string name="enableTor">Ativar Tor</string>
+    <string name="error">Ah não!</string>
     <string name="errorNoInternet">Ah não! Você não está conectado com a Internet.</string>
     <string name="errorTor">Ah não! Tor não está funcionando corretamente.</string>
-    <string name="error">Ah não!</string>
-
     <string name="error_no_video">Sem vídeo!</string>
     <string name="error_select_video_and_retry">Por favor, selecione um vídeo e tente novamente.</string>
-
-    <string name="share_with">Compartilhar com...</string>
-
-    <string name="homePageSet">Sua página inicial foi definida como esta página.</string>
+    <string name="home">Início</string>
     <string name="homePageHelp">Se quiser mudar a página inicial, pressione o botão Início que mudará para a página aberta atual.</string>
-    <string name="set_as_home">Definir como início.</string>
+    <string name="homePageSet">Sua página inicial foi definida como esta página.</string>
+    <string name="menu">Menu</string>
+    <string name="openInBrowser">Abrir no navegador</string>
     <string name="playInBackground">Reproduzir em plano de fundo</string>
-    <string name="download">Baixar</string>
+    <string name="refresh">Atualizar</string>
+    <string name="removePage">Remover esta página</string>
+    <string name="set_as_home">Definir como início.</string>
+    <string name="share">Compartilhar</string>
+    <string name="share_with">Compartilhar com...</string>
+    <string name="torWarning">Usar o Tor de maneira irresponsável, como entrar com sua conta do YouTube, não irá fazer seu tráfego ficar anônimo e só irá piorar.</string>
 </resources>
