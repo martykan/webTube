@@ -1,36 +1,27 @@
-
 <resources>
-    <string name="app_name" translatable="false">WebTube</string>
-
-    <string name="home">Domů</string>
-    <string name="refresh">Obnovit</string>
-    <string name="bookmarks">Záložky</string>
-    <string name="openInBrowser">Otevřít v prohlížeči</string>
-    <string name="castToKodi">Streamovat do Kodi</string>
     <string name="acceptCookies">Přijmat cookies</string>
-    <string name="share">Sdílet</string>
-    <string name="enableTor">Povolit Tor</string>
-    <string name="disableTor">Zakázat Tor</string>
-    <string name="menu">Menu</string>
-
-    <string name="torWarning">Používání Toru není zodpovědné, jako přihlašování na tvůj YouTube ůčet, už nebudete anonymní a vše bude jenom horší.</string>
-    <string name="enable">Povolit</string>
-
     <string name="addPage">Přidat tuto stránku</string>
-    <string name="removePage">Odstranit tuto stránku</string>
-
+    <string name="bookmarks">Záložky</string>
+    <string name="castToKodi">Streamovat do Kodi</string>
+    <string name="disableTor">Zakázat Tor</string>
+    <string name="download">Stáhnout</string>
+    <string name="enable">Povolit</string>
+    <string name="enableTor">Povolit Tor</string>
+    <string name="error">Ach ne!</string>
     <string name="errorNoInternet">Ach ne! Vypadá to že nejsi připojen k internetu.</string>
     <string name="errorTor">Ach en! Tor jaksi nefunguje.</string>
-    <string name="error">Ach ne!</string>
-
     <string name="error_no_video">Žádné Video!</string>
     <string name="error_select_video_and_retry">Prosím vyber video a zkus to znova.</string>
-
-    <string name="share_with">Sdílet s…</string>
-
-    <string name="homePageSet">Tato stránka byla nastavena jako domovská.</string>
+    <string name="home">Domů</string>
     <string name="homePageHelp">Pokud si chceš změnit domovskou stránku stačí podržet tlačítko domů a stránka na které právě jsi bude nastavena jako domovská.</string>
-    <string name="set_as_home">Nastavit jako domovskou stránku</string>
+    <string name="homePageSet">Tato stránka byla nastavena jako domovská.</string>
+    <string name="menu">Menu</string>
+    <string name="openInBrowser">Otevřít v prohlížeči</string>
     <string name="playInBackground">Přehrávat na pozadí</string>
-    <string name="download">Stáhnout</string>
+    <string name="refresh">Obnovit</string>
+    <string name="removePage">Odstranit tuto stránku</string> 
+    <string name="set_as_home">Nastavit jako domovskou stránku</string>
+    <string name="share">Sdílet</string>
+    <string name="share_with">Sdílet s…</string>
+    <string name="torWarning">Používání Toru není zodpovědné, jako přihlašování na tvůj YouTube ůčet, už nebudete anonymní a vše bude jenom horší.</string>
 </resources>
