@@ -1,7 +1,7 @@
 # webTube
 Android wrapper for the YouTube website with a couple little tweaks. Allows you to use YouTube comfortably, even without GAPPS on your phone.
 
-[<img src="https://f-droid.org/badge/get-it-on.png" width=250>](https://f-droid.org/packages/cz.martykan.webtube/)
+[<img src="https://fdroid.gitlab.io/artwork/badge/get-it-on.png" width=250>](https://f-droid.org/packages/cz.martykan.webtube/)
 
 ## Screenshots
 [<img src="http://i.imgur.com/s7G1o3G.png" width=250>](http://i.imgur.com/s7G1o3G.png)
