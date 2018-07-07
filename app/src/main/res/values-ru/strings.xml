@@ -1,22 +1,26 @@
-<?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string name="acceptCookies">Принимать куки</string>
     <string name="addPage">Добавить страницу</string>
     <string name="bookmarks">Закладки</string>
     <string name="castToKodi">Отправить в Kodi</string>
     <string name="disableTor">Отключить Tor</string>
+    <string name="download">Скачать</string>
     <string name="enable">Включить</string>
     <string name="enableTor">Включить Tor</string>
     <string name="error">О нет!</string>
-    <string name="errorNoInternet"> О нет! Вы не подключены к Интернету.</string>
-    <string name="errorTor"> О нет! Tor не работает должным образом.</string>
+    <string name="errorNoInternet">О нет! Вы не подключены к Интернету.</string>
+    <string name="errorTor">О нет! Tor не работает должным образом.</string>
     <string name="error_no_video">Нет видео!</string>
     <string name="error_select_video_and_retry">Пожалуйста, выберите видео и попробуйте ещё раз.</string>
     <string name="home">Домой</string>
     <string name="homePageHelp">Если вы хотите изменить домашнюю страницу, просто удерживайте кнопку Home и она поменяется на текущей открытую страницу.</string>
     <string name="homePageSet">Текущая страница установлена как домашняя.</string>
+    <string name="menu">Меню</string>
     <string name="openInBrowser">Открыть в браузере</string>
+    <string name="playInBackground">Играть в фоновом режиме</string>
     <string name="refresh">Обновить</string>
     <string name="removePage">Удалить страницу</string>
+    <string name="set_as_home">Установить как дом</string>
     <string name="share">Поделиться</string>
     <string name="share_with">Поделиться с…</string>
     <string name="torWarning">Безответственное поведение при использовании Tor, например, при входе в YouTube, деанонимизирует ваш интернет-трафик и может привести к серьезным последствиям.</string>

@@ -1,28 +1,27 @@
 <resources>
-    <string name="home">首頁</string>
-    <string name="refresh">重新整理</string>
-    <string name="bookmarks">我的最愛</string>
-    <string name="openInBrowser">使用外部瀏覽器開啟</string>
-    <string name="castToKodi">串流至Kodi</string>
-    <string name="share">分享</string>
-    <string name="enableTor">啟用 Tor(洋蔥網路)</string>
-    <string name="disableTor">停用 Tor(洋蔥網路)</string>
-
-    <string name="torWarning">不正確的使用Tor, 像是登入YouTube帳號, 會讓您失去透過Tor匿名的功能.</string>
-    <string name="enable">啟用</string>
-
+    <string name="acceptCookies">接受Cookie</string>
     <string name="addPage">加入本頁</string>
-    <string name="removePage">移除本頁</string>
-
+    <string name="bookmarks">我的最愛</string>
+    <string name="castToKodi">串流至Kodi</string>
+    <string name="disableTor">停用 Tor(洋蔥網路)</string>
+    <string name="download">下載</string>
+    <string name="enable">啟用</string>
+    <string name="enableTor">啟用 Tor(洋蔥網路)</string>
+    <string name="error">不好了！</string>
     <string name="errorNoInternet">無可用連線.</string>
     <string name="errorTor">Tor無法正常運作.</string>
-    <string name="error">Oh no!</string>
-
     <string name="error_no_video">沒有影片!</string>
     <string name="error_select_video_and_retry">請選擇影片並重試.</string>
-
-    <string name="share_with">分享…</string>
-
-    <string name="homePageSet">您的首頁已被設定為本頁面.</string>
+    <string name="home">首頁</string>
     <string name="homePageHelp">想更改首頁的話, 只需按住房子圖案的按鈕, 首頁將修改為目前頁面.</string>
+    <string name="homePageSet">您的首頁已被設定為本頁面.</string>
+    <string name="menu">菜單</string>
+    <string name="openInBrowser">使用外部瀏覽器開啟</string>
+    <string name="playInBackground">在後台播放</string>
+    <string name="refresh">重新整理</string>
+    <string name="removePage">移除本頁</string>
+    <string name="set_as_home">設置為家</string>
+    <string name="share">分享</string>
+    <string name="share_with">分享…</string>
+    <string name="torWarning">不正確的使用Tor, 像是登入YouTube帳號, 會讓您失去透過Tor匿名的功能.</string>
 </resources>
