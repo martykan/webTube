@@ -1,0 +1,29 @@
+<resources>
+    <string name="app_name" translatable="false">WebTube</string>
+
+    <string name="acceptCookies">Cookies accepteren</string>
+    <string name="addPage">Deze pagina toevoegen</string>
+    <string name="bookmarks">Bladwijzers</string>
+    <string name="castToKodi">Casten naar Kodi</string>
+    <string name="disableTor">Tor uitschakelen</string>
+    <string name="download">Downloaden</string>
+    <string name="enable">Inschakelen</string>
+    <string name="enableTor">Tor inschakelen</string>
+    <string name="error">O nee!</string>
+    <string name="errorNoInternet">O nee! Je bent niet verbonden met het internet.</string>
+    <string name="errorTor">O nee! Tor werkt niet goed.</string>
+    <string name="error_no_video">Geen video!</string>
+    <string name="error_select_video_and_retry">Selecteer een video en probeer het opnieuw.</string>
+    <string name="home">Startpagina</string>
+    <string name="homePageHelp">Als je de startpagina wilt wijzigen, houdt dan de knop Startpagina ingedrukt. De pagina wijzigt dan in de huidige geopende pagina.</string>
+    <string name="homePageSet">Deze pagina is ingesteld als je startpagina.</string>
+    <string name="menu">Menu</string>
+    <string name="openInBrowser">Openen in browser</string>
+    <string name="playInBackground">Afspelen op achtergrond</string>
+    <string name="refresh">Verversen</string>
+    <string name="removePage">Deze pagina verwijderen</string>
+    <string name="set_as_home">Instellen als startpagina</string>
+    <string name="share">Delen</string>
+    <string name="share_with">Delen met…</string>
+    <string name="torWarning">Als je Tor onjuist gebruikt, bijv. door in te loggen op je YouTube-account, dan is je netwerkverkeer niet anoniem meer.</string>
+</resources>
