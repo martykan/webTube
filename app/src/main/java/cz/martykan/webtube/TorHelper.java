@@ -10,7 +10,7 @@ import android.webkit.CookieManager;
 import android.webkit.WebView;
 
 import info.guardianproject.netcipher.proxy.OrbotHelper;
-import info.guardianproject.netcipher.web.WebkitProxy;
+import info.guardianproject.netcipher.webkit.WebkitProxy;
 
 public class TorHelper {
     public static final String PREF_TOR_ENABLED = "torEnabled";
@@ -47,7 +47,7 @@ public class TorHelper {
                 WebkitProxy.setProxy(MainActivity.class.getName(), mApplicationContext, null, "localhost", PORT_TOR);
                 SharedPreferences.Editor spEdit = sp.edit();
                 spEdit.putBoolean(PREF_TOR_ENABLED, true);
-                spEdit.commit();
+				spEdit.apply();
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -63,7 +63,7 @@ public class TorHelper {
                 WebkitProxy.resetProxy(MainActivity.class.getName(), mApplicationContext);
                 SharedPreferences.Editor spEdit = sp.edit();
                 spEdit.putBoolean(PREF_TOR_ENABLED, false);
-                spEdit.commit();
+				spEdit.apply();
                 CookieHelper.acceptCookies(webView, true);
             } catch (Exception e) {
                 e.printStackTrace();
@@ -76,5 +76,4 @@ public class TorHelper {
         mgr.set(AlarmManager.RTC, System.currentTimeMillis() + 100, mPendingIntent);
         System.exit(0);
     }
-
 }

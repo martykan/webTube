@@ -23,6 +23,5 @@ public class Downloader {
             e.printStackTrace();
         }
         context.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("https://www.ytbmp4.com/search?q=" + encodedURL)));
-
     }
 }

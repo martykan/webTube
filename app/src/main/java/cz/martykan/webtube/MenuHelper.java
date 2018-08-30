@@ -1,8 +1,5 @@
 package cz.martykan.webtube;
 
-import android.animation.Animator;
-import android.animation.ObjectAnimator;
-import android.animation.PropertyValuesHolder;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -19,7 +16,6 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.webkit.WebView;
-import android.widget.ArrayAdapter;
 
 import info.guardianproject.netcipher.proxy.OrbotHelper;
 
@@ -53,18 +49,15 @@ public class MenuHelper implements ActionMenuView.OnMenuItemClickListener {
             dialog.setMessage(context.getString(R.string.homePageHelp));
             dialog.setCancelable(false);
             dialog.setButton(DialogInterface.BUTTON_POSITIVE, "OK",
-                    new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog, int buttonId) {
-                            dialog.dismiss();
-                            SharedPreferences.Editor editor = sp.edit();
-                            editor.putBoolean("homepageLearned", true);
-                            editor.commit();
-                        }
-                    });
+					(dialog1, buttonId) -> {
+						dialog1.dismiss();
+						SharedPreferences.Editor editor = sp.edit();
+						editor.putBoolean("homepageLearned", true);
+						editor.apply();
+					});
             dialog.show();
         }
     }
-
 
     public void setUpMenu(final ActionMenuView actionMenu, final DrawerLayout drawerLayout, final View bookmarksPanel ) {
         this.drawerLayout = drawerLayout;
@@ -101,11 +94,7 @@ public class MenuHelper implements ActionMenuView.OnMenuItemClickListener {
         dialog.setMessage(context.getString(R.string.error_select_video_and_retry));
         dialog.setCancelable(true);
         dialog.setButton(DialogInterface.BUTTON_POSITIVE, context.getString(android.R.string.ok).toUpperCase(),
-                new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int buttonId) {
-                        dialog.dismiss();
-                    }
-                });
+				(dialog1, buttonId) -> dialog1.dismiss());
         dialog.show();
     }
 
@@ -129,7 +118,7 @@ public class MenuHelper implements ActionMenuView.OnMenuItemClickListener {
                 Snackbar.make(appWindow, context.getString(R.string.homePageSet), Snackbar.LENGTH_LONG).show();
                 SharedPreferences.Editor editor = sp.edit();
                 editor.putString("homepage", webView.getUrl());
-                editor.commit();
+				editor.apply();
                 return true;
 
             case R.id.action_bookmarks:
@@ -153,15 +142,15 @@ public class MenuHelper implements ActionMenuView.OnMenuItemClickListener {
                     show_noVideo_dialog();
                 } else {
                     try {
-                                    /* The following code is based on an extract from the source code of NewPipe (v0.7.2) (https://github.com/theScrabi/NewPipe),
-                                       which is also licenced under version 3 of the GNU General Public License as published by the Free Software Foundation.
-                                       The copyright owner of the original code is Christian Schabesberger <chris.schabesberger@mailbox.org>.
-                                       All modifications were made on 06-Jan-2016 */
+                            /* The following code is based on an extract from the source code of NewPipe (v0.7.2) (https://github.com/theScrabi/NewPipe),
+                            which is also licenced under version 3 of the GNU General Public License as published by the Free Software Foundation.
+                            The copyright owner of the original code is Christian Schabesberger <chris.schabesberger@mailbox.org>.
+                            All modifications were made on 06-Jan-2016 */
                         Intent intent = new Intent(Intent.ACTION_VIEW);
                         intent.setPackage("org.xbmc.kore");
                         intent.setData(Uri.parse(webView.getUrl().replace("https", "http")));
                         context.startActivity(intent);
-                                    /* End of the modified NewPipe code extract */
+						/* End of the modified NewPipe code extract */
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
@@ -191,19 +180,13 @@ public class MenuHelper implements ActionMenuView.OnMenuItemClickListener {
                         alert.setMessage(context.getString(R.string.torWarning));
                         alert.setCancelable(false);
                         alert.setButton(DialogInterface.BUTTON_POSITIVE, context.getString(R.string.enable),
-                                new DialogInterface.OnClickListener() {
-                                    public void onClick(DialogInterface dialog, int buttonId) {
-                                        torHelper.torEnable();
-                                        item.setChecked(true);
-                                        cookieItem.setChecked(false).setEnabled(false);
-                                    }
-                                });
+								(dialog, buttonId) -> {
+									torHelper.torEnable();
+									item.setChecked(true);
+									cookieItem.setChecked(false).setEnabled(false);
+								});
                         alert.setButton(DialogInterface.BUTTON_NEGATIVE, context.getString(android.R.string.cancel),
-                                new DialogInterface.OnClickListener() {
-                                    public void onClick(DialogInterface dialog, int buttonId) {
-                                        item.setChecked(false);
-                                    }
-                                });
+								(dialog, buttonId) -> item.setChecked(false));
                         alert.show();
                     }
                 }
@@ -231,10 +214,9 @@ public class MenuHelper implements ActionMenuView.OnMenuItemClickListener {
                 }
                 SharedPreferences.Editor spEdit = sp.edit();
                 spEdit.putBoolean(PREF_COOKIES_ENABLED,!sp.getBoolean(PREF_COOKIES_ENABLED,true));
-                spEdit.commit();
+				spEdit.apply();
                 return  true;
         }
-
         return false;
     }
 }

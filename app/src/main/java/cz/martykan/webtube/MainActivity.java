@@ -1,57 +1,26 @@
 package cz.martykan.webtube;
 
-import android.animation.Animator;
-import android.animation.ObjectAnimator;
-import android.animation.PropertyValuesHolder;
-import android.app.AlarmManager;
-import android.app.NotificationManager;
-import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
-import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.media.AudioManager;
-import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.design.widget.NavigationView;
-import android.support.design.widget.Snackbar;
-import android.support.v4.app.NotificationCompat;
 import android.support.v4.widget.DrawerLayout;
-import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.ActionMenuView;
-import android.util.Log;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.WindowManager;
-import android.webkit.CookieManager;
-import android.webkit.ValueCallback;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
-import android.widget.ArrayAdapter;
 import android.widget.FrameLayout;
 import android.widget.ProgressBar;
-
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.io.UnsupportedEncodingException;
-import java.net.URLDecoder;
-import java.util.ArrayList;
-import java.util.List;
-
-import info.guardianproject.netcipher.proxy.OrbotHelper;
-import info.guardianproject.netcipher.web.WebkitProxy;
-
 
 public class MainActivity extends AppCompatActivity {
     private static final String LOG_TAG = "webTube";
@@ -82,16 +51,13 @@ public class MainActivity extends AppCompatActivity {
     public static void toggleVideo() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
             webView.evaluateJavascript("(function() { return document.getElementsByTagName('video')[0].paused; })();",
-                    new ValueCallback<String>() {
-                        @Override
-                        public void onReceiveValue(String value) {
-                            if (value.equals("true")) {
-                                playVideo();
-                            } else {
-                                pauseVideo();
-                            }
-                        }
-                    });
+					value -> {
+						if (value.equals("true")) {
+							playVideo();
+						} else {
+							pauseVideo();
+						}
+					});
         } else {
             pauseVideo();
         }
@@ -116,16 +82,16 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        webView = (WebView) findViewById(R.id.webView);
+		webView = findViewById(R.id.webView);
         appWindow = findViewById(R.id.appWindow);
-        progress = (ProgressBar) findViewById(R.id.progress);
-        customViewContainer = (FrameLayout) findViewById(R.id.customViewContainer);
+		progress = findViewById(R.id.progress);
+		customViewContainer = findViewById(R.id.customViewContainer);
 
         sp = PreferenceManager.getDefaultSharedPreferences(this);
-        drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
-        navigationView = (NavigationView) findViewById(R.id.bookmarks_panel);
+		drawerLayout = findViewById(R.id.drawer_layout);
+		navigationView = findViewById(R.id.bookmarks_panel);
 
-        // Set up media button reciever
+		// Set up media button receiver
         ((AudioManager) getSystemService(AUDIO_SERVICE)).registerMediaButtonEventReceiver(
                 new ComponentName(getPackageName(), MediaButtonIntentReceiver.class.getName()));
 
@@ -140,16 +106,16 @@ public class MainActivity extends AppCompatActivity {
 
         // Initialize bookmarks panel
         bookmarkManager = new BookmarkManager(this, webView);
-        bookmarkManager.initalizeBookmarks(navigationView);
+		bookmarkManager.initializeBookmarks(navigationView);
         drawerLayout.setDrawerListener(new DrawerLayout.DrawerListener() {
             @Override
             public void onDrawerSlide(View drawerView, float slideOffset) {
-                bookmarkManager.initalizeBookmarks(navigationView);
+				bookmarkManager.initializeBookmarks(navigationView);
             }
 
             @Override
             public void onDrawerOpened(View drawerView) {
-                bookmarkManager.initalizeBookmarks(navigationView);
+				bookmarkManager.initializeBookmarks(navigationView);
             }
 
             @Override
@@ -172,7 +138,7 @@ public class MainActivity extends AppCompatActivity {
         backgroundPlayHelper = new BackgroundPlayHelper(mApplicationContext, webView);
 
         // Menu helper
-        ActionMenuView actionMenu = (ActionMenuView) findViewById(R.id.menu_main);
+		ActionMenuView actionMenu = findViewById(R.id.menu_main);
         menuHelper = new MenuHelper(this, webView, torHelper, backgroundPlayHelper, appWindow);
         getMenuInflater().inflate(R.menu.menu_main, actionMenu.getMenu());
         menuHelper.setUpMenu(actionMenu, drawerLayout, findViewById(R.id.bookmarks_panel));
@@ -264,7 +230,6 @@ public class MainActivity extends AppCompatActivity {
         webView.setBackgroundColor(Color.WHITE);
         webView.setScrollbarFadingEnabled(true);
         webView.setNetworkAvailable(true);
-
     }
 
     @Override
@@ -274,6 +239,5 @@ public class MainActivity extends AppCompatActivity {
         } else {
             finish();
         }
-
     }
 }

@@ -32,7 +32,7 @@ public class BookmarkManager {
         sp = PreferenceManager.getDefaultSharedPreferences(context);
     }
 
-    public void initalizeBookmarks(NavigationView navigationView) {
+	public void initializeBookmarks(NavigationView navigationView) {
         this.navigationView = navigationView;
         bookmarkUrls = new ArrayList<>();
         bookmarkTimelessUrls = new ArrayList<>();
@@ -86,11 +86,11 @@ public class BookmarkManager {
             bookmarksArray.put(new JSONObject("{'title':'" + title.replace("'", "\\'") + "','url':'" + url + "'}"));
             SharedPreferences.Editor editor = sp.edit();
             editor.putString("bookmarks", bookmarksArray.toString());
-            editor.commit();
+			editor.apply();
         } catch (JSONException e) {
             e.printStackTrace();
         }
-        initalizeBookmarks(navigationView);
+		initializeBookmarks(navigationView);
     }
 
     public void removeBookmark(String title) {
@@ -110,11 +110,11 @@ public class BookmarkManager {
             }
             SharedPreferences.Editor editor = sp.edit();
             editor.putString("bookmarks", bookmarksArray.toString());
-            editor.commit();
+			editor.apply();
         } catch (JSONException e) {
             e.printStackTrace();
         }
-        initalizeBookmarks(navigationView);
+		initializeBookmarks(navigationView);
     }
 
     public String getUrl(String title) {

@@ -8,7 +8,6 @@ import android.preference.PreferenceManager;
 import android.support.design.widget.Snackbar;
 import android.support.v4.content.ContextCompat;
 import android.view.View;
-import android.webkit.ValueCallback;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 
@@ -69,14 +68,11 @@ public class WebTubeWebViewClient extends WebViewClient {
             if (Build.VERSION.SDK_INT > Build.VERSION_CODES.KITKAT) {
                 statusBarSpace.setVisibility(View.VISIBLE);
                 view.evaluateJavascript("(function() { if(document.getElementById('player').style.visibility == 'hidden' || document.getElementById('player').innerHTML == '') { return 'not_video'; } else { return 'video'; } })();",
-                        new ValueCallback<String>() {
-                            @Override
-                            public void onReceiveValue(final String value) {
-                                int colorId = value.contains("not_video") ? R.color.colorPrimary : R.color.colorWatch;
-                                statusBarSpace.setBackgroundColor(ContextCompat.getColor(context, colorId));
-                                bottomBar.setBackgroundColor(ContextCompat.getColor(context, colorId));
-                            }
-                        });
+						value -> {
+							int colorId = value.contains("not_video") ? R.color.colorPrimary : R.color.colorWatch;
+							statusBarSpace.setBackgroundColor(ContextCompat.getColor(context, colorId));
+							bottomBar.setBackgroundColor(ContextCompat.getColor(context, colorId));
+						});
             }
         }
     }
@@ -94,5 +90,4 @@ public class WebTubeWebViewClient extends WebViewClient {
                     setAction(context.getString(R.string.refresh), clickListener).show();
         }
     }
-
 }
