@@ -6,7 +6,6 @@ import android.support.design.widget.NavigationView;
 import android.support.v4.widget.DrawerLayout;
 import android.util.Log;
 import android.view.MenuItem;
-import android.webkit.ValueCallback;
 import android.webkit.WebView;
 
 import java.io.UnsupportedEncodingException;
@@ -33,24 +32,21 @@ public class BookmarkSelectedListener implements NavigationView.OnNavigationItem
             if (!webView.getTitle().equals("YouTube")) {
                 if (webView.getUrl().contains("/watch") && Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
                     time = "0";
-                    webView.evaluateJavascript("(function() { return document.getElementsByTagName('video')[0].currentTime; })();", new ValueCallback<String>() {
-                        @Override
-                        public void onReceiveValue(String value) {
-                            Log.i("VALUE", value);
-                            time = value;
-                            String url = webView.getUrl();
-                            try {
-                                time = time.substring(0, time.indexOf("."));
-                            } catch (Exception e) {
-                                e.printStackTrace();
-                                time = "0";
-                            }
-                            if (url.contains("&t=")) {
-                                url = url.substring(0, url.indexOf("&t="));
-                            }
-                            bookmarkManager.addBookmark(webView.getTitle().replace(" - YouTube", ""), url + "&t=" + time);
-                        }
-                    });
+					webView.evaluateJavascript("(function() { return document.getElementsByTagName('video')[0].currentTime; })();", value -> {
+						Log.i("VALUE", value);
+						time = value;
+						String url = webView.getUrl();
+						try {
+							time = time.substring(0, time.indexOf("."));
+						} catch (Exception e) {
+							e.printStackTrace();
+							time = "0";
+						}
+						if (url.contains("&t=")) {
+							url = url.substring(0, url.indexOf("&t="));
+						}
+						bookmarkManager.addBookmark(webView.getTitle().replace(" - YouTube", ""), url + "&t=" + time);
+					});
                 } else {
                     bookmarkManager.addBookmark(webView.getTitle().replace(" - YouTube", ""), webView.getUrl());
                 }
@@ -90,5 +86,4 @@ public class BookmarkSelectedListener implements NavigationView.OnNavigationItem
         }
         return true;
     }
-
 }
