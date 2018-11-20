@@ -1,14 +1,14 @@
 package cz.martykan.webtube;
 
-import android.app.Activity;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import androidx.appcompat.app.AppCompatActivity;
 import android.util.Log;
 
-public class NotificationCloser extends Activity {
+public class NotificationCloser extends AppCompatActivity {
 
     public static final String NOTIFICATION_ID = "NOTIFICATION_ID";
 

@@ -1,7 +1,7 @@
 package cz.martykan.webtube;
 
 import android.os.Build;
-import android.support.v4.widget.DrawerLayout;
+import androidx.drawerlayout.widget.DrawerLayout;
 import android.view.View;
 import android.webkit.WebChromeClient;
 import android.webkit.WebView;

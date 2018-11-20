@@ -2,8 +2,8 @@ package cz.martykan.webtube;
 
 import android.content.Context;
 import android.os.Build;
-import android.support.design.widget.NavigationView;
-import android.support.v4.widget.DrawerLayout;
+import com.google.android.material.navigation.NavigationView;
+import androidx.drawerlayout.widget.DrawerLayout;
 import android.util.Log;
 import android.view.MenuItem;
 import android.webkit.WebView;

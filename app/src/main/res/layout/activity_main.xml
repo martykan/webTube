@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     tools:context="cz.martykan.webtube.MainActivity">
 
-    <android.support.v4.widget.DrawerLayout
+    <androidx.drawerlayout.widget.DrawerLayout
         android:id="@+id/drawer_layout"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
@@ -44,7 +44,7 @@
                     android:layout_alignParentBottom="true"
                     android:background="@color/colorPrimary">
 
-                    <android.support.v7.widget.ActionMenuView
+                    <androidx.appcompat.widget.ActionMenuView
                         android:id="@+id/menu_main"
                         android:layout_width="match_parent"
                         android:layout_height="?attr/actionBarSize"
@@ -72,7 +72,7 @@
             </RelativeLayout>
         </RelativeLayout>
 
-        <android.support.design.widget.NavigationView
+        <com.google.android.material.navigation.NavigationView
             android:id="@+id/bookmarks_panel"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
@@ -80,7 +80,7 @@
             app:headerLayout="@layout/bookmarks_header"
             app:menu="@menu/bookmarks" />
 
-    </android.support.v4.widget.DrawerLayout>
+    </androidx.drawerlayout.widget.DrawerLayout>
 
     <FrameLayout
         android:id="@+id/customViewContainer"
