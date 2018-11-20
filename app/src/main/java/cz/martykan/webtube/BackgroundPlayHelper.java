@@ -21,7 +21,7 @@ public class BackgroundPlayHelper {
     WebView webView;
     SharedPreferences sp;
 
-    public BackgroundPlayHelper (Context context, WebView webView) {
+    public BackgroundPlayHelper(Context context, WebView webView) {
         this.context = context;
         this.webView = webView;
 
@@ -31,13 +31,13 @@ public class BackgroundPlayHelper {
     public void enableBackgroundPlay() {
         SharedPreferences.Editor spedit = sp.edit();
         spedit.putBoolean(PREF_BACKGROUND_PLAY_ENABLED, true);
-		spedit.apply();
+        spedit.apply();
     }
 
     public void disableBackgroundPlay() {
         SharedPreferences.Editor spedit = sp.edit();
         spedit.putBoolean(PREF_BACKGROUND_PLAY_ENABLED, false);
-		spedit.apply();
+        spedit.apply();
     }
 
     public boolean isBackgroundPlayEnabled() {
@@ -48,12 +48,12 @@ public class BackgroundPlayHelper {
         try {
             if (webView.getUrl().contains("/watch")) {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-					webView.evaluateJavascript("(function() { if(document.getElementsByTagName('video')[0].paused == false) { return 'playing'; } else { return 'stopped'; } })();", value -> {
-						Log.i("VALUE", value);
-						if (value.equals("\"playing\"")) {
-							showBackgroundPlaybackNotification();
-						}
-					});
+                    webView.evaluateJavascript("(function() { if(document.getElementsByTagName('video')[0].paused == false) { return 'playing'; } else { return 'stopped'; } })();", value -> {
+                        Log.i("VALUE", value);
+                        if (value.equals("\"playing\"")) {
+                            showBackgroundPlaybackNotification();
+                        }
+                    });
                 } else {
                     showBackgroundPlaybackNotification();
                 }
@@ -73,19 +73,19 @@ public class BackgroundPlayHelper {
                 .setContentTitle(context.getString(R.string.app_name))
                 .setContentText(webView.getTitle().replace(" - YouTube", ""))
                 .setAutoCancel(true)
-				.setContentIntent(PendingIntent.getActivity(
-                                context,
-                                NOTIFICATION_ID,
-                                new Intent(context, MainActivity.class)
-                                        .setAction(Intent.ACTION_VIEW)
-                                        .setData(Uri.parse(webView.getUrl())),
-                                PendingIntent.FLAG_UPDATE_CURRENT));
-		NotificationManager manager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+                .setContentIntent(PendingIntent.getActivity(
+                        context,
+                        NOTIFICATION_ID,
+                        new Intent(context, MainActivity.class)
+                                .setAction(Intent.ACTION_VIEW)
+                                .setData(Uri.parse(webView.getUrl())),
+                        PendingIntent.FLAG_UPDATE_CURRENT));
+        NotificationManager manager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
         manager.notify(NOTIFICATION_ID, builder.build());
     }
 
     public void hideBackgroundPlaybackNotification() {
-		NotificationManager manager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+        NotificationManager manager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
         manager.cancel(NOTIFICATION_ID);
     }
 }

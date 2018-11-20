@@ -14,7 +14,7 @@ public class HeadSetReceiver extends BroadcastReceiver {
             int state = intent.getIntExtra("state", -1);
             switch (state) {
                 case 0:
-                    if(headphonePlug) {
+                    if (headphonePlug) {
                         MainActivity.pauseVideo();
                         headphonePlug = false;
                     }

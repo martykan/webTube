@@ -68,11 +68,11 @@ public class WebTubeWebViewClient extends WebViewClient {
             if (Build.VERSION.SDK_INT > Build.VERSION_CODES.KITKAT) {
                 statusBarSpace.setVisibility(View.VISIBLE);
                 view.evaluateJavascript("(function() { if(document.getElementById('player').style.visibility == 'hidden' || document.getElementById('player').innerHTML == '') { return 'not_video'; } else { return 'video'; } })();",
-						value -> {
-							int colorId = value.contains("not_video") ? R.color.colorPrimary : R.color.colorWatch;
-							statusBarSpace.setBackgroundColor(ContextCompat.getColor(context, colorId));
-							bottomBar.setBackgroundColor(ContextCompat.getColor(context, colorId));
-						});
+                        value -> {
+                            int colorId = value.contains("not_video") ? R.color.colorPrimary : R.color.colorWatch;
+                            statusBarSpace.setBackgroundColor(ContextCompat.getColor(context, colorId));
+                            bottomBar.setBackgroundColor(ContextCompat.getColor(context, colorId));
+                        });
             }
         }
     }

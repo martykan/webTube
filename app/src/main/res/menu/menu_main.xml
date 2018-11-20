@@ -5,26 +5,26 @@
 
     <item
         android:id="@+id/action_home"
-        android:title="@string/home"
         android:icon="@drawable/ic_home_white_24dp"
-        app:showAsAction="always" />
+        android:title="@string/home"
+        app:showAsAction="ifRoom" />
 
     <item
         android:id="@+id/action_refresh"
-        android:title="@string/refresh"
         android:icon="@drawable/ic_refresh_white_24dp"
-        app:showAsAction="always" />
+        android:title="@string/refresh"
+        app:showAsAction="ifRoom" />
 
     <item
         android:id="@+id/action_share"
-        android:title="@string/share"
         android:icon="@drawable/ic_share_variant_white_24dp"
-        app:showAsAction="always" />
+        android:title="@string/share"
+        app:showAsAction="ifRoom" />
 
     <item
         android:id="@+id/action_bookmarks"
-        android:title="@string/bookmarks"
         android:icon="@drawable/ic_star_white_24dp"
+        android:title="@string/bookmarks"
         app:showAsAction="always" />
 
     <item
@@ -48,8 +48,8 @@
         android:id="@+id/action_tor"
         android:checkable="true"
         android:checked="false"
-        android:title="@string/enableTor"
         android:enabled="false"
+        android:title="@string/enableTor"
         app:showAsAction="never" />
 
     <item
@@ -59,9 +59,9 @@
 
     <item
         android:id="@+id/action_accept_cookies"
-        android:title="@string/acceptCookies"
         android:checkable="true"
         android:checked="true"
+        android:title="@string/acceptCookies"
         app:showAsAction="never" />
 
     <item

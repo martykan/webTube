@@ -7,9 +7,9 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/statusbar_margin"
         android:background="#DDD"
-        android:padding="16dp"
-        android:layout_marginTop="@dimen/statusbar_margin">
+        android:padding="16dp">
 
         <TextView
             android:id="@+id/textView"

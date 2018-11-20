@@ -39,11 +39,11 @@ public class WebTubeChromeClient extends WebChromeClient {
         customViewContainer.setVisibility(View.VISIBLE);
         customViewContainer.addView(view);
 
-		// Hide the status bar
-		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
-			decorView.setSystemUiVisibility(View.SYSTEM_UI_FLAG_FULLSCREEN);
-		}
-		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+        // Hide the status bar
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+            decorView.setSystemUiVisibility(View.SYSTEM_UI_FLAG_FULLSCREEN);
+        }
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
             decorView.setSystemUiVisibility(View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION | View.SYSTEM_UI_FLAG_FULLSCREEN);
         }
     }
@@ -72,17 +72,17 @@ public class WebTubeChromeClient extends WebChromeClient {
         progress.setVisibility(View.VISIBLE);
         progress.setProgress(percentage);
 
-		// For more advanced loading status
+        // For more advanced loading status
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
             progress.setIndeterminate(percentage == 100);
             view.evaluateJavascript("(function() { return document.readyState == \"complete\"; })();",
-					value -> {
-						if (value.equals("true")) {
-							progress.setVisibility(View.INVISIBLE);
-						} else {
-							onProgressChanged(webView, 100);
-						}
-					});
+                    value -> {
+                        if (value.equals("true")) {
+                            progress.setVisibility(View.INVISIBLE);
+                        } else {
+                            onProgressChanged(webView, 100);
+                        }
+                    });
         } else {
             if (percentage == 100) {
                 progress.setVisibility(View.GONE);

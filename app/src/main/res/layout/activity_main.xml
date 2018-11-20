@@ -38,10 +38,10 @@
                     android:layout_alignParentTop="true" />
 
                 <RelativeLayout
+                    android:id="@+id/relativeLayout2"
                     android:layout_width="match_parent"
                     android:layout_height="56dp"
                     android:layout_alignParentBottom="true"
-                    android:id="@+id/relativeLayout2"
                     android:background="@color/colorPrimary">
 
                     <android.support.v7.widget.ActionMenuView
@@ -59,14 +59,14 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_below="@+id/menu_main"
-                        android:layout_alignParentLeft="true"
                         android:layout_alignParentStart="true"
-                        android:progress="50"
+                        android:layout_alignParentLeft="true"
                         android:layout_marginTop="-7dp"
                         android:layout_marginBottom="-7dp"
-                        android:progressTint="@color/white"
-                        android:indeterminateTint="@color/white"
                         android:backgroundTint="@android:color/transparent"
+                        android:indeterminateTint="@color/white"
+                        android:progress="50"
+                        android:progressTint="@color/white"
                         tools:targetApi="lollipop" />
                 </RelativeLayout>
             </RelativeLayout>
@@ -86,8 +86,8 @@
         android:id="@+id/customViewContainer"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
+        android:layout_alignParentLeft="true"
         android:layout_alignParentTop="true"
         android:background="#000"
         android:clickable="false"

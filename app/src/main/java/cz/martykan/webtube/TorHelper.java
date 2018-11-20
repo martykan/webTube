@@ -47,7 +47,7 @@ public class TorHelper {
                 WebkitProxy.setProxy(MainActivity.class.getName(), mApplicationContext, null, "localhost", PORT_TOR);
                 SharedPreferences.Editor spEdit = sp.edit();
                 spEdit.putBoolean(PREF_TOR_ENABLED, true);
-				spEdit.apply();
+                spEdit.apply();
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -63,7 +63,7 @@ public class TorHelper {
                 WebkitProxy.resetProxy(MainActivity.class.getName(), mApplicationContext);
                 SharedPreferences.Editor spEdit = sp.edit();
                 spEdit.putBoolean(PREF_TOR_ENABLED, false);
-				spEdit.apply();
+                spEdit.apply();
                 CookieHelper.acceptCookies(webView, true);
             } catch (Exception e) {
                 e.printStackTrace();
