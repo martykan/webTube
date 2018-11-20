@@ -21,6 +21,6 @@ public class Downloader {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        context.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("https://www.ytbmp4.com/search?q=" + encodedURL)));
+        context.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("https://dirpy.com/studio?url=" + encodedURL)));
     }
 }
