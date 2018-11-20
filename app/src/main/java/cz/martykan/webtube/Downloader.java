@@ -9,7 +9,7 @@ import java.net.URLEncoder;
 public class Downloader {
     Context context;
 
-    public Downloader (Context context) {
+    public Downloader(Context context) {
         this.context = context;
     }
 
@@ -18,8 +18,7 @@ public class Downloader {
         String encodedURL = url;
         try {
             encodedURL = URLEncoder.encode(url, "utf-8");
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
         context.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("https://www.ytbmp4.com/search?q=" + encodedURL)));

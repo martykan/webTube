@@ -18,7 +18,7 @@ public class MediaButtonIntentReceiver extends BroadcastReceiver {
         if (!Intent.ACTION_MEDIA_BUTTON.equals(intentAction)) {
             return;
         }
-		KeyEvent event = intent.getParcelableExtra(Intent.EXTRA_KEY_EVENT);
+        KeyEvent event = intent.getParcelableExtra(Intent.EXTRA_KEY_EVENT);
         Log.i("Key", event.getKeyCode() + " pressed");
 
         int action = event.getAction();

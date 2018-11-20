@@ -27,10 +27,6 @@ public class MainActivity extends AppCompatActivity {
 
     private static WebView webView;
     String time;
-    private View appWindow;
-    private ProgressBar progress;
-    private FrameLayout customViewContainer;
-    private DrawerLayout drawerLayout;
     private NavigationView navigationView;
     private SharedPreferences sp;
     private BroadcastReceiver headSetReceiver;
@@ -51,13 +47,13 @@ public class MainActivity extends AppCompatActivity {
     public static void toggleVideo() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
             webView.evaluateJavascript("(function() { return document.getElementsByTagName('video')[0].paused; })();",
-					value -> {
-						if (value.equals("true")) {
-							playVideo();
-						} else {
-							pauseVideo();
-						}
-					});
+                    value -> {
+                        if (value.equals("true")) {
+                            playVideo();
+                        } else {
+                            pauseVideo();
+                        }
+                    });
         } else {
             pauseVideo();
         }
@@ -82,16 +78,16 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-		webView = findViewById(R.id.webView);
-        appWindow = findViewById(R.id.appWindow);
-		progress = findViewById(R.id.progress);
-		customViewContainer = findViewById(R.id.customViewContainer);
+        webView = findViewById(R.id.webView);
+        View appWindow = findViewById(R.id.appWindow);
+        ProgressBar progress = findViewById(R.id.progress);
+        FrameLayout customViewContainer = findViewById(R.id.customViewContainer);
 
         sp = PreferenceManager.getDefaultSharedPreferences(this);
-		drawerLayout = findViewById(R.id.drawer_layout);
-		navigationView = findViewById(R.id.bookmarks_panel);
+        DrawerLayout drawerLayout = findViewById(R.id.drawer_layout);
+        navigationView = findViewById(R.id.bookmarks_panel);
 
-		// Set up media button receiver
+        // Set up media button receiver
         ((AudioManager) getSystemService(AUDIO_SERVICE)).registerMediaButtonEventReceiver(
                 new ComponentName(getPackageName(), MediaButtonIntentReceiver.class.getName()));
 
@@ -106,16 +102,16 @@ public class MainActivity extends AppCompatActivity {
 
         // Initialize bookmarks panel
         bookmarkManager = new BookmarkManager(this, webView);
-		bookmarkManager.initializeBookmarks(navigationView);
+        bookmarkManager.initializeBookmarks(navigationView);
         drawerLayout.setDrawerListener(new DrawerLayout.DrawerListener() {
             @Override
             public void onDrawerSlide(View drawerView, float slideOffset) {
-				bookmarkManager.initializeBookmarks(navigationView);
+                bookmarkManager.initializeBookmarks(navigationView);
             }
 
             @Override
             public void onDrawerOpened(View drawerView) {
-				bookmarkManager.initializeBookmarks(navigationView);
+                bookmarkManager.initializeBookmarks(navigationView);
             }
 
             @Override
@@ -138,7 +134,7 @@ public class MainActivity extends AppCompatActivity {
         backgroundPlayHelper = new BackgroundPlayHelper(mApplicationContext, webView);
 
         // Menu helper
-		ActionMenuView actionMenu = findViewById(R.id.menu_main);
+        ActionMenuView actionMenu = findViewById(R.id.menu_main);
         menuHelper = new MenuHelper(this, webView, torHelper, backgroundPlayHelper, appWindow);
         getMenuInflater().inflate(R.menu.menu_main, actionMenu.getMenu());
         menuHelper.setUpMenu(actionMenu, drawerLayout, findViewById(R.id.bookmarks_panel));
@@ -157,10 +153,9 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public void onPause() {
         super.onPause();
-        if(backgroundPlayHelper.isBackgroundPlayEnabled()) {
+        if (backgroundPlayHelper.isBackgroundPlayEnabled()) {
             backgroundPlayHelper.playInBackground();
-        }
-        else {
+        } else {
             pauseVideo();
         }
     }
@@ -193,7 +188,7 @@ public class MainActivity extends AppCompatActivity {
         if (Intent.ACTION_VIEW.equals(intent.getAction()) && intent.getData() != null) {
             final String url = intent.getData().toString();
 
-            if (url != null && !url.equals(webView.getUrl())) {
+            if (!url.equals(webView.getUrl())) {
                 webView.loadUrl(url);
             }
 

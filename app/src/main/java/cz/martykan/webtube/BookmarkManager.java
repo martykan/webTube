@@ -17,7 +17,6 @@ import java.util.List;
 
 public class BookmarkManager {
     private List<String> bookmarkUrls;
-    private List<String> bookmarkTimelessUrls;
     private List<String> bookmarkTitles;
 
     Context context;
@@ -32,10 +31,10 @@ public class BookmarkManager {
         sp = PreferenceManager.getDefaultSharedPreferences(context);
     }
 
-	public void initializeBookmarks(NavigationView navigationView) {
+    public void initializeBookmarks(NavigationView navigationView) {
         this.navigationView = navigationView;
         bookmarkUrls = new ArrayList<>();
-        bookmarkTimelessUrls = new ArrayList<>();
+        List<String> bookmarkTimelessUrls = new ArrayList<>();
         bookmarkTitles = new ArrayList<>();
 
         final Menu menu = navigationView.getMenu();
@@ -69,7 +68,9 @@ public class BookmarkManager {
                 url = url.replace("+", "%20");
             }
 
-            if (bookmarkUrls.contains(webView.getUrl()) || bookmarkTitles.contains(webView.getTitle().replace("'", "\\'")) || bookmarkTimelessUrls.contains(url)) {
+            if (bookmarkUrls.contains(webView.getUrl())
+                    || bookmarkTitles.contains(webView.getTitle().replace("'", "\\'"))
+                    || bookmarkTimelessUrls.contains(url)) {
                 menu.add(context.getString(R.string.removePage)).setIcon(R.drawable.ic_close_grey600_24dp);
             } else {
                 menu.add(context.getString(R.string.addPage)).setIcon(R.drawable.ic_plus_grey600_24dp);
@@ -86,11 +87,11 @@ public class BookmarkManager {
             bookmarksArray.put(new JSONObject("{'title':'" + title.replace("'", "\\'") + "','url':'" + url + "'}"));
             SharedPreferences.Editor editor = sp.edit();
             editor.putString("bookmarks", bookmarksArray.toString());
-			editor.apply();
+            editor.apply();
         } catch (JSONException e) {
             e.printStackTrace();
         }
-		initializeBookmarks(navigationView);
+        initializeBookmarks(navigationView);
     }
 
     public void removeBookmark(String title) {
@@ -110,11 +111,11 @@ public class BookmarkManager {
             }
             SharedPreferences.Editor editor = sp.edit();
             editor.putString("bookmarks", bookmarksArray.toString());
-			editor.apply();
+            editor.apply();
         } catch (JSONException e) {
             e.printStackTrace();
         }
-		initializeBookmarks(navigationView);
+        initializeBookmarks(navigationView);
     }
 
     public String getUrl(String title) {
