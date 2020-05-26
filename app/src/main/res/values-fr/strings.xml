@@ -13,14 +13,14 @@
     <string name="error_no_video">Pas de vidéo !</string>
     <string name="error_select_video_and_retry">Veuillez sélectionner une vidéo et réessayer.</string>
     <string name="home">Accueil</string>
-    <string name="homePageHelp">Si vous voulez changer la page d\'acceuil, maintenez appuyé le bouton Home et elle changera pour la page actuellement ouverte.</string>
+    <string name="homePageHelp">Si vous voulez changer la page d\'accueil, maintenez appuyé le bouton Home et elle changera pour la page actuellement ouverte.</string>
     <string name="homePageSet">Votre page d\'accueil a été réglée sur cette page.</string>
     <string name="menu">Menu</string>
     <string name="openInBrowser">Ouvrir dans un navigateur</string>
     <string name="playInBackground">Lire en arrière-plan</string>
     <string name="refresh">Rafraîchir</string>
     <string name="removePage">Enlever cette page</string>
-    <string name="set_as_home">Définir comme acceuil</string>
+    <string name="set_as_home">Définir comme page d\'accueil</string>
     <string name="share">Partager</string>
     <string name="share_with">Partager avec…</string>
     <string name="torWarning">Utiliser Tor de façon irresponsable, comme en vous connectant avec votre compte YouTube, peut désanonymiser votre trafic et seulement rendre les choses pires.</string>
