@@ -69,6 +69,7 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        // This is Test Commit
         mApplicationContext = getApplicationContext();
         // Set HW acceleration flags
         getWindow().setFlags(
