@@ -69,7 +69,6 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-
         mApplicationContext = getApplicationContext();
         // Set HW acceleration flags
         getWindow().setFlags(
