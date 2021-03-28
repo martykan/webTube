@@ -26,7 +26,6 @@ public class Downloader {
         } else {
             Log.i("Invalid Url Format", "");
         }
-
         context.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("https://www.y2mate.com/youtube/" + part2)));
 
     }
